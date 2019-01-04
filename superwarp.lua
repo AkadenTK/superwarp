@@ -132,14 +132,14 @@ function poke_npc(id, index)
 	end
 end
 
-local function find_homepoint()
+local function find_npc(search)
 	local target_id = nil
 	local target_index = nil
 	local distance = nil
 	local name = nil
 	for i, v in pairs(windower.ffxi.get_mob_array()) do
 		local d = windower.ffxi.get_mob_by_index(i).distance
-		if (not target_id or d < distance) and string.find(v.name,'Home Point') then
+		if (not target_id or d < distance) and string.find(v.name, search) then
 			target_index = i
 			target_id = v.id
 			name = v.name
@@ -150,32 +150,62 @@ local function find_homepoint()
 end
 
 local function set_homepoint()
-	local id, index, dist, name = find_homepoint()
-	if id and index and distance <= 6^2 then
+	local id, index, dist, name = find_npc('Home Point')
+	if id and index and dist <= 6^2 then
 		current_activity = {type='sethp', id=id, index=index, name=name}
 		poke_npc(id, index)
+	elseif not id then
+			log('No homepoint found!')
+	elseif distance > 6^2 then
+		log('Homepoint found, but too far!')
 	end
-	log('set hp')
 end
 
 local function do_homepoint_warp(zone, sub_zone)
 	local warp_index, display_name = resolve_warp_index(maps.hp, zone, sub_zone)
 	if warp_index then
-		log('Warping via Home Point to '..display_name..'.')
+		local id, index, dist, name = find_npc('Home Point')
+		if id and index and dist <= 6^2 then
+			current_activity = {type='hp', id=id, index=index, name=name, hp_index=warp_index}
+			poke_npc(id, index)
+			log('Warping via Home Point to '..display_name..'.')
+		elseif not id then
+				log('No homepoint found!')
+		elseif distance > 6^2 then
+			log('Homepoint found, but too far!')
+		end
 	end
 end
 
 local function do_waypoint_warp(zone, sub_zone)
 	local warp_index, display_name = resolve_warp_index(maps.wp, zone, sub_zone)
 	if warp_index then
-		log('Warping via Waypoint to '..display_name..'.')
+		local id, index, dist, name = find_npc('Waypoint')
+		if id and index and dist <= 6^2 then
+			current_activity = {type='wp', id=id, index=index, name=name, wp_index=warp_index}
+			poke_npc(id, index)
+			log('Warping via Waypoint to '..display_name..'.')
+		elseif not id then
+				log('No homepoint found!')
+		elseif distance > 6^2 then
+			log('Homepoint found, but too far!')
+		end
 	end
 end
 
 local function do_guide_warp(zone)
 	local warp_index, display_name = resolve_warp_index(maps.sg, zone)
 	if warp_index then
-		log('Warping via Survival Guide to '..display_name..'.')
+		local id, index, dist, name = find_npc('Survival Guide')
+		if id and index and dist <= 6^2 then
+			current_activity = {type='sg', id=id, index=index, name=name, sg_index=warp_index}
+			poke_npc(id, index)
+			log('Warping via Survival Guide to '..display_name..'.')
+		elseif not id then
+				log('No homepoint found!')
+		elseif distance > 6^2 then
+			log('Homepoint found, but too far!')
+		end
 	end
 end
 
