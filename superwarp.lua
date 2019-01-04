@@ -116,9 +116,45 @@ local function resolve_warp_index(map, zone, sub_zone)
 			end
 		end
 	end
+	log('Could not find zone: '..zone)
+	return nil
+end 
+
+function poke_npc(id, index)
+	if id and index then
+		local packet = packets.new('outgoing', 0x01A, {
+			["Target"]=id,
+			["Target Index"]=index,
+			["Category"]=0,
+			["Param"]=0,
+			["_unknown1"]=0})
+		packets.inject(packet)
+	end
+end
+
+local function find_homepoint()
+	local target_id = nil
+	local target_index = nil
+	local distance = nil
+	local name = nil
+	for i, v in pairs(windower.ffxi.get_mob_array()) do
+		local d = windower.ffxi.get_mob_by_index(i).distance
+		if (not target_id or d < distance) and string.find(v.name,'Home Point') then
+			target_index = i
+			target_id = v.id
+			name = v.name
+			distance = d
+		end
+	end
+	return target_id, target_index, distance, name
 end
 
 local function set_homepoint()
+	local id, index, dist, name = find_homepoint()
+	if id and index and distance <= 6^2 then
+		current_activity = {type='sethp', id=id, index=index, name=name}
+		poke_npc(id, index)
+	end
 	log('set hp')
 end
 
@@ -194,4 +230,161 @@ windower.register_event('unhandled command', function(cmd, ...)
     if S{'hp','wp','sg'}:contains(cmd:lower()) then
 		handle_warp(cmd, args)
     end
+end)
+
+
+windower.register_event('incoming chunk',function(id,data,modified,injected,blocked)
+	if id == 0x034 or id == 0x032 then
+		local p = packets.parse('incoming',data)
+		
+		if current_activity then
+			local packet = packets.new('outgoing', 0x05B)
+
+			if current_activity.type == 'sethp' then
+				local zone = windower.ffxi.get_info()['zone']
+
+				-- menu change
+				packet["Target"] = current_activity.id
+				packet["Target Index"] = current_activity.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = p['Menu ID']
+
+				packet["Option Index"] = 8
+				packet["_unknown1"] = 0
+				packet["Automated Message"] = true
+				packet["_unknown2"] = 0
+				packets.inject(packet)
+				
+				-- select "set HP"
+				packet["Target"] = current_activity.id
+				packet["Target Index"] = current_activity.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = p['Menu ID']
+
+				packet["Option Index"] = 1
+				packet["_unknown1"] = 0
+				packet["Automated Message"] = false
+				packet["_unknown2"] = 0
+				packets.inject(packet)
+
+				last_activity = current_activity
+				current_activity = nil
+				return true
+			elseif current_activity.type == 'hp' then
+				local zone = windower.ffxi.get_info()['zone']
+
+				-- menu change
+				packet["Target"] = current_activity.id
+				packet["Target Index"] = current_activity.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = p['Menu ID']
+
+				packet["Option Index"] = 8
+				packet["_unknown1"] = 0
+				packet["Automated Message"] = true
+				packet["_unknown2"] = 0
+				packets.inject(packet)
+
+				-- menu change
+				packet["Target"] = current_activity.id
+				packet["Target Index"] = current_activity.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = p['Menu ID']
+
+				packet["Option Index"] = 2
+				packet["_unknown1"] = 0
+				packet["Automated Message"] = true
+				packet["_unknown2"] = 0
+				packets.inject(packet)
+			
+				-- request warp
+				packet["Target"] = current_activity.id
+				packet["Target Index"] = current_activity.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = p['Menu ID']
+
+				packet["Option Index"] = 2
+				packet["_unknown1"] = current_activity.hp_index
+				packet["Automated Message"] = false
+				packet["_unknown2"] = 0
+				packets.inject(packet)
+
+				last_activity = current_activity
+				current_activity = nil
+				return true
+			elseif current_activity.type == 'wp' then
+				local zone = windower.ffxi.get_info()['zone']
+
+				-- menu change
+				packet["Target"] = current_activity.id
+				packet["Target Index"] = current_activity.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = p['Menu ID']
+
+				packet["Option Index"] = current_activity.wp_index
+				packet["_unknown1"] = 0
+				packet["Automated Message"] = true
+				packet["_unknown2"] = 0
+				packets.inject(packet)
+			
+				-- request warp
+				packet["Target"] = current_activity.id
+				packet["Target Index"] = current_activity.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = p['Menu ID']
+
+				packet["Option Index"] = current_activity.wp_index
+				packet["_unknown1"] = 0
+				packet["Automated Message"] = false
+				packet["_unknown2"] = 0
+				packets.inject(packet)
+
+				last_activity = current_activity
+				current_activity = nil
+				return true
+			elseif current_activity.type == 'sg' then
+				local zone = windower.ffxi.get_info()['zone']
+
+				-- menu change
+				packet["Target"] = current_activity.id
+				packet["Target Index"] = current_activity.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = p['Menu ID']
+
+				packet["Option Index"] = 8
+				packet["_unknown1"] = 0
+				packet["Automated Message"] = true
+				packet["_unknown2"] = 0
+				packets.inject(packet)
+
+				-- menu change
+				packet["Target"] = current_activity.id
+				packet["Target Index"] = current_activity.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = p['Menu ID']
+
+				packet["Option Index"] = 1
+				packet["_unknown1"] = current_activity.sg_index
+				packet["Automated Message"] = true
+				packet["_unknown2"] = 0
+				packets.inject(packet)
+			
+				-- request warp
+				packet["Target"] = current_activity.id
+				packet["Target Index"] = current_activity.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = p['Menu ID']
+
+				packet["Option Index"] = 1
+				packet["_unknown1"] = current_activity.sg_index
+				packet["Automated Message"] = false
+				packet["_unknown2"] = 0
+				packets.inject(packet)
+
+				last_activity = current_activity
+				current_activity = nil
+				return true
+			end
+		end
+	end
 end)
