@@ -137,7 +137,7 @@ local function resolve_warp_index(map, zone, sub_zone)
 		else -- no sub_zones table, it's just an index.
 			if (fuzzy_zone:length() >= 3 and fuzzy_z:contains(fuzzy_zone)) or fuzzy_z == fuzzy_zone then
 				debug('found warp index: '..z..' ('..sub_zones..')')
-				return sub_zones, zone
+				return sub_zones, z
 			end
 		end
 	end
@@ -312,6 +312,10 @@ windower.register_event('addon command', function(...)
 		if args[1] and args[1]:lower() == 'all' then
 			windower.send_ipc_message('reset')
 		end
+	else
+		log("[sw] hp [warp/w] [all/a/@all] zone name [homepoint_number] -- warp to a designated homepoint. \"all\" sends ipc to all local clients.")
+		log("[sw] wp [warp/w] [all/a/@all] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.")
+		log("[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.")
 	end
 end)
 
