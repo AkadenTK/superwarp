@@ -69,9 +69,15 @@ warp_list = S{'hp','wp','sg'}
 local defaults = {
 	debug = false,
 	send_all_delay = 0.4,
+	max_retries = 6,
+	retry_delay = 2,
 }
 
 local settings = config.load(defaults)
+
+local state = {
+	loop_count = nil,
+}
 
 function debug(msg)
 	if settings.debug then
@@ -210,17 +216,31 @@ local function set_homepoint()
 	end
 end
 
+local function loop_warp(fn, ...)
+	if state.loop_count == nil then 
+		state.loop_count = settings.max_retries 
+	end
+
+	if state.loop_count > 0 then
+		fn(...)
+		state.loop_count = state.loop_count - 1
+
+		loop_warp:schedule(settings.retry_delay, fn, ...)
+	end
+end
+
 local function do_homepoint_warp(zone, sub_zone)
 	local warp_index, display_name = resolve_warp_index(maps.hp, zone, sub_zone)
 	if warp_index then
 		local id, index, dist, name = find_npc('Home Point')
 		if id and index and dist <= 6^2 then
+			reset(true)
 			current_activity = {type='hp', id=id, index=index, name=name, hp_index=warp_index}
 			poke_npc(id, index)
 			log('Warping via Home Point to '..display_name..'.')
 		elseif not id then
 			log('No homepoint found!')
-		elseif distance > 6^2 then
+		elseif dist > 6^2 then
 			log('Homepoint found, but too far!')
 		end
 	end
@@ -236,7 +256,7 @@ local function do_waypoint_warp(zone, sub_zone)
 			log('Warping via Waypoint to '..display_name..'.')
 		elseif not id then
 			log('No homepoint found!')
-		elseif distance > 6^2 then
+		elseif dist > 6^2 then
 			log('Homepoint found, but too far!')
 		end
 	end
@@ -252,7 +272,7 @@ local function do_guide_warp(zone)
 			log('Warping via Survival Guide to '..display_name..'.')
 		elseif not id then
 				log('No homepoint found!')
-		elseif distance > 6^2 then
+		elseif dist > 6^2 then
 			log('Homepoint found, but too far!')
 		end
 	end
@@ -285,16 +305,17 @@ local function handle_warp(warp, args)
 		end
 	end
 
+	state.loop_count = nil
 	if warp == 'hp' then
 		if args[1]:lower() == 'set' then
 			set_homepoint()
 		else
-			do_homepoint_warp(args:concat(' '), sub_zone_target)
+			loop_warp(do_homepoint_warp, args:concat(' '), sub_zone_target)
 		end
 	elseif warp == 'wp' then
-		do_waypoint_warp(args:concat(' '), sub_zone_target)
+		loop_warp(do_waypoint_warp, args:concat(' '), sub_zone_target)
 	elseif warp == 'sg' then
-		do_guide_warp(args:concat(' '))
+		loop_warp(do_guide_warp, args:concat(' '))
 	end
 end
 
@@ -378,6 +399,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 
 				last_packet = packet
 				last_activity = current_activity
+				state.loop_count = 0
 				current_activity = nil
 				return true
 			elseif current_activity.type == 'hp' then
@@ -421,6 +443,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 
 				last_packet = packet
 				last_activity = current_activity
+				state.loop_count = 0
 				current_activity = nil
 				return true
 			elseif current_activity.type == 'wp' then
@@ -452,6 +475,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 
 				last_packet = packet
 				last_activity = current_activity
+				state.loop_count = 0
 				current_activity = nil
 				return true
 			elseif current_activity.type == 'sg' then
@@ -495,6 +519,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 
 				last_packet = packet
 				last_activity = current_activity
+				state.loop_count = 0
 				current_activity = nil
 				return true
 			end
