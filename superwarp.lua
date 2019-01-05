@@ -40,6 +40,7 @@ require('tables')
 require('logger')
 require('functions')
 packets = require('packets')
+require('coroutine')
 
 maps = {
 	['hp'] = require('map/homepoints'),
@@ -68,6 +69,22 @@ function debug(msg)
 	if debugging then
 		log('debug: '..msg)
 	end
+end
+
+local function get_delay()
+    local self = windower.ffxi.get_player().name
+    local members = {}
+    for k, v in pairs(windower.ffxi.get_party()) do
+        if type(v) == 'table' then
+            members[#members + 1] = v.name
+        end
+    end
+    table.sort(members)
+    for k, v in pairs(members) do
+        if v == self then
+            return (k - 1) * .4
+        end
+    end
 end
 
 --- resolve sub-zone target aliases (ah -> auction house, etc.)
@@ -217,7 +234,16 @@ local function handle_warp(warp, args)
 	warp = warp:lower()
 
 	local all = args[1]:lower() == 'all'
-	if all then args:remove(1) end
+	if all then 
+		args:remove(1) 
+
+		debug('sending warp to all.')
+		windower.send_ipc_message(warp..' '..args:concat(' '))
+
+		local delay = get_delay()
+		handle_warp:schedule(delay, warp, args)
+		return
+	end
 
 	local sub_zone_targt = nil
 	if sub_zone_targets[warp] then
@@ -261,7 +287,6 @@ windower.register_event('unhandled command', function(cmd, ...)
 		handle_warp(cmd, args)
     end
 end)
-
 
 windower.register_event('incoming chunk',function(id,data,modified,injected,blocked)
 	if id == 0x034 or id == 0x032 then
@@ -417,4 +442,13 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 			end
 		end
 	end
+end)
+
+windower.register_event('ipc message', function(msg) 
+	local args = msg:split(' ')
+	local cmd = args[1]
+	args:remove(1)
+	local delay = get_delay()
+	debug('received ipc: '..msg..'. executing in '..tostring(delay)..'s.')
+	handle_warp:schedule(delay, cmd, args)
 end)
