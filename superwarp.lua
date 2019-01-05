@@ -41,6 +41,7 @@ require('logger')
 require('functions')
 packets = require('packets')
 require('coroutine')
+config = require('config')
 
 maps = {
 	['hp'] = require('map/homepoints'),
@@ -63,10 +64,17 @@ sub_zone_targets = {
 	['wp'] = S{'frontier station', 'platea', 'triumphus', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', }	
 }
 
-debugging = true
+warp_list = S{'hp','wp','sg'}
+
+local defaults = {
+	debug = false,
+	send_all_delay = 0.4,
+}
+
+local settings = config.load(defaults)
 
 function debug(msg)
-	if debugging then
+	if settings.debug then
 		log('debug: '..msg)
 	end
 end
@@ -82,7 +90,7 @@ local function get_delay()
     table.sort(members)
     for k, v in pairs(members) do
         if v == self then
-            return (k - 1) * .4
+            return (k - 1) * settings.send_all_delay
         end
     end
 end
@@ -166,13 +174,37 @@ local function find_npc(search)
 	return target_id, target_index, distance, name
 end
 
+local function reset(quiet)
+	if current_activity and last_packet then
+		local packet = packets.new('outgoing', 0x05B)
+		packet["Target"]=last_packet['Target']
+		packet["Option Index"]="0"
+		packet["_unknown1"]="16384"
+		packet["Target Index"]=last_packet['Target Index']
+		packet["Automated Message"]=false
+		packet["_unknown2"]=0
+		packet["Zone"]=last_packet['Zone']
+		packet["Menu ID"]=last_packet['Menu ID']
+		packets.inject(packet)
+		last_activity = current_activity
+		current_activity = nil
+		if not quiet then
+			log('Should be reset now. Please try again.')
+		end
+	else
+		if not quiet then
+			log('No warp scheduled.')
+		end
+	end
+end
+
 local function set_homepoint()
 	local id, index, dist, name = find_npc('Home Point')
 	if id and index and dist <= 6^2 then
 		current_activity = {type='sethp', id=id, index=index, name=name}
 		poke_npc(id, index)
 	elseif not id then
-			log('No homepoint found!')
+		log('No homepoint found!')
 	elseif distance > 6^2 then
 		log('Homepoint found, but too far!')
 	end
@@ -187,7 +219,7 @@ local function do_homepoint_warp(zone, sub_zone)
 			poke_npc(id, index)
 			log('Warping via Home Point to '..display_name..'.')
 		elseif not id then
-				log('No homepoint found!')
+			log('No homepoint found!')
 		elseif distance > 6^2 then
 			log('Homepoint found, but too far!')
 		end
@@ -203,7 +235,7 @@ local function do_waypoint_warp(zone, sub_zone)
 			poke_npc(id, index)
 			log('Warping via Waypoint to '..display_name..'.')
 		elseif not id then
-				log('No homepoint found!')
+			log('No homepoint found!')
 		elseif distance > 6^2 then
 			log('Homepoint found, but too far!')
 		end
@@ -226,14 +258,13 @@ local function do_guide_warp(zone)
 	end
 end
 
-local function reset()
-	log('Should be reset, try again.')
-end
-
 local function handle_warp(warp, args)
 	warp = warp:lower()
 
-	local all = args[1]:lower() == 'all'
+	-- because I can't stop typing "hp warp X" because I've been trained. 
+	if args[1]:lower() == 'warp' or args[1]:lower() == 'w' then args:remove(1) end
+
+	local all = args[1]:lower() == 'all' or args[1]:lower() == 'a' or args[1]:lower() == '@all'
 	if all then 
 		args:remove(1) 
 
@@ -274,20 +305,39 @@ windower.register_event('addon command', function(...)
 	args:remove(1)
 	for i,v in pairs(args) do args[i]=windower.convert_auto_trans(args[i]) end
 	local item = table.concat(args," "):lower()
-	if S{'hp','wp','sg'}:contains(cmd) then
+	if warp_list:contains(cmd) then
 		handle_warp(cmd, args)
 	elseif cmd == 'reset' then
 		reset()	
+		if args[1] and args[1]:lower() == 'all' then
+			windower.send_ipc_message('reset')
+		end
 	end
 end)
 
+-- handle direct hp/wp/sg commands
 windower.register_event('unhandled command', function(cmd, ...)
     local args = T{...}
-    if S{'hp','wp','sg'}:contains(cmd:lower()) then
+    if warp_list:contains(cmd:lower()) then
 		handle_warp(cmd, args)
     end
 end)
 
+-- handle ipc message
+windower.register_event('ipc message', function(msg) 
+	local args = msg:split(' ')
+	local cmd = args[1]
+	args:remove(1)
+	if cmd == 'reset' then
+		reset()
+	elseif warp_list:contains(cmd) then
+		local delay = get_delay()
+		debug('received ipc: '..msg..'. executing in '..tostring(delay)..'s.')
+		handle_warp:schedule(delay, cmd, args)
+	end
+end)
+
+-- Handle menu interraction. 
 windower.register_event('incoming chunk',function(id,data,modified,injected,blocked)
 	if id == 0x034 or id == 0x032 then
 		local p = packets.parse('incoming',data)
@@ -322,6 +372,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 				packet["_unknown2"] = 0
 				packets.inject(packet)
 
+				last_packet = packet
 				last_activity = current_activity
 				current_activity = nil
 				return true
@@ -364,6 +415,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 				packet["_unknown2"] = 0
 				packets.inject(packet)
 
+				last_packet = packet
 				last_activity = current_activity
 				current_activity = nil
 				return true
@@ -394,6 +446,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 				packet["_unknown2"] = 0
 				packets.inject(packet)
 
+				last_packet = packet
 				last_activity = current_activity
 				current_activity = nil
 				return true
@@ -436,19 +489,11 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 				packet["_unknown2"] = 0
 				packets.inject(packet)
 
+				last_packet = packet
 				last_activity = current_activity
 				current_activity = nil
 				return true
 			end
 		end
 	end
-end)
-
-windower.register_event('ipc message', function(msg) 
-	local args = msg:split(' ')
-	local cmd = args[1]
-	args:remove(1)
-	local delay = get_delay()
-	debug('received ipc: '..msg..'. executing in '..tostring(delay)..'s.')
-	handle_warp:schedule(delay, cmd, args)
 end)
