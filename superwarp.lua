@@ -115,40 +115,50 @@ function get_fuzzy_name(name)
 	return name:lower():gsub("%s", ""):gsub("%p", "")
 end
 
-local function resolve_warp_index(map, zone, sub_zone)
-	local fuzzy_zone = get_fuzzy_name(zone)
-	for z, sub_zones in pairs(map) do
-		local fuzzy_z = get_fuzzy_name(z)
-		if fuzzy_z ~= '' and type(sub_zones) == 'table' then
-			if sub_zone ~= nil then
-				local fuzzy_sub_zone = get_fuzzy_name(sub_zone)
-				if (fuzzy_zone:length() >= 3 and fuzzy_z:contains(fuzzy_zone)) or fuzzy_zone == fuzzy_z then
-					for sz, index in pairs(sub_zones) do
-						local fuzzy_sz = get_fuzzy_name(sz)
-						if (sub_zone:length() >= 3 and fuzzy_sz:contains(fuzzy_sub_zone)) or fuzzy_sz == fuzzy_sub_zone then
-							debug('found warp index: '..z..'/'..sz..' ('..index..')')
-							return index, z..' - '..sz
-						end
-					end
-					log('Found zone ('..z..'), but not sub zone: '..sub_zone)
-					return nil
-				end
-			else
-				-- table listed, but no sub_zone specified, just return the first.
-				for sz, index in pairs(sub_zones) do
-					debug('Found zone ('..z..'), but no sub-zone listed, using first ('..sz..')')
-					return index, z..' - '..sz
-				end
-			end
-		else -- no sub_zones table, it's just an index.
-			if (fuzzy_zone:length() >= 3 and fuzzy_z:contains(fuzzy_zone)) or fuzzy_z == fuzzy_zone then
-				debug('found warp index: '..z..' ('..sub_zones..')')
-				return sub_zones, z
+function get_closest_match(map, needle)
+	local fuzzy_needle = get_fuzzy_name(needle)
+
+	local key, score
+	for haystack, value in pairs(map) do
+		local fuzzy_haystack = get_fuzzy_name(haystack)
+		if (fuzzy_needle:length() >= 3 and fuzzy_haystack:contains(fuzzy_needle)) or fuzzy_haystack == fuzzy_needle then
+			local cur_score = fuzzy_haystack:length() - fuzzy_needle:length()
+			if not key or cur_score < score then
+				key = haystack
+				score = cur_score
 			end
 		end
 	end
-	log('Could not find zone: '..zone)
-	return nil
+	return key
+end
+
+local function resolve_warp_index(map, zone, sub_zone)
+	local closest_zone_name = get_closest_match(map, zone)
+	if closest_zone_name then
+		local zone_map = map[closest_zone_name]
+		if type(zone_map) == 'table' then
+			if sub_zone ~= nil then
+				local closest_sub_zone = get_closest_match(zone_map, sub_zone)
+				if closest_sub_zone then
+					debug('found warp index: '..closest_zone_name..'/'..closest_sub_zone..' ('..zone_map[closest_sub_zone]..')')
+					return zone_map[closest_sub_zone], closest_zone_name..' - '..closest_sub_zone
+				else
+					log('Found zone ('..closest_zone_name..'), but not sub zone: "'..sub_zone..'"')
+					return nil
+				end
+			else
+				for sz, index in pairs(zone_map) do
+					debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using first ('..sz..')')
+					return index, closest_zone_name..' - '..sz
+				end
+			end
+		else
+			return zone_map, closest_zone_name	
+		end
+	else
+		log('Could not find zone: '..zone)
+		return nil
+	end
 end 
 
 function poke_npc(id, index)
@@ -296,7 +306,7 @@ local function handle_warp(warp, args)
 		return
 	end
 
-	local sub_zone_targt = nil
+	local sub_zone_target = nil
 	if sub_zone_targets[warp] then
 		local target_candidate = resolve_sub_zone_aliases(args:last())
 		if sub_zone_targets[warp]:contains(target_candidate:lower()) then
