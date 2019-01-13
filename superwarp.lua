@@ -343,6 +343,7 @@ end)
 -- handle direct hp/wp/sg commands
 windower.register_event('unhandled command', function(cmd, ...)
     local args = T{...}
+	for i,v in pairs(args) do args[i]=windower.convert_auto_trans(args[i]) end
     if warp_list:contains(cmd:lower()) then
 		handle_warp(cmd, args)
     end
