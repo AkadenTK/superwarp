@@ -253,6 +253,8 @@ local function do_homepoint_warp(zone, sub_zone)
 		elseif dist > 6^2 then
 			log('Homepoint found, but too far!')
 		end
+	else
+		state.loop_count = 0
 	end
 end
 
@@ -269,6 +271,8 @@ local function do_waypoint_warp(zone, sub_zone)
 		elseif dist > 6^2 then
 			log('Homepoint found, but too far!')
 		end
+	else
+		state.loop_count = 0
 	end
 end
 
@@ -281,10 +285,12 @@ local function do_guide_warp(zone)
 			poke_npc(id, index)
 			log('Warping via Survival Guide to '..display_name..'.')
 		elseif not id then
-				log('No homepoint found!')
+			log('No homepoint found!')
 		elseif dist > 6^2 then
 			log('Homepoint found, but too far!')
 		end
+	else
+		state.loop_count = 0
 	end
 end
 
