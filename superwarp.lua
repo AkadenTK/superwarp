@@ -44,9 +44,9 @@ require('coroutine')
 config = require('config')
 
 maps = {
-	['hp'] = require('map/homepoints'),
-	['wp'] = require('map/waypoints'),
-	['sg'] = require('map/guides'),
+	['homepoints'] = require('map/homepoints'),
+	['waypoints'] = require('map/waypoints'),
+	['guides'] = require('map/guides'),
 }
 
 sub_zone_aliases = {
@@ -104,6 +104,7 @@ end
 --- resolve sub-zone target aliases (ah -> auction house, etc.)
 local function resolve_sub_zone_aliases(raw)
 	if raw == nil then return nil end
+	if type(raw) == 'number' then return raw end
 	local raw_lower = raw:lower()
 
 	if sub_zone_aliases[raw_lower] then return sub_zone_aliases[raw_lower] end
@@ -132,10 +133,10 @@ function get_closest_match(map, needle)
 	return key
 end
 
-local function resolve_warp_index(map, zone, sub_zone)
-	local closest_zone_name = get_closest_match(map, zone)
+local function resolve_warp_index(map_name, zone, sub_zone)
+	local closest_zone_name = get_closest_match(maps[map_name], zone)
 	if closest_zone_name then
-		local zone_map = map[closest_zone_name]
+		local zone_map = maps[map_name][closest_zone_name]
 		if type(zone_map) == 'table' then
 			if sub_zone ~= nil then
 				local closest_sub_zone = get_closest_match(zone_map, sub_zone)
@@ -147,6 +148,18 @@ local function resolve_warp_index(map, zone, sub_zone)
 					return nil
 				end
 			else
+				if settings.favorites and settings.favorites[map_name] then
+					for fz, fsz in pairs(settings.favorites[map_name]) do
+						if get_fuzzy_name(fz) == get_fuzzy_name(closest_zone_name) then
+							for sz, index in pairs(zone_map) do
+								if sz == tostring(resolve_sub_zone_aliases(fsz)) then
+									debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using favorite ('..sz..')')
+									return index, closest_zone_name..' - '..sz
+								end
+							end
+						end
+					end
+				end
 				for sz, index in pairs(zone_map) do
 					debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using first ('..sz..')')
 					return index, closest_zone_name..' - '..sz
@@ -240,7 +253,7 @@ local function loop_warp(fn, ...)
 end
 
 local function do_homepoint_warp(zone, sub_zone)
-	local warp_index, display_name = resolve_warp_index(maps.hp, zone, sub_zone)
+	local warp_index, display_name = resolve_warp_index('homepoints', zone, sub_zone)
 	if warp_index then
 		local id, index, dist, name = find_npc('Home Point')
 		if id and index and dist <= 6^2 then
@@ -259,7 +272,7 @@ local function do_homepoint_warp(zone, sub_zone)
 end
 
 local function do_waypoint_warp(zone, sub_zone)
-	local warp_index, display_name = resolve_warp_index(maps.wp, zone, sub_zone)
+	local warp_index, display_name = resolve_warp_index('waypoints', zone, sub_zone)
 	if warp_index then
 		local id, index, dist, name = find_npc('Waypoint')
 		if id and index and dist <= 6^2 then
@@ -277,7 +290,7 @@ local function do_waypoint_warp(zone, sub_zone)
 end
 
 local function do_guide_warp(zone)
-	local warp_index, display_name = resolve_warp_index(maps.sg, zone)
+	local warp_index, display_name = resolve_warp_index('guides', zone)
 	if warp_index then
 		local id, index, dist, name = find_npc('Survival Guide')
 		if id and index and dist <= 6^2 then
