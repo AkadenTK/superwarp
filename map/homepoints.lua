@@ -2,6 +2,7 @@ return { -- option: 2
 	short_name = 'hp',
 	long_name = 'homepoint',
 	npc_name = 'Home Point',
+	sub_zone_targets = S{'entrance', 'mog house', 'auction house', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
 	build_warp_packets = function(id, index, zone, menu, settings)
 		local p = {}
 		local packet = packets.new('outgoing', 0x05B)

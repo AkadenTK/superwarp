@@ -3,6 +3,7 @@ return T{
 	long_name = 'waypoint',
 	npc_name = 'Waypoint',
 	move_in_zone = true,
+	sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
 	build_warp_packets = function(id, index, zone, menu, settings)
 		local p = {}
 		local packet = packets.new('outgoing', 0x05B)

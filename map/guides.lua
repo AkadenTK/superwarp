@@ -1,7 +1,8 @@
 return { -- option: 1
 	short_name = 'sg',
-	long_name = 'Survival Guide',
+	long_name = 'survival guide',
 	npc_name = 'Survival Guide',
+	sub_zone_targets = S{},
 	build_warp_packets = function(id, index, zone, menu, settings)
 		local p = {}
 		local packet = packets.new('outgoing', 0x05B)

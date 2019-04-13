@@ -43,11 +43,12 @@ packets = require('packets')
 require('coroutine')
 config = require('config')
 
-maps = {
-	['homepoints'] = require('map/homepoints'),
-	['waypoints'] = require('map/waypoints'),
-	['guides'] = require('map/guides'),
-}
+maps = require('map/maps')
+
+warp_list = T{}
+for k, map in pairs(maps) do
+	warp_list:append(map.short_name)
+end
 
 sub_zone_aliases = {
 	['e'] = 'Entrance',
@@ -59,18 +60,12 @@ sub_zone_aliases = {
 	['fs'] = 'Frontier Station',
 }
 
-sub_zone_targets = {
-	['hp'] = S{'entrance', 'mog house', 'auction house', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
-	['wp'] = S{'frontier station', 'platea', 'triumphus', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', }	
-}
-
-warp_list = S{'hp','wp','sg'}
-
 local defaults = {
 	debug = false,
 	send_all_delay = 0.4,
 	max_retries = 6,
 	retry_delay = 2,
+	enable_same_zone_teleport = true,
 }
 
 local settings = config.load(defaults)
@@ -317,15 +312,6 @@ local function handle_warp(warp, args)
 		return
 	end
 
-	local sub_zone_target = nil
-	if sub_zone_targets[warp] then
-		local target_candidate = resolve_sub_zone_aliases(args:last())
-		if sub_zone_targets[warp]:contains(target_candidate:lower()) then
-			sub_zone_target = target_candidate
-			args:remove(args:length())
-		end
-	end
-
 	for key,map in pairs(maps) do
 		if map.short_name == warp then
 			local sub_cmd = nil
@@ -341,6 +327,14 @@ local function handle_warp(warp, args)
 				do_sub_cmd(key, sub_cmd)
 				return
 			else
+				local sub_zone_target = nil
+				if map.sub_zone_targets then
+					local target_candidate = resolve_sub_zone_aliases(args:last())
+					if map.sub_zone_targets:contains(target_candidate:lower()) then
+						sub_zone_target = target_candidate
+						args:remove(args:length())
+					end
+				end
 				state.loop_count = nil
 				loop_warp(key, args:concat(' '), sub_zone_target)
 				return
@@ -356,6 +350,7 @@ windower.register_event('addon command', function(...)
 	args:remove(1)
 	for i,v in pairs(args) do args[i]=windower.convert_auto_trans(args[i]) end
 	local item = table.concat(args," "):lower()
+
 	if warp_list:contains(cmd) then
 		handle_warp(cmd, args)
 	elseif cmd == 'reset' then
