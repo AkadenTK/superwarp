@@ -213,7 +213,7 @@ local function find_npc(search)
 	local name = nil
 	for i, v in pairs(windower.ffxi.get_mob_array()) do
 		local d = windower.ffxi.get_mob_by_index(i).distance
-		if (not target_id or d < distance) and string.find(v.name, search) then
+		if v.valid_target and (not target_id or d < distance) and string.find(v.name, search) then
 			target_index = i
 			target_id = v.id
 			name = v.name
