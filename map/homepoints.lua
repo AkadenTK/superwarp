@@ -20,6 +20,7 @@ return { -- option: 2
 		p[1] = packet
 
 		-- menu change
+		packet = packets.new('outgoing', 0x05B)
 		packet["Target"] = id
 		packet["Target Index"] = index
 		packet["Zone"] = zone
@@ -33,6 +34,7 @@ return { -- option: 2
 		p[2] = packet
 	
 		-- request warp
+		packet = packets.new('outgoing', 0x05B)
 		packet["Target"] = id
 		packet["Target Index"] = index
 		packet["Zone"] = zone

@@ -20,9 +20,8 @@ return T{
 		packet.debug_desc = 'menu change'
 		p[1] = packet
 
-		packet = packets.new('outgoing', 0x05B)
-
 		-- request warp
+		packet = packets.new('outgoing', 0x05B)
 		packet["Target"] = id
 		packet["Target Index"] = index
 		packet["Zone"] = zone
