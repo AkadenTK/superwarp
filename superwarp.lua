@@ -295,7 +295,7 @@ local function loop_warp(map_name, ...)
 		do_warp(map_name, ...)
 		state.loop_count = state.loop_count - 1
 
-		loop_warp:schedule(settings.retry_delay, do_warp, map_name, ...)
+		loop_warp:schedule(settings.retry_delay, map_name, ...)
 	end
 end
 
