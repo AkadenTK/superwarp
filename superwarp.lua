@@ -372,6 +372,7 @@ windower.register_event('addon command', function(...)
 	elseif cmd == 'debug' then
 		settings.debug = not settings.debug
 		log('Debug is now '..tostring(settings.debug))
+		settings:save()
 	else
 		for key, map in pairs(maps) do
 			log(map.help_text)
