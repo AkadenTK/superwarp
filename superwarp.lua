@@ -201,13 +201,19 @@ function poke_npc(id, index)
 	end
 end
 
+local function distance_sqd(a, b)
+	local dx, dy = b.x-a.x, b.y-a.y
+	return dy*dy + dx*dx
+end
+
 local function find_npc(search)
 	local target_id = nil
 	local target_index = nil
 	local distance = nil
 	local name = nil
+	local p = windower.ffxi.get_mob_by_target("me")
 	for i, v in pairs(windower.ffxi.get_mob_array()) do
-		local d = windower.ffxi.get_mob_by_index(i).distance
+		local d = distance_sqd(windower.ffxi.get_mob_by_index(i), p)
 		if v.valid_target and (not target_id or d < distance) and string.find(v.name, search) then
 			target_index = i
 			target_id = v.id
