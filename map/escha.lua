@@ -132,6 +132,8 @@ return T{
 	            packet["Menu ID"] = menu
 				packet.debug_desc = 'zone warp request'
 	            p:append(packet)
+
+				log("Entering Escha")
 			end
 
 			return p
