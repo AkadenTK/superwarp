@@ -405,7 +405,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 				built_packets = map.sub_commands[current_activity.sub_cmd](current_activity.id, current_activity.index, zone, p['Menu ID'], current_activity.activity_settings)
 			else
 				debug("building "..current_activity.type.." warp packets...")
-				built_packets = map.build_warp_packets(current_activity.id, current_activity.index, zone, p['Menu ID'], current_activity.activity_settings)
+				built_packets = map.build_warp_packets(current_activity.id, current_activity.index, zone, p['Menu ID'], current_activity.activity_settings, map.move_in_zone and settings.enable_same_zone_teleport)
 			end
 
 			if built_packets and type(built_packets) == 'table' then
