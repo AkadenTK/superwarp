@@ -168,7 +168,7 @@ local function resolve_warp(map_name, zone, sub_zone)
 										end
 									end
 									debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using favorite ('..sz..')')
-									return sub_zone_map, closest_zone_name..' - '..sz
+									return sub_zone_map, closest_zone_name..' - '..sz.." (F)"
 								end
 							end
 						end
