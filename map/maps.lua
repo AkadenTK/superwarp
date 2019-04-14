@@ -3,4 +3,5 @@ return {
 	['waypoints'] = require('map/waypoints'),
 	['guides'] = require('map/guides'),
 	['escha'] = require('map/escha'),
+	['unity'] = require('map/unity'),
 }
