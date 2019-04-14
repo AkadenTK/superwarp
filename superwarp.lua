@@ -207,21 +207,20 @@ local function distance_sqd(a, b)
 end
 
 local function find_npc(search)
-	local target_id = nil
-	local target_index = nil
+	local needles = search:split(';')
+	local target_npc = nil
 	local distance = nil
-	local name = nil
 	local p = windower.ffxi.get_mob_by_target("me")
 	for i, v in pairs(windower.ffxi.get_mob_array()) do
 		local d = distance_sqd(windower.ffxi.get_mob_by_index(i), p)
-		if v.valid_target and (not target_id or d < distance) and string.find(v.name, search) then
-			target_index = i
-			target_id = v.id
-			name = v.name
-			distance = d
+		for i, needle in ipairs(needles) do
+			if v.valid_target and (not target_npc or d < distance) and string.find(v.name, needle) then
+				target_npc = v
+				distance = d
+			end
 		end
 	end
-	return target_id, target_index, distance, name
+	return target_npc, distance
 end
 
 local function reset(quiet)
@@ -257,15 +256,15 @@ local function do_warp(map_name, zone, sub_zone)
 
 	local warp_settings, display_name = resolve_warp(map_name, zone, sub_zone)
 	if warp_settings and warp_settings.index then
-		local id, index, dist, name = find_npc(map.npc_name)
-		if id and index and dist <= 6^2 then
-			current_activity = {type=map_name, id=id, index=index, name=name, activity_settings=warp_settings}
-			poke_npc(id, index)
+		local npc, dist = find_npc(map.npc_name)
+		if npc and npc.id and npc.index and dist <= 6^2 then
+			current_activity = {type=map_name, npc=npc, activity_settings=warp_settings}
+			poke_npc(npc.id, npc.index)
 			log('Warping via ' .. map.long_name .. ' to '..display_name..'.')
-		elseif not id then
-			log('No ' .. map.npc_name .. ' found!')
+		elseif not npc then
+			log('No ' .. map.long_name .. ' found!')
 		elseif dist > 6^2 then
-			log(map.npc_name .. ' found, but too far!')
+			log(npc.name .. ' found, but too far!')
 		end
 	else
 		debug("something went wrong")
@@ -276,14 +275,14 @@ end
 local function do_sub_cmd(map_name, sub_cmd)
 	local map = maps[map_name]
 
-	local id, index, dist, name = find_npc(map.npc_name)
-	if id and index and dist <= 6^2 then
-		current_activity = {type=map_name, sub_cmd=sub_cmd, id=id, index=index, name=name}
-		poke_npc(id, index)
-	elseif not id then
-		log('No '..map.npc_name..' found!')
+	local npc, dist = find_npc(map.npc_name)
+	if npc and npc.id and npc.index and dist <= 6^2 then
+		current_activity = {type=map_name, sub_cmd=sub_cmd, npc=npc}
+		poke_npc(npc.id, npc.index)
+	elseif not npc then
+		log('No '..map.long_name..' found!')
 	elseif distance > 6^2 then
-		log(map.npc_name..' found, but too far!')
+		log(npc.name..' found, but too far!')
 	end
 end
 
@@ -342,7 +341,12 @@ local function handle_warp(warp, args)
 					end
 				end
 				state.loop_count = nil
-				loop_warp(key, args:concat(' '), sub_zone_target)
+				local zone = windower.ffxi.get_info().zone
+				if map.auto_select_zone and map.auto_select_zone(zone) then
+					loop_warp(key, map.auto_select_zone(zone), sub_zone_target)
+				else
+					loop_warp(key, args:concat(' '), sub_zone_target)
+				end
 				return
 			end
 		end
@@ -368,9 +372,9 @@ windower.register_event('addon command', function(...)
 		settings.debug = not settings.debug
 		log('Debug is now '..tostring(settings.debug))
 	else
-		log("[sw] hp [warp/w] [all/a/@all] zone name [homepoint_number] -- warp to a designated homepoint. \"all\" sends ipc to all local clients.")
-		log("[sw] wp [warp/w] [all/a/@all] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.")
-		log("[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.")
+		for key, map in pairs(maps) do
+			log(map.help_text)
+		end
 	end
 end)
 
@@ -408,15 +412,15 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 			local built_packets = nil
 			if current_activity.sub_cmd then
 				debug("building "..current_activity.type.." sub_command packets: "..current_activity.sub_cmd)
-				built_packets = map.sub_commands[current_activity.sub_cmd](current_activity.id, current_activity.index, zone, p['Menu ID'], current_activity.activity_settings)
+				built_packets = map.sub_commands[current_activity.sub_cmd](current_activity.npc, zone, p['Menu ID'], current_activity.activity_settings)
 			else
 				debug("building "..current_activity.type.." warp packets...")
-				built_packets = map.build_warp_packets(current_activity.id, current_activity.index, zone, p['Menu ID'], current_activity.activity_settings, map.move_in_zone and settings.enable_same_zone_teleport)
+				built_packets = map.build_warp_packets(current_activity.npc, zone, p['Menu ID'], current_activity.activity_settings, map.move_in_zone and settings.enable_same_zone_teleport)
 			end
 
 			if built_packets and type(built_packets) == 'table' then
 				for i, packet in ipairs(built_packets) do
-					debug("injecting packet "..tostring(i)..' '..packet.debug_desc)
+					debug("injecting packet "..tostring(i)..' '..(packet.debug_desc or ''))
 					packets.inject(packet)
 					last_packet = packet
 				end

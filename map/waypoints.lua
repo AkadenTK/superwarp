@@ -3,14 +3,21 @@ return T{
 	long_name = 'waypoint',
 	npc_name = 'Waypoint',
 	move_in_zone = true,
+	help_text = "[sw] wp [warp/w] [all/a/@all] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.",
 	sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
-	build_warp_packets = function(id, index, zone, menu, settings, move_in_zone)
+	build_warp_packets = function(npc, zone, menu, settings, move_in_zone)
 		local p = T{}
-		local packet = packets.new('outgoing', 0x05B)
+		local packet = nil
+
+		-- request map
+		packet = packets.new('outgoing', 0x114)
+		packet.debug_desc = 'request map'
+        p:append(packet)
 
 		-- menu change
-		packet["Target"] = id
-		packet["Target Index"] = index
+		packet = packets.new('outgoing', 0x05B)
+		packet["Target"] = npc.id
+		packet["Target Index"] = npc.index
 		packet["Zone"] = zone
 		packet["Menu ID"] = menu
 
@@ -24,15 +31,14 @@ return T{
 		if move_in_zone and settings.zone == zone and settings.x and settings.y and settings.z  then
 			-- request in-zone warp
 			packet = packets.new('outgoing', 0x05C)
-			packet["X"] = settings.x
-			packet["Y"] = settings.y
-			packet["Z"] = settings.z
-			packet["Target ID"] = id
-			packet["Target Index"] = index
+			packet["Target ID"] = npc.id
+			packet["Target Index"] = npc.index
 			packet["Zone"] = zone
 			packet["Menu ID"] = menu
 
-			packet["Option Index"] = settings.index
+			packet["X"] = settings.x
+			packet["Y"] = settings.y
+			packet["Z"] = settings.z
 			packet["_unknown1"] = 0
 			packet["_unknown3"] = 0
 			packet.debug_desc = 'same-zone move request'
@@ -40,8 +46,8 @@ return T{
 
 			-- complete menu
 			packet = packets.new('outgoing', 0x05B)
-			packet["Target"] = id
-			packet["Target Index"] = index
+			packet["Target"] = npc.id
+			packet["Target Index"] = npc.index
 			packet["Zone"] = zone
 			packet["Menu ID"] = menu
 
@@ -55,8 +61,8 @@ return T{
 
 			-- request warp
 			packet = packets.new('outgoing', 0x05B)
-			packet["Target"] = id
-			packet["Target Index"] = index
+			packet["Target"] = npc.id
+			packet["Target Index"] = npc.index
 			packet["Zone"] = zone
 			packet["Menu ID"] = menu
 

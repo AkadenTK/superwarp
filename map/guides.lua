@@ -2,14 +2,16 @@ return { -- option: 1
 	short_name = 'sg',
 	long_name = 'survival guide',
 	npc_name = 'Survival Guide',
+	help_text = "[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.",
 	sub_zone_targets = S{},
-	build_warp_packets = function(id, index, zone, menu, settings)
+	build_warp_packets = function(npc, zone, menu, settings)
 		local p = {}
 		local packet = packets.new('outgoing', 0x05B)
 
 		-- menu change
-		packet["Target"] = id
-		packet["Target Index"] = index
+		packet = packets.new('outgoing', 0x05B)
+		packet["Target"] = npc.id
+		packet["Target Index"] = npc.index
 		packet["Zone"] = zone
 		packet["Menu ID"] = menu
 
@@ -18,12 +20,12 @@ return { -- option: 1
 		packet["Automated Message"] = true
 		packet["_unknown2"] = 0
 		packet.debug_desc = 'menu change'
-		p[1] = packet
+		p:append(packet)
 
 		-- menu change
 		packet = packets.new('outgoing', 0x05B)
-		packet["Target"] = id
-		packet["Target Index"] = index
+		packet["Target"] = npc.id
+		packet["Target Index"] = npc.index
 		packet["Zone"] = zone
 		packet["Menu ID"] = menu
 
@@ -32,12 +34,12 @@ return { -- option: 1
 		packet["Automated Message"] = true
 		packet["_unknown2"] = 0
 		packet.debug_desc = 'menu change'
-		p[2] = packet
+		p:append(packet)
 	
 		-- request warp
 		packet = packets.new('outgoing', 0x05B)
-		packet["Target"] = id
-		packet["Target Index"] = index
+		packet["Target"] = npc.id
+		packet["Target Index"] = npc.index
 		packet["Zone"] = zone
 		packet["Menu ID"] = menu
 
@@ -46,7 +48,7 @@ return { -- option: 1
 		packet["Automated Message"] = false
 		packet["_unknown2"] = 0
 		packet.debug_desc = 'zone warp request'
-		p[3] = packet
+		p:append(packet)
 
 		return p
 	end,

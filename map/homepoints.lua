@@ -2,14 +2,21 @@ return { -- option: 2
 	short_name = 'hp',
 	long_name = 'homepoint',
 	npc_name = 'Home Point',
+	help_text = "[sw] hp [warp/w] [all/a/@all] zone name [homepoint_number] -- warp to a designated homepoint. \"all\" sends ipc to all local clients.\n[sw] hp [all/a/@all] set -- set the closest homepoint as your return homepoint",
 	sub_zone_targets = S{'entrance', 'mog house', 'auction house', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
-	build_warp_packets = function(id, index, zone, menu, settings)
+	build_warp_packets = function(npc, zone, menu, settings)
 		local p = {}
-		local packet = packets.new('outgoing', 0x05B)
+		local packet = nil
+
+		-- request map
+		packet = packets.new('outgoing', 0x114)
+		packet.debug_desc = 'request map'
+        p:append(packet)
 
 		-- menu change
-		packet["Target"] = id
-		packet["Target Index"] = index
+		packet = packets.new('outgoing', 0x05B)
+		packet["Target"] = npc.id
+		packet["Target Index"] = npc.index
 		packet["Zone"] = zone
 		packet["Menu ID"] = menu
 
@@ -18,12 +25,12 @@ return { -- option: 2
 		packet["Automated Message"] = true
 		packet["_unknown2"] = 0
 		packet.debug_desc = 'menu change'
-		p[1] = packet
+		p:append(packet)
 
 		-- menu change
 		packet = packets.new('outgoing', 0x05B)
-		packet["Target"] = id
-		packet["Target Index"] = index
+		packet["Target"] = npc.id
+		packet["Target Index"] = npc.index
 		packet["Zone"] = zone
 		packet["Menu ID"] = menu
 
@@ -32,12 +39,12 @@ return { -- option: 2
 		packet["Automated Message"] = true
 		packet["_unknown2"] = 0
 		packet.debug_desc = 'menu change'
-		p[2] = packet
+		p:append(packet)
 	
 		-- request warp
 		packet = packets.new('outgoing', 0x05B)
-		packet["Target"] = id
-		packet["Target Index"] = index
+		packet["Target"] = npc.id
+		packet["Target Index"] = npc.index
 		packet["Zone"] = zone
 		packet["Menu ID"] = menu
 
@@ -46,16 +53,18 @@ return { -- option: 2
 		packet["Automated Message"] = false
 		packet["_unknown2"] = 0
 		packet.debug_desc = 'zone warp request'
-		p[3] = packet
+		p:append(packet)
 		return p
 	end,
 	sub_commands = {
-		set = function(id, index, zone, menu, settings)
+		set = function(npc, zone, menu, settings)
 			local p = {}
-			local packet = packets.new('outgoing', 0x05B)
+			local packet = nil
+			
 			-- menu change
-			packet["Target"] = id
-			packet["Target Index"] = index
+			packet = packets.new('outgoing', 0x05B)
+			packet["Target"] = npc.id
+			packet["Target Index"] = npc.index
 			packet["Zone"] = zone
 			packet["Menu ID"] = menu
 
@@ -63,11 +72,12 @@ return { -- option: 2
 			packet["_unknown1"] = 0
 			packet["Automated Message"] = true
 			packet["_unknown2"] = 0
-			p[1] = packet
+		    p:append(packet)
 			
 			-- select "set HP"
-			packet["Target"] = id
-			packet["Target Index"] = index
+			packet = packets.new('outgoing', 0x05B)
+			packet["Target"] = npc.id
+			packet["Target Index"] = npc.index
 			packet["Zone"] = zone
 			packet["Menu ID"] = menu
 
@@ -76,7 +86,7 @@ return { -- option: 2
 			packet["Automated Message"] = false
 			packet["_unknown2"] = 0
 			packet.debug_desc = 'hp set request'
-			p[2] = packet
+			p:append(packet)
 
 			return p
 		end,
