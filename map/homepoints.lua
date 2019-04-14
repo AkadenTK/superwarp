@@ -5,7 +5,7 @@ return { -- option: 2
 	help_text = "[sw] hp [warp/w] [all/a/@all] zone name [homepoint_number] -- warp to a designated homepoint. \"all\" sends ipc to all local clients.\n[sw] hp [all/a/@all] set -- set the closest homepoint as your return homepoint",
 	sub_zone_targets = S{'entrance', 'mog house', 'auction house', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
 	build_warp_packets = function(npc, zone, menu, settings)
-		local p = {}
+		local p = T{}
 		local packet = nil
 
 		-- request map
@@ -58,7 +58,7 @@ return { -- option: 2
 	end,
 	sub_commands = {
 		set = function(npc, zone, menu, settings)
-			local p = {}
+			local p = T{}
 			local packet = nil
 			
 			-- menu change

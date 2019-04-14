@@ -5,7 +5,7 @@ return { -- option: 1
 	help_text = "[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.",
 	sub_zone_targets = S{},
 	build_warp_packets = function(npc, zone, menu, settings)
-		local p = {}
+		local p = T{}
 		local packet = packets.new('outgoing', 0x05B)
 
 		-- menu change

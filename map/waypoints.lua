@@ -4,7 +4,7 @@ return T{
 	npc_name = 'Waypoint',
 	move_in_zone = true,
 	help_text = "[sw] wp [warp/w] [all/a/@all] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.",
-	sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
+	sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enigmatic device'},
 	build_warp_packets = function(npc, zone, menu, settings, move_in_zone)
 		local p = T{}
 		local packet = nil
@@ -156,6 +156,7 @@ return T{
 		['1'] = { index = 72, zone = 263, x = -40.499, z = 0.367, y = 296.367, },
 		['2'] = { index = 73, zone = 263, x = 122.132, z = 0.146, y = -287.731, },
 		['3'] = { index = 74, zone = 263, x = -274.776, z = 0.357, y = 85.376, },
+		['Enigmatic Device'] = { index = 302 },
 	},
 	['Marjami Ravine'] = {
 		['Frontier Station'] = { index = 81, zone = 266, x = 358, z = -60, y = 165, },
@@ -171,13 +172,16 @@ return T{
 		['3'] = { index = 94, zone = 267, x = 9.24, z = 23, y = 162.803, },
 		['4'] = { index = 95, zone = 267, x = -228.942, z = 3.567, y = 364.512, },
 	},
-	['Jeuno'] = { index = 100 },
-	['Rala'] = { index = 300 },
-	['Waterways'] = { index = 300 },
-	['Cirdas'] = { index = 301 },
-	['Caverns'] = { index = 301 },
-	['Yorcia'] = { index = 302 },
-	['Weald'] = { index = 302 },
-	['Outer'] = { index = 303 },
-	['Ra\'Kaznar'] = { index = 303 },
+	['Jeuno'] = {
+		['Enigmatic Device'] = { index = 100 },
+	},
+	['Rala Waterways'] = {
+		['Enigmatic Device'] = { index = 300 },
+	},
+	['Cirdas Caverns'] = {
+		['Enigmatic Device'] = { index = 301 },
+	},
+	['Outer Ra\'Kaznar'] = {
+		['Enigmatic Device'] = { index = 303 },
+	},
 }

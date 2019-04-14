@@ -58,6 +58,7 @@ sub_zone_aliases = {
 	['mog'] = 'Mog House',
 	['house'] = 'Mog House',
 	['fs'] = 'Frontier Station',
+	['ed'] = 'Enigmatic Device',
 }
 
 local defaults = {
