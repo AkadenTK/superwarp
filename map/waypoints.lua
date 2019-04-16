@@ -4,7 +4,7 @@ return T{
 	npc_name = 'Waypoint',
 	move_in_zone = true,
 	help_text = "[sw] wp [warp/w] [all/a/@all] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.",
-	sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enigmatic device'},
+	sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'couriers', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enigmatic device'},
 	build_warp_packets = function(npc, zone, menu, settings, move_in_zone)
 		local p = T{}
 		local packet = nil
@@ -79,6 +79,7 @@ return T{
 	['Western Adoulin'] = {
 		['Platea'] = { shortcut = '1' },
 		['Triumphus'] = { shortcut = '1' },
+		['Couriers'] = { shortcut = '1' },
 		['Pioneers'] = { shortcut = '2' },
 		['Mummers'] = { shortcut = '3' },
 		['Inventors'] = { shortcut = '4' },
