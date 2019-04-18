@@ -174,9 +174,15 @@ local function resolve_warp(map_name, zone, sub_zone)
 						end
 					end
 				end
-				for sz, index in pairs(zone_map) do
+				for sz, sub_zone_map in pairs(zone_map) do
+					if sub_zone_map.shortcut then
+						if zone_map[sub_zone_map.shortcut] and type(zone_map[sub_zone_map.shortcut]) == 'table' then
+							debug ('found shortcut: '..sub_zone_map.shortcut)
+							sub_zone_map = zone_map[sub_zone_map.shortcut]
+						end
+					end
 					debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using first ('..sz..')')
-					return index, closest_zone_name..' - '..sz
+					return sub_zone_map, closest_zone_name..' - '..sz
 				end
 			end
 		else
