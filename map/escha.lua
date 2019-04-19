@@ -1,39 +1,27 @@
 return T{
 	short_name = 'ew',
 	long_name = 'eascha portal',
-	npc_name = 'Undulating Confluence;Eschan Portal;Dimensional Portal;Ethereal Ingress',
+	npc_names = T{
+		warp = T{'Eschan Portal', 'Ethereal Ingress'},
+		enter = T{'Undulating Confluence', 'Dimensional Portal'},
+	},
 	move_in_zone = true,
 	help_text = "[sw] ew [warp/w] [all/a/@all] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.",
 	sub_zone_targets =  S{'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15' },
 	auto_select_zone = function(zone)
 		if zone == 288 then return 'Escha Zi\'tah' end
-		if zone == 289 then return 'Escha Ru\'' end
+		if zone == 289 then return 'Escha Ru\'an' end
 		if zone == 291 then return 'Reisenjima' end
 	end,
 	build_warp_packets = function(npc, zone, menu, settings, move_in_zone)
 		local p = T{}
 		local packet = nil
 
-		if not npc.name:lower():startswith('eschan portal') and not npc.name:lower():startswith('ethereal ingress') then
-			-- we've hooked onto the exit portal. Warn the user and cancel the interaction.
-			packet = packets.new('outgoing', 0x05B)
-			packet["Target"] = npc.id
-			packet["Option Index"] = 0
-			packet["_unknown1"] = 16384
-			packet["Target Index"] = npc.index
-			packet["Automated Message"] = false
-			packet["_unknown2"] = 0
-			packet["Zone"] = zone
-			packet["Menu ID"] = menu
-			packet.debug_desc = 'cancel menu'
-			p:append(packet)
-			log("WARNING: not close enough to a portal!")
-		else
-
+		if zone == settings.zone then
 			-- request map
 			packet = packets.new('outgoing', 0x114)
 			packet.debug_desc = 'request map'
-            p:append(packet)
+	        p:append(packet)
 
 			-- menu change
 			packet = packets.new('outgoing', 0x05B)
@@ -49,22 +37,20 @@ return T{
 			packet.debug_desc = 'menu change'
 			p:append(packet)
 
-			if zone == settings.zone then
-				-- request in-zone warp
-				packet = packets.new('outgoing', 0x05C)
-				packet["Target ID"] = npc.id
-				packet["Target Index"] = npc.index
-				packet["Zone"] = zone
-				packet["Menu ID"] = menu
+			-- request in-zone warp
+			packet = packets.new('outgoing', 0x05C)
+			packet["Target ID"] = npc.id
+			packet["Target Index"] = npc.index
+			packet["Zone"] = zone
+			packet["Menu ID"] = menu
 
-				packet["X"] = settings.x
-				packet["Y"] = settings.y
-				packet["Z"] = settings.z
-				packet["_unknown1"] = 0
-				packet["_unknown3"] = 0
-				packet.debug_desc = 'same-zone move request'
-				p:append(packet)
-			end
+			packet["X"] = settings.x
+			packet["Y"] = settings.y
+			packet["Z"] = settings.z
+			packet["_unknown1"] = 0
+			packet["_unknown3"] = 0
+			packet.debug_desc = 'same-zone move request'
+			p:append(packet)
 
 			-- complete menu
 			packet = packets.new('outgoing', 0x05B)
@@ -79,7 +65,18 @@ return T{
 			packet["_unknown2"] = 0
 			packet.debug_desc = 'complete menu'
 			p:append(packet)
-
+		else
+			packet["Target"] = npc.id
+			packet["Option Index"] = 0
+			packet["_unknown1"] = 16384
+			packet["Target Index"] = npc.index
+			packet["Automated Message"] = false
+			packet["_unknown2"] = 0
+			packet["Zone"] = zone
+			packet["Menu ID"] = menu
+			packet.debug_desc = 'cancel menu'
+			p:append(packet)
+			log('WARNING: not in correct zone!')
 		end
 
 		return p

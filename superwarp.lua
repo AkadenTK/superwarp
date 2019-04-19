@@ -213,8 +213,7 @@ local function distance_sqd(a, b)
 	return dy*dy + dx*dx
 end
 
-local function find_npc(search)
-	local needles = search:split(';')
+local function find_npc(needles)
 	local target_npc = nil
 	local distance = nil
 	local p = windower.ffxi.get_mob_by_target("me")
@@ -263,11 +262,11 @@ local function do_warp(map_name, zone, sub_zone)
 
 	local warp_settings, display_name = resolve_warp(map_name, zone, sub_zone)
 	if warp_settings and warp_settings.index then
-		local npc, dist = find_npc(map.npc_name)
+		local npc, dist = find_npc(map.npc_names.warp)
 		if npc and npc.id and npc.index and dist <= 6^2 then
 			current_activity = {type=map_name, npc=npc, activity_settings=warp_settings}
 			poke_npc(npc.id, npc.index)
-			log('Warping via ' .. map.long_name .. ' to '..display_name..'.')
+			log('Warping via ' .. npc.name .. ' to '..display_name..'.')
 		elseif not npc then
 			log('No ' .. map.long_name .. ' found!')
 		elseif dist > 6^2 then
@@ -282,7 +281,7 @@ end
 local function do_sub_cmd(map_name, sub_cmd)
 	local map = maps[map_name]
 
-	local npc, dist = find_npc(map.npc_name)
+	local npc, dist = find_npc(map.npc_names[sub_cmd])
 	if npc and npc.id and npc.index and dist <= 6^2 then
 		current_activity = {type=map_name, sub_cmd=sub_cmd, npc=npc}
 		poke_npc(npc.id, npc.index)
@@ -349,11 +348,14 @@ local function handle_warp(warp, args)
 				end
 				state.loop_count = nil
 				local zone = windower.ffxi.get_info().zone
+				local zone_target = args:concat(' ')
 				if map.auto_select_zone and map.auto_select_zone(zone) then
-					loop_warp(key, map.auto_select_zone(zone), sub_zone_target)
-				else
-					loop_warp(key, args:concat(' '), sub_zone_target)
+					zone_target = map.auto_select_zone(zone)
 				end
+				if map.auto_select_sub_zone and map.auto_select_sub_zone(zone) then
+					sub_zone_target = map.auto_select_sub_zone(zone)
+				end
+				loop_warp(key, zone_target, sub_zone_target)
 				return
 			end
 		end

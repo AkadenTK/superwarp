@@ -1,7 +1,9 @@
 return { -- option: 1
 	short_name = 'un',
 	long_name = 'unity npc',
-	npc_name = "Igsli;Urbiolaine;Teldro-Kesdrodo;Yonolala;Nunaarl Bthtrogg",
+	npc_names = T{
+		warp = T{"Igsli", "Urbiolaine", "Teldro-Kesdrodo", "Yonolala", "Nunaarl Bthtrogg"},
+	},
 	help_text = "[sw] un [warp/w] [all/a/@all] zone name -- warp to a designated unity zone. \"all\" sends ipc to all local clients.",
 	sub_zone_targets = S{},
 	build_warp_packets = function(npc, zone, menu, settings)

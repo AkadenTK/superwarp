@@ -1,7 +1,9 @@
 return T{
 	short_name = 'wp',
 	long_name = 'waypoint',
-	npc_name = 'Waypoint',
+	npc_names = T{
+		warp = T{'Waypoint'},
+	},
 	move_in_zone = true,
 	help_text = "[sw] wp [warp/w] [all/a/@all] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.",
 	sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'couriers', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enigmatic device'},

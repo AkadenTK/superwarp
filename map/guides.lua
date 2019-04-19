@@ -1,7 +1,9 @@
 return { -- option: 1
 	short_name = 'sg',
 	long_name = 'survival guide',
-	npc_name = 'Survival Guide',
+	npc_names = T{
+		warp = T{'Survival Guide'},
+	},
 	help_text = "[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.",
 	sub_zone_targets = S{},
 	build_warp_packets = function(npc, zone, menu, settings)
