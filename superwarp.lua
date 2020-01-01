@@ -252,28 +252,45 @@ local function find_npc(needles)
 	return target_npc, distance
 end
 
+-- Thanks to Ivaar for these two:
+function desperate_release()
+    windower.packets.inject_incoming(0x052, string.char(0,0,0,0,0,0,0,0))
+    windower.packets.inject_incoming(0x052, string.char(0,0,0,0,1,0,0,0))
+end
+function release(menu_id)
+	windower.packets.inject_incoming(0x052, 'ICHC':pack(0,2,menu_id,0))
+	windower.packets.inject_incoming(0x052, string.char(0,0,0,0,1,0,0,0)) -- likely not needed
+
+end
+
 local function reset(quiet)
-	local activity = current_activity or last_activity
-	if last_npc and last_menu then
-		if last_packet then
-			local packet = packets.new('outgoing', 0x05B)
-			local npc = windower.ffxi.get_mob_by_id(last_npc)
-			packet["Target"]=npc.id
-			packet["Option Index"]="0"
-			packet["_unknown1"]="16384"
-			packet["Target Index"]=npc.index
-			packet["Automated Message"]=false
-			packet["_unknown2"]=0
-			packet["Zone"]=windower.ffxi.get_info()['zone']
-			packet["Menu ID"]=last_menu
-			packets.inject(packet)
-		end
+	if last_npc ~= nil and last_menu ~= nil then
+		desperate_release()
+		release(last_menu)
+		local packet = packets.new('outgoing', 0x05B)
+		packet["Target"]=last_npc
+		packet["Option Index"]="0"
+		packet["_unknown1"]="16384"
+		packet["Target Index"]=last_npc_index
+		packet["Automated Message"]=false
+		packet["_unknown2"]=0
+		packet["Zone"]=windower.ffxi.get_info()['zone']
+		packet["Menu ID"]=last_menu
+		packets.inject(packet)
 		last_activity = activity
 		current_activity = nil
+		last_npc = nil
+		last_npc_index = nil
+		last_menu = nil
+
 		if not quiet then
-			log('Should be reset now. Please try again.')
+			log('Should be reset now. Please try again. If still locked, try a second reset.')
 		end
 	else
+		desperate_release()
+		last_npc = nil
+		last_npc_index = nil
+		last_menu = nil
 		current_activity = nil
 		if not quiet then
 			log('No warp scheduled.')
@@ -526,7 +543,6 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 	end
 
 	if id == 0x034 or id == 0x032 then
-
 		local p = packets.parse('incoming',data)
 		
 		if current_activity and not current_activity.running then
@@ -535,6 +551,8 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 
 			last_menu = p["Menu ID"]
 			last_npc = p["NPC"]
+			last_npc_index = p["NPC Index"]
+			debug("recorded reset params: "..last_menu.." "..last_npc)
 
 			current_activity.action_queue = nil
 			current_activity.action_index = 1
