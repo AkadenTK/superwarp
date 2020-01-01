@@ -285,17 +285,26 @@ local function do_warp(map_name, zone, sub_zone)
 	local warp_settings, display_name = resolve_warp(map_name, zone, sub_zone)
 	if warp_settings and warp_settings.index then
 		local npc, dist = find_npc(map.npc_names.warp)
-		if npc and warp_settings.npc == npc.index then
-			log("You are already at "..display_name)
-			state.loop_count = 0
-		elseif npc and npc.id and npc.index and dist <= 6^2 then
-			current_activity = {type=map_name, npc=npc, activity_settings=warp_settings}
-			poke_npc(npc.id, npc.index)
-			log('Warping via ' .. npc.name .. ' to '..display_name..'.')
-		elseif not npc then
+
+		if not npc then
 			log('No ' .. map.long_name .. ' found!')
+			if state.loop_count > 0 then
+				do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
+				state.loop_count = state.loop_count - 1
+			end
 		elseif dist > 6^2 then
 			log(npc.name .. ' found, but too far!')
+			if state.loop_count > 0 then
+				do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
+				state.loop_count = state.loop_count - 1
+			end
+		elseif warp_settings.npc == npc.index then
+			log("You are already at "..display_name)
+			state.loop_count = 0
+		elseif npc.id and npc.index then
+			current_activity = {type=map_name, npc=npc, activity_settings=warp_settings, zone=zone, sub_zone=sub_zone}
+			poke_npc(npc.id, npc.index)
+			log('Warping via ' .. npc.name .. ' to '..display_name..'.')
 		end
 	else
 		debug("something went wrong")
@@ -317,21 +326,10 @@ local function do_sub_cmd(map_name, sub_cmd)
 	end
 end
 
-local function loop_warp(map_name, ...)
-	if state.loop_count == nil then 
-		state.loop_count = settings.max_retries 
-	end
-
-	if state.loop_count > 0 then
-		do_warp(map_name, ...)
-		state.loop_count = state.loop_count - 1
-
-		loop_warp:schedule(settings.retry_delay, map_name, ...)
-	end
-end
-
 local function handle_warp(warp, args)
+
 	warp = warp:lower()
+	state.loop_count = settings.max_retries
 
 	-- because I can't stop typing "hp warp X" because I've been trained. 
 	if args[1]:lower() == 'warp' or args[1]:lower() == 'w' then args:remove(1) end
@@ -371,7 +369,6 @@ local function handle_warp(warp, args)
 						args:remove(args:length())
 					end
 				end
-				state.loop_count = nil
 				local zone = windower.ffxi.get_info().zone
 				local zone_target = args:concat(' ')
 				if map.auto_select_zone and map.auto_select_zone(zone) then
@@ -380,7 +377,7 @@ local function handle_warp(warp, args)
 				if map.auto_select_sub_zone and map.auto_select_sub_zone(zone) then
 					sub_zone_target = map.auto_select_sub_zone(zone)
 				end
-				loop_warp(key, zone_target, sub_zone_target)
+				do_warp(key, zone_target, sub_zone_target)
 				return
 			end
 		end
@@ -484,7 +481,11 @@ local function perform_next_action()
 			if continue then
 				perform_next_action()
 			else
-				reset()
+				reset(true)
+				if state.loop_count > 0 then
+					do_wap:schedule(settings.retry_delay, current_activity.type, current_activity.zone, current_activity.sub_zone)
+					state.loop_count = state.loop_count - 1
+				end
 			end
 		end
 	end
