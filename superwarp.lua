@@ -30,9 +30,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'superwarp'
 
-_addon.author = 'Akaden'
+_addon.author = 'core: Akaden; waypoints: Ivaar, Thorny; data: Akaden, Kenshi'
 
-_addon.version = '0.95'
+_addon.version = '0.96'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -63,13 +63,33 @@ sub_zone_aliases = {
 
 local defaults = {
 	debug = false,
-	send_all_delay = 0.4,
-	max_retries = 6,
-	retry_delay = 2,
-	enable_same_zone_teleport = true,
+	send_all_delay = 0.4, 					-- delay (seconds) between each character
+	max_retries = 6,						-- max retries for loading NPCs.
+	retry_delay = 2,						-- delay (seconds) between retries
+	simulated_response_time = 0,			-- response time (seconds) for selecting a single menu item. Note this can happen multiple times per warp.
+	default_packet_wait_timeout = 5,		-- timeout (seconds) for waiting on a packet response before continuing on.
+	enable_same_zone_teleport = true,		-- enable teleporting between points in the same zone. This is the default behavior in-game. Turning it off will look different than teleporting manually.
 }
 
 local settings = config.load(defaults)
+
+-- bounds checks.
+if settings.send_all_delay < 0 then
+	settings.send_all_delay = 0
+end
+if settings.max_retries < 1 then
+	settings.max_retries = 1
+end
+if settings.retry_delay < 1 then
+	settings.retry_delay = 1
+end
+if settings.simulated_response_time < 0 then
+	settings.simulated_response_time = 0
+end
+if settings.default_packet_wait_timeout < 1 then
+	settings.default_packet_wait_timeout = 1
+end
+config.save(settings)
 
 local state = {
 	loop_count = nil,
@@ -82,6 +102,7 @@ function debug(msg)
 end
 
 local function get_delay()
+	-- gets the delay before executing the warp. Based on party list, sorted by name ascending.
     local self = windower.ffxi.get_player().name
     local members = {}
     for k, v in pairs(windower.ffxi.get_party()) do
@@ -231,17 +252,18 @@ end
 
 local function reset(quiet)
 	local activity = current_activity or last_activity
-	if activity then
+	if last_npc and last_menu then
 		if last_packet then
 			local packet = packets.new('outgoing', 0x05B)
-			packet["Target"]=last_packet['Target']
+			local npc = windower.ffxi.get_mob_by_id(last_npc)
+			packet["Target"]=npc.id
 			packet["Option Index"]="0"
 			packet["_unknown1"]="16384"
-			packet["Target Index"]=last_packet['Target Index']
+			packet["Target Index"]=npc.index
 			packet["Automated Message"]=false
 			packet["_unknown2"]=0
-			packet["Zone"]=last_packet['Zone']
-			packet["Menu ID"]=last_packet['Menu ID']
+			packet["Zone"]=windower.ffxi.get_info()['zone']
+			packet["Menu ID"]=last_menu
 			packets.inject(packet)
 		end
 		last_activity = activity
@@ -263,7 +285,10 @@ local function do_warp(map_name, zone, sub_zone)
 	local warp_settings, display_name = resolve_warp(map_name, zone, sub_zone)
 	if warp_settings and warp_settings.index then
 		local npc, dist = find_npc(map.npc_names.warp)
-		if npc and npc.id and npc.index and dist <= 6^2 then
+		if npc and warp_settings.npc == npc.index then
+			log("You are already at "..display_name)
+			state.loop_count = 0
+		elseif npc and npc.id and npc.index and dist <= 6^2 then
 			current_activity = {type=map_name, npc=npc, activity_settings=warp_settings}
 			poke_npc(npc.id, npc.index)
 			log('Warping via ' .. npc.name .. ' to '..display_name..'.')
@@ -411,35 +436,128 @@ windower.register_event('ipc message', function(msg)
 	end
 end)
 
--- Handle menu interraction. 
-windower.register_event('incoming chunk',function(id,data,modified,injected,blocked)
-	if id == 0x034 or id == 0x032 then
-		local p = packets.parse('incoming',data)
-		
-		if current_activity then
-			local zone = windower.ffxi.get_info()['zone']
-			local map = maps[current_activity.type]
-			local built_packets = nil
-			if current_activity.sub_cmd then
-				debug("building "..current_activity.type.." sub_command packets: "..current_activity.sub_cmd)
-				built_packets = map.sub_commands[current_activity.sub_cmd](current_activity.npc, zone, p['Menu ID'], current_activity.activity_settings)
-			else
-				debug("building "..current_activity.type.." warp packets...")
-				built_packets = map.build_warp_packets(current_activity.npc, zone, p['Menu ID'], current_activity.activity_settings, map.move_in_zone and settings.enable_same_zone_teleport)
+local function perform_next_action()
+	if current_activity and current_activity.running and current_activity.action_queue and current_activity.action_index > 0 then
+		local current_action = current_activity.action_queue[current_activity.action_index]
+		if current_action == nil then
+			debug("all actions complete")
+			last_activity = current_activity
+			state.loop_count = 0
+			current_activity = nil
+		elseif current_action.wait_packet then
+			debug("waiting for packet 0x"..current_action.wait_packet:hex().." for action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
+			current_action.wait_start = os.time()
+			if not current_action.timeout then 
+				current_action.timeout = settings.default_packet_wait_timeout
+			end
+			local fn = function(i, p, d)
+				if current_activity and current_activity.action_queue and current_activity.action_index == i then
+					debug("timed out waiting for packet 0x"..p:hex().." for action "..tostring(i)..' '..(d or ''))
+					current_activity.wait_packet = nil
+					perform_next_action()
+				end
 			end
 
-			if built_packets and type(built_packets) == 'table' then
-				for i, packet in ipairs(built_packets) do
-					debug("injecting packet "..tostring(i)..' '..(packet.debug_desc or ''))
-					packets.inject(packet)
-					last_packet = packet
-				end
+			fn:schedule(current_action.timeout, current_activity.action_index, current_activity.wait_packet, current_activity.description)
+		elseif current_action.delay and current_action.delay > 0 then
+			debug("delaying action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
+			local delay_seconds = current_action.delay
+			current_action.delay = nil
+			perform_next_action:schedule(delay_seconds)
+		elseif current_action.packet then
+			-- just a packet, inject it.
+			debug("injecting packet "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
+			packets.inject(current_action.packet)
+			current_activity.action_index = current_activity.action_index + 1
+			if current_action.message then
+				log(current_action.message)
+			end
+			perform_next_action()
+		elseif current_action.fn ~= nil then
+			-- has a function, pass along params.
+			debug("performing action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
+			continue = current_action.fn(current_action.incoming_packet)
+			current_activity.action_index = current_activity.action_index + 1
+			if current_action.message then
+				log(current_action.message)
+			end
+			if continue then
+				perform_next_action()
+			else
+				reset()
+			end
+		end
+	end
+end
 
+-- Handle menu interraction. 
+windower.register_event('incoming chunk',function(id,data,modified,injected,blocked)
+	if current_activity and current_activity.action_queue and current_activity.running then
+		local current_action = current_activity.action_queue[current_activity.action_index]
+		if current_action.wait_packet and current_action.wait_packet == id then
+			debug("received packet 0x"..id:hex().." for action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
+			current_action.wait_packet = nil
+			current_action.incoming_packet = packets.parse('incoming',data)
+			perform_next_action()
+		end
+	end
+
+	if id == 0x034 or id == 0x032 then
+
+		local p = packets.parse('incoming',data)
+		
+		if current_activity and not current_activity.running then
+			local zone = windower.ffxi.get_info()['zone']
+			local map = maps[current_activity.type]
+
+			last_menu = p["Menu ID"]
+			last_npc = p["NPC"]
+
+			current_activity.action_queue = nil
+			current_activity.action_index = 1
+
+			if current_activity.sub_cmd then
+				debug("building "..current_activity.type.." sub_command actions: "..current_activity.sub_cmd)
+				current_activity.action_queue = map.sub_commands[current_activity.sub_cmd](current_activity, zone, p, settings)
+			else
+				debug("building "..current_activity.type.." warp actions...")
+				current_activity.action_queue = map.build_warp_packets(current_activity, zone, p, settings)
+			end
+
+			if current_activity.action_queue and type(current_activity.action_queue) == 'table' then
+				-- startup actions.
+
+				current_activity.running = true
+
+				perform_next_action:schedule(0)
+
+				return true
+			else
+				log("No action required.")
 				last_activity = current_activity
 				state.loop_count = 0
 				current_activity = nil
-				return true
+				return false
 			end
 		end
+	end
+
+end)
+
+
+-- debugging
+windower.register_event('outgoing chunk',function(id,data,modified,injected,blocked)
+	if id == 0x05C then
+		--if not injected then
+		--	print(data:hex())
+		--end
+		--local p = packets.parse('outgoing', data)
+		--local t = windower.ffxi.get_mob_by_index(p['Target Index'])
+		--debug("out 0x05C: "..t.name..", menu:"..tostring(p['Menu ID'])..", zone:"..tostring(p['Zone'])..", x:"..string.format('%0.3f', p['X'])..", z:"..string.format('%0.3f', p['Z'])..", y:"..string.format('%0.3f', p['Y'])..", _u1:"..tostring(p['_unknown1'])..", _u3:"..tostring(p['_unknown3']))
+	elseif id == 0x05B then
+        --print(data:unpack('b7b4b3b7b8', 9))
+		--local p = packets.parse('outgoing', data)
+		--local t = windower.ffxi.get_mob_by_index(p['Target Index'])
+		--debug("out 0x05B: "..t.name.." oi:"..tostring(p['Option Index']).." _u1:"..tostring(p['_unknown1']).." _u2:"..tostring(p['_unknown2']).." menu:"..tostring(p['Menu ID']).." auto:"..tostring(p['Automated Message']))
 	end
 end)

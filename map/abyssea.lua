@@ -9,7 +9,6 @@ return T{
 		warp = T{'Veridical Conflux', 'Ernst', 'Ivan', 'Willis', 'Horst', 'Kierron', 'Vincent'},
 		enter = T{'Cavernous Maw'},
 	},
-	move_in_zone = true,
 	help_text = "[sw] ab [warp/w] [all/a/@all] conflux number -- warp to a designated conflux in your current abyssea zone.\n[sw] ab [all/a/@all] enter -- enter the abyssea zone corresponding to the entrance zone.",
 	sub_zone_targets =  S{'00', '0', '1', '2', '3', '4', '5', '6', '7', '8', 'Cavernous Maw'},
 	auto_select_zone = function(zone)
@@ -26,17 +25,37 @@ return T{
 	auto_select_sub_zone = function(zone)
 		if warp_zones:contains(zone) then return 'Cavernous Maw' end
 	end,
-	build_warp_packets = function(npc, zone, menu, settings, move_in_zone)
-		local p = T{}
+	build_warp_packets = function(current_activity, zone, p, settings)
+		local actions = T{}
 		local packet = nil
+		local menu = p["Menu ID"]
+		local npc = current_activity.npc
+		local destination = current_activity.activity_settings
+		if zone == destination.zone then
 
-		if zone == settings.zone then
 			-- have xyz data and within zone. must be conflux.
+			local cruor = p["Menu Parameters"]:unpack('i', 29)
+
+			debug("cruor: "..cruor)
+
+	        if cruor < 200 then
+	            packet = packets.new('outgoing', 0x05B)
+	            packet["Target"] = npc.id
+	            packet["Option Index"] = 0
+	            packet["_unknown1"] = 16384
+	            packet["Target Index"] = npc.index
+	            packet["Automated Message"] = false
+	            packet["_unknown2"] = 0
+	            packet["Zone"] = zone
+	            packet["Menu ID"] = menu
+	            actions:append(T{packet=packet, description='cancel menu', message='Not enough cruor!'})
+	            return actions
+			end
 
 			-- request map
 			--packet = packets.new('outgoing', 0x114)
 			--packet.debug_desc = 'request map'
-	        --p:append(packet)
+	        --actions:append(packet)
 
 			-- menu change
 			packet = packets.new('outgoing', 0x05B)
@@ -46,11 +65,10 @@ return T{
 			packet["Menu ID"] = menu
 
 			packet["Option Index"] = 1
-			packet["_unknown1"] = settings.index
+			packet["_unknown1"] = destination.index
 			packet["Automated Message"] = true
 			packet["_unknown2"] = 0
-			packet.debug_desc = 'menu change'
-			p:append(packet)
+            actions:append(T{packet=packet, delay=settings.simulated_response_time, description='send options'})
 
 			-- request in-zone warp
 			packet = packets.new('outgoing', 0x05C)
@@ -59,13 +77,12 @@ return T{
 			packet["Zone"] = zone
 			packet["Menu ID"] = menu
 
-			packet["X"] = settings.x
-			packet["Y"] = settings.y
-			packet["Z"] = settings.z
-			packet["_unknown1"] = 0
-			packet["_unknown3"] = 0
-			packet.debug_desc = 'same-zone move request'
-			p:append(packet)
+			packet["X"] = destination.x
+			packet["Y"] = destination.y
+			packet["Z"] = destination.z
+			packet["_unknown1"] = destination.unknown1
+			packet["Rotation"] = destination.h
+            actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='same-zone move request'})
 
 			-- complete menu
 			packet = packets.new('outgoing', 0x05B)
@@ -74,51 +91,68 @@ return T{
 			packet["Zone"] = zone
 			packet["Menu ID"] = menu
 
-			packet["Option Index"] = settings.index
+			packet["Option Index"] = destination.index
 			packet["_unknown1"] = 0
 			packet["Automated Message"] = false
 			packet["_unknown2"] = 0
-			packet.debug_desc = 'complete menu'
-			p:append(packet)
+            actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='complete menu'})
 			
 		else
 			-- no xyz data, must be a zone warp.
+			local cruor = p["Menu Parameters"]:unpack('i', 5)
+
+			debug("cruor: "..cruor)
+
+			if cruor < 200 then
+	            packet = packets.new('outgoing', 0x05B)
+	            packet["Target"] = npc.id
+	            packet["Option Index"] = 0
+	            packet["_unknown1"] = 16384
+	            packet["Target Index"] = npc.index
+	            packet["Automated Message"] = false
+	            packet["_unknown2"] = 0
+	            packet["Zone"] = zone
+	            packet["Menu ID"] = menu
+	            actions:append(T{packet=packet, description='cancel menu', message='Not enough cruor!'})
+	            return actions
+			end
 
 			packet = packets.new('outgoing', 0x05B)
 			packet["Target"] = npc.id
-			packet["Option Index"] = settings.index
+			packet["Option Index"] = destination.index
 			packet["_unknown1"] = 0
 			packet["Target Index"] = npc.index
 			packet["Automated Message"] = true
 			packet["_unknown2"] = 0
 			packet["Zone"] = zone
 			packet["Menu ID"] = menu
-			packet.debug_desc = 'menu change'
-			p:append(packet)
+            actions:append(T{packet=packet, delay=settings.simulated_response_time, description='send options'})
 
 			packet = packets.new('outgoing', 0x05B)
 			packet["Target"] = npc.id
-			packet["Option Index"] = settings.index
+			packet["Option Index"] = destination.index
 			packet["_unknown1"] = 0
 			packet["Target Index"] = npc.index
 			packet["Automated Message"] = false
 			packet["_unknown2"] = 0
 			packet["Zone"] = zone
 			packet["Menu ID"] = menu
-			packet.debug_desc = 'zone warp request'
-			p:append(packet)
+        	actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='zone warp request'})
 		end
 
-		return p
+		return actions
 	end,
 	sub_commands = {
-		enter = function(npc, zone, menu, settings)
-			local p = T{}
-			local packet = packets.new('outgoing', 0x05B)
+		enter = function(current_activity, zone, p, settings)
+			local actions = T{}
+			local packet = nil
+			local menu = p["Menu ID"]
+			local npc = current_activity.npc
 
 			-- La theine, konschtat or tahrongi, Buburimu, Valkurm, or Jugner, South Gustaberg, Xarcabard or Qufim
 			if not entry_zones:contains(zone) then -- we're not in an entry zone...
 				-- send the cancel menu packet.
+				packet = packets.new('outgoing', 0x05B)
 				packet["Target"] = npc.id
 				packet["Option Index"] = 0
 				packet["_unknown1"] = 16384
@@ -127,10 +161,9 @@ return T{
 				packet["_unknown2"] = 0
 				packet["Zone"] = zone
 				packet["Menu ID"] = menu
-				packet.debug_desc = 'cancel menu'
-				p:append(packet)
-				log('WARNING: not in an entry zone!')
+            	actions:append(T{packet=packet, description='cancel menu', message='WARNING: not in an entry zone!'})
 			else
+				packet = packets.new('outgoing', 0x05B)
 				packet["Target"] = npc.id
 	            packet["Option Index"] = 0
 	            packet["_unknown1"] = 0
@@ -139,8 +172,7 @@ return T{
 	            packet["_unknown2"] = 0
 	            packet["Zone"] = zone
 	            packet["Menu ID"] = menu
-				packet.debug_desc = 'menu change'
-	            p:append(packet)
+            	actions:append(T{packet=packet, delay=settings.simulated_response_time, description='send options'})
 
 				packet = packets.new('outgoing', 0x05B)
 	            packet["Target"] = npc.id
@@ -151,117 +183,113 @@ return T{
 	            packet["_unknown2"] = 0
 	            packet["Zone"] = zone
 	            packet["Menu ID"] = menu
-				packet.debug_desc = 'zone warp request'
-	            p:append(packet)
-
-				log("Entering Abyssea")
+            	actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='complete menu', message='Entering Abyssea'})
 			end
 
-			return p
+			return actions
 		end,
 	},
-
 	['Abyssea - La Theine'] = T{
 		['Cavernous Maw'] = { index = 260 }, 
-		['1'] = { index = 1, zone = 132, x = -480, z = -0.4, y = 764, },
-		['2'] = { index = 2, zone = 132, x = -593.811, z = -16.3, y = 30.151, },
-		['3'] = { index = 3, zone = 132, x = -122.966, z = -8.6, y = -38.954, },
-		['4'] = { index = 4, zone = 132, x = -54.616, z = 29.2, y = 175.25, },
-		['5'] = { index = 5, zone = 132, x = 201.681, z = 23.3, y = -398.155, },
-		['6'] = { index = 6, zone = 132, x = 595.377, z = 39.4, y = -507.186, },
-		['7'] = { index = 7, zone = 132, x = 494.223, z = 39.6, y = 333.094, },
-		['8'] = { index = 8, zone = 132, x = 215.145, z = 15.8, y = -198.918, },
+		['1'] = { index = 1, zone = 132, npc = 701, x = -480.00003051758, z = -0.40000000596046, y = 764.00006103516, h = 63, unknown1 = 65538},
+		['2'] = { index = 2, zone = 132, npc = 702, x = -593.81103515625, z = -16.300001144409, y = 30.151000976563, h = 180, unknown1 = 131074},
+		['3'] = { index = 3, zone = 132, npc = 703, x = -122.96600341797, z = -8.6000003814697, y = -38.954002380371, h = 31, unknown1 = 196610},
+		['4'] = { index = 4, zone = 132, npc = 704, x = -54.61600112915, z = 29.200000762939, y = 175.25001525879, h = 244, unknown1 = 262146},
+		['5'] = { index = 5, zone = 132, npc = 705, x = 201.68101501465, z = 23.300001144409, y = -398.15502929688, h = 100, unknown1 = 327682},
+		['6'] = { index = 6, zone = 132, npc = 706, x = 595.37701416016, z = 39.400001525879, y = -507.18603515625, h = 10, unknown1 = 393218},
+		['7'] = { index = 7, zone = 132, npc = 707, x = 494.22302246094, z = 39.600002288818, y = 333.0940246582, h = 112, unknown1 = 458754},
+		['8'] = { index = 8, zone = 132, npc = 708, x = 215.14500427246, z = 15.800001144409, y = -198.91801452637, h = 53, unknown1 = 524290},
 	},
 	['Abyssea - Konschtat'] = T{
 		['Cavernous Maw'] = { index = 264 }, 
-		['1'] = { index = 1, zone = 15, x = 126, z = -72.8, y = -834, },
-		['2'] = { index = 2, zone = 15, x = -164, z = -32.7, y = -276, },
-		['3'] = { index = 3, zone = 15, x = -644, z = -0.7, y = 124, },
-		['4'] = { index = 4, zone = 15, x = 20, z = 8.7, y = 45, },
-		['5'] = { index = 5, zone = 15, x = -125, z = 15.2, y = 282, },
-		['6'] = { index = 6, zone = 15, x = -316, z = 47.1, y = 564, },
-		['7'] = { index = 7, zone = 15, x = 476, z = 7.3, y = 124, },
-		['8'] = { index = 8, zone = 15, x = 244, z = 39.2, y = 636, },
+		['1'] = { index = 1, zone = 15, npc = 538, x = 126.00000762939, z = -72.800003051758, y = -834.00006103516, h = 223, unknown1 = 65538},
+		['2'] = { index = 2, zone = 15, npc = 539, x = -164.00001525879, z = -32.700000762939, y = -276, h = 159, unknown1 = 131074},
+		['3'] = { index = 3, zone = 15, npc = 540, x = -644.00006103516, z = -0.70000004768372, y = 124.00000762939, h = 159, unknown1 = 196610},
+		['4'] = { index = 4, zone = 15, npc = 541, x = 20, z = 8.7000007629395, y = 45.000003814697, h = 191, unknown1 = 262146},
+		['5'] = { index = 5, zone = 15, npc = 542, x = -125.00000762939, z = 15.200000762939, y = 282, h = 127, unknown1 = 327682},
+		['6'] = { index = 6, zone = 15, npc = 543, x = -316, z = 47.100002288818, y = 564, h = 223, unknown1 = 393218},
+		['7'] = { index = 7, zone = 15, npc = 544, x = 476.00003051758, z = 7.3000001907349, y = 124.00000762939, h = 159, unknown1 = 458754},
+		['8'] = { index = 8, zone = 15, npc = 545, x = 244.00001525879, z = 39.200000762939, y = 636, h = 31, unknown1 = 524290},
 	},
 	['Abyssea - Tahrongi'] = T{
 		['Cavernous Maw'] = { index = 268 }, 
-		['1'] = { index = 1, zone = 45, x = 7.826, z = 31.515, y = -636.834, },
-		['2'] = { index = 2, zone = 45, x = 24.01, z = -16.682, y = -171.587, },
-		['3'] = { index = 3, zone = 45, x = -290.784, z = -25.574, y = -171.655, },
-		['4'] = { index = 4, zone = 45, x = -239.868, z = 7.47, y = 166.166, },
-		['5'] = { index = 5, zone = 45, x = -56.126, z = 31.085, y = 547.426, },
-		['6'] = { index = 6, zone = 45, x = -64.581, z = 36.774, y = 331.84, },
-		['7'] = { index = 7, zone = 45, x = 120.149, z = 15.776, y = 155.141, },
-		['8'] = { index = 8, zone = 45, x = 324.225, z = 39.661, y = 433.333, },
+		['1'] = { index = 1, zone = 45, npc = 535, x = 7.826000213623, z = 31.515001296997, y = -636.83404541016, h = 81, unknown1 = 65538},
+		['2'] = { index = 2, zone = 45, npc = 536, x = 24.010000228882, z = -16.682001113892, y = -171.58700561523, h = 162, unknown1 = 131074},
+		['3'] = { index = 3, zone = 45, npc = 537, x = -290.78402709961, z = -25.574001312256, y = -171.65501403809, h = 201, unknown1 = 196610},
+		['4'] = { index = 4, zone = 45, npc = 538, x = -239.86801147461, z = 7.4700002670288, y = 166.16600036621, h = 76, unknown1 = 262146},
+		['5'] = { index = 5, zone = 45, npc = 539, x = -56.126003265381, z = 31.085000991821, y = 547.42602539063, h = 150, unknown1 = 327682},
+		['6'] = { index = 6, zone = 45, npc = 540, x = -64.581001281738, z = 36.774002075195, y = 331.84002685547, h = 39, unknown1 = 393218},
+		['7'] = { index = 7, zone = 45, npc = 541, x = 120.1490020752, z = 15.776000976563, y = 155.14100646973, h = 177, unknown1 = 458754},
+		['8'] = { index = 8, zone = 45, npc = 542, x = 324.22500610352, z = 39.661003112793, y = 433.3330078125, h = 159, unknown1 = 524290},
 	},
 	['Abyssea - Vunkerl'] = T{
 		['Cavernous Maw'] = { index = 272 }, 
-		['1'] = { index = 1, zone = 217, x = -322, z = -40.523, y = 676, },
-		['2'] = { index = 2, zone = 217, x = -24.502000808716, z = -34.138999938965, y = 370.20001220703, },
-		['3'] = { index = 3, zone = 217, x = 202.532, z = -31.807, y = 312.143, },
-		['4'] = { index = 4, zone = 217, x = -266.898, z = -41.942, y = -111.422, },
-		['5'] = { index = 5, zone = 217, x = -118.682, z = -39.894, y = -477.375, },
-		['6'] = { index = 6, zone = 217, x = -100, z = -56, y = -764.016, },
-		['7'] = { index = 7, zone = 217, x = -675.132, z = -45.693, y = -555.552, },
-		['8'] = { index = 8, zone = 217, x = -291.04, z = -32.02, y = 282.571, },
-		['00'] = { index = 9, zone = 217, x = 158, z = -38.1, y = -158, },
+		['1'] = { index = 1, zone = 217, npc = 647, x = -322.00003051758, z = -40.523002624512, y = 676.00006103516, h = 127, unknown1 = 65538},
+		['2'] = { index = 2, zone = 217, npc = 648, x = -24.502000808716, z = -34.138999938965, y = 370.20001220703, h = 95, unknown1 = 131074},
+		['3'] = { index = 3, zone = 217, npc = 649, x = 202.53201293945, z = -31.807001113892, y = 312.14300537109, h = 159, unknown1 = 196610},
+		['4'] = { index = 4, zone = 217, npc = 650, x = -266.89801025391, z = -41.942001342773, y = -111.42200469971, h = 63, unknown1 = 262146},
+		['5'] = { index = 5, zone = 217, npc = 651, x = -118.68200683594, z = -39.89400100708, y = -477.37503051758, h = 0, unknown1 = 327682},
+		['6'] = { index = 6, zone = 217, npc = 652, x = -100.00000762939, z = -56.000003814697, y = -764.01605224609, h = 159, unknown1 = 393218},
+		['7'] = { index = 7, zone = 217, npc = 653, x = -675.13201904297, z = -45.693000793457, y = -555.55200195313, h = 223, unknown1 = 458754},
+		['8'] = { index = 8, zone = 217, npc = 654, x = -291.04000854492, z = -32.020999908447, y = 282.5710144043, h = 127, unknown1 = 524290},
+		['00'] = { index = 9, zone = 217, npc = 666, x = 158, z = -38.100002288818, y = -158, h = 159, unknown1 = 589826},
 	},
 	['Abyssea - Misareaux'] = T{
 		['Cavernous Maw'] = { index = 276 }, 
-		['1'] = { index = 1, zone = 216, x = 634, z = -16.5, y = 286, },
-		['2'] = { index = 2, zone = 216, x = 399.449, z = -6.755, y = 33.191, },
-		['3'] = { index = 3, zone = 216, x = -96.818, z = -33.828, y = 254.32, },
-		['4'] = { index = 4, zone = 216, x = 141.423, z = -10.116, y = -222.391, },
-		['5'] = { index = 5, zone = 216, x = -40.898, z = -24.068, y = 439.29, },
-		['6'] = { index = 6, zone = 216, x = -231.253, z = -32.804, y = 208.758, },
-		['7'] = { index = 7, zone = 216, x = 288.974, z = 23.489, y = -407.234, },
-		['8'] = { index = 8, zone = 216, x = 648.311, z = -0.016, y = -476.111, },
-		['00'] = { index = 9, zone = 216, x = 276, z = -16.342, y = 236, },
+		['1'] = { index = 1, zone = 216, npc = 723, x = 634, z = -16.5, y = 286, h = 159, unknown1 = 65538},
+		['2'] = { index = 2, zone = 216, npc = 724, x = 399.44900512695, z = -6.7550001144409, y = 33.19100189209, h = 156, unknown1 = 131074},
+		['3'] = { index = 3, zone = 216, npc = 725, x = -96.818000793457, z = -33.828002929688, y = 254.32000732422, h = 249, unknown1 = 196610},
+		['4'] = { index = 4, zone = 216, npc = 726, x = 141.42300415039, z = -10.116000175476, y = -222.39100646973, h = 95, unknown1 = 262146},
+		['5'] = { index = 5, zone = 216, npc = 727, x = -40.898002624512, z = -24.068000793457, y = 439.29000854492, h = 193, unknown1 = 327682},
+		['6'] = { index = 6, zone = 216, npc = 728, x = -231.25300598145, z = -32.804000854492, y = 208.75801086426, h = 128, unknown1 = 393218},
+		['7'] = { index = 7, zone = 216, npc = 729, x = 288.97399902344, z = 23.489000320435, y = -407.23400878906, h = 193, unknown1 = 458754},
+		['8'] = { index = 8, zone = 216, npc = 730, x = 648.31103515625, z = -0.016000000759959, y = -476.11102294922, h = 31, unknown1 = 524290},
+		['00'] = { index = 9, zone = 216, npc = 742, x = 276, z = -16.342000961304, y = 236.00001525879, h = 63, unknown1 = 589826},
 	},
 	['Abyssea - Attohwa'] = T{
 		['Cavernous Maw'] = { index = 280 }, 
-		['1'] = { index = 1, zone = 215,  x = -140, z = 19.5, y = -200, },
-		['2'] = { index = 2, zone = 215, x = -485.504, z = -3.996, y = -4.940, },
-		['3'] = { index = 3, zone = 215, x = 258.909, z = 20.941, y = -21.157, },
-		['4'] = { index = 4, zone = 215, x = -603.877, z = -4.321, y = 191.936, },
-		['5'] = { index = 5, zone = 215, x = 466.831, z = 20.555, y = 78.005, },
-		['6'] = { index = 6, zone = 215, x = -247.103, z = 13.979, y = 283.572, },
-		['7'] = { index = 7, zone = 215, x = 378.845, z = 20, y = -141.945, },
-		['8'] = { index = 8, zone = 215, x = 1.446, z = -3.652, y = 150.792, },
-		['00'] = { index = 9, zone = 215, x = -280, z = -4.5, y = 0, },
+		['1'] = { index = 1, zone = 215, npc = 614, x = -140, z = 19.5, y = -200.00001525879, h = 191, unknown1 = 65538},
+		['2'] = { index = 2, zone = 215, npc = 615, x = -485.50402832031, z = -3.996000289917, y = -4.9400000572205, h = 223, unknown1 = 131074},
+		['3'] = { index = 3, zone = 215, npc = 616, x = 258.90902709961, z = 20.94100189209, y = -21.157001495361, h = 131, unknown1 = 196610},
+		['4'] = { index = 4, zone = 215, npc = 617, x = -603.87701416016, z = -4.3210000991821, y = 191.93600463867, h = 0, unknown1 = 262146},
+		['5'] = { index = 5, zone = 215, npc = 618, x = 466.83102416992, z = 20.555000305176, y = 78.005004882813, h = 191, unknown1 = 327682},
+		['6'] = { index = 6, zone = 215, npc = 619, x = -247.10301208496, z = 13.979001045227, y = 283.57202148438, h = 62, unknown1 = 393218},
+		['7'] = { index = 7, zone = 215, npc = 620, x = 378.84503173828, z = 20, y = -141.94599914551, h = 181, unknown1 = 458754},
+		['8'] = { index = 8, zone = 215, npc = 621, x = 1.4460000991821, z = -3.6520001888275, y = 150.79200744629, h = 191, unknown1 = 524290},
+		['00'] = { index = 9, zone = 215, npc = 633, x = -280, z = -4.5, y = 0, h = 191, unknown1 = 589826},
 	},
 	['Abyssea - Altepa'] = T{
 		['Cavernous Maw'] = { index = 284 }, 
-		['1'] = { index = 1, zone = 218, x = 404, z = -0.300, y = 288, },
-		['2'] = { index = 2, zone = 218, x = 639, z = 0, y = -126, },
-		['3'] = { index = 3, zone = 218, x = -80, z = 0, y = 437, },
-		['4'] = { index = 4, zone = 218, x = -323, z = 0.878, y = -263, },
-		['5'] = { index = 5, zone = 218, x = -477, z = -1, y = -684, },
-		['6'] = { index = 6, zone = 218, x = -640, z = 0, y = -242, },
-		['7'] = { index = 7, zone = 218, x = -604, z = -1, y = -39, },
-		['8'] = { index = 8, zone = 218, x = -826, z = -10, y = -591, },
+		['1'] = { index = 1, zone = 218, npc = 563, x = 404.00003051758, z = -0.30000001192093, y = 288, h = 127, unknown1 = 65538},
+		['2'] = { index = 2, zone = 218, npc = 564, x = 639, z = 0, y = -126.00000762939, h = 159, unknown1 = 131074},
+		['3'] = { index = 3, zone = 218, npc = 565, x = -80, z = 0, y = 437.00003051758, h = 63, unknown1 = 196610},
+		['4'] = { index = 4, zone = 218, npc = 566, x = -323.00003051758, z = 0.87800002098083, y = -263, h = 31, unknown1 = 262146},
+		['5'] = { index = 5, zone = 218, npc = 567, x = -477.00003051758, z = -1, y = -684.00006103516, h = 191, unknown1 = 327682},
+		['6'] = { index = 6, zone = 218, npc = 568, x = -640, z = 0, y = -242.00001525879, h = 79, unknown1 = 393218},
+		['7'] = { index = 7, zone = 218, npc = 569, x = -604, z = -1, y = -39, h = 0, unknown1 = 458754},
+		['8'] = { index = 8, zone = 218, npc = 570, x = -826.00006103516, z = -10, y = -591, h = 159, unknown1 = 524290},
 	},
 	['Abyssea - Uleguerand'] = T{
 		['Cavernous Maw'] = { index = 288 }, 
-		['1'] = { index = 1, zone = 253, x = -202, z = -39.900, y = -506, },
-		['2'] = { index = 2, zone = 253, x = -381.055, z = -25.283, y = -169.200, },
-		['3'] = { index = 3, zone = 253, x = -300.773, z = -53.509, y = -34.171, },
-		['4'] = { index = 4, zone = 253, x = 137.366, z = 0.100, y = -368.519, },
-		['5'] = { index = 5, zone = 253, x = 576.008, z = -36.076, y = -8.386, },
-		['6'] = { index = 6, zone = 253, x = 338.860, z = -100.288, y = 500.109, },
-		['7'] = { index = 7, zone = 253, x = -257.359, z = -176.335, y = 236.791, },
-		['8'] = { index = 8, zone = 253, x = -582.977, z = -40.378, y = 45.543, },
+		['1'] = { index = 1, zone = 253, npc = 563, x = -202.00001525879, z = -39.900001525879, y = -506.00003051758, h = 31, unknown1 = 65538},
+		['2'] = { index = 2, zone = 253, npc = 564, x = -381.05502319336, z = -25.283000946045, y = -169.20001220703, h = 204, unknown1 = 131074},
+		['3'] = { index = 3, zone = 253, npc = 565, x = -300.77301025391, z = -53.509002685547, y = -34.171001434326, h = 58, unknown1 = 196610},
+		['4'] = { index = 4, zone = 253, npc = 566, x = 137.36601257324, z = 0.10000000149012, y = -368.51901245117, h = 243, unknown1 = 262146},
+		['5'] = { index = 5, zone = 253, npc = 567, x = 576.00805664063, z = -36.076000213623, y = -8.3860006332397, h = 228, unknown1 = 327682},
+		['6'] = { index = 6, zone = 253, npc = 568, x = 338.86001586914, z = -100.28800201416, y = 500.10900878906, h = 90, unknown1 = 393218},
+		['7'] = { index = 7, zone = 253, npc = 569, x = -257.35900878906, z = -176.33500671387, y = 236.791015625, h = 23, unknown1 = 458754},
+		['8'] = { index = 8, zone = 253, npc = 570, x = -582.97705078125, z = -40.378002166748, y = 45.543003082275, h = 89, unknown1 = 524290},
 	},
 	['Abyssea - Grauberg'] = T{
 		['Cavernous Maw'] = { index = 292 }, 
-		['1'] = { index = 1, zone = 254, x = -514.000, z = 22.417, y = -756.000, },
-		['2'] = { index = 2, zone = 254, x = 321.833, z = 31.439, y = -557.983, },
-		['3'] = { index = 3, zone = 254, x = 423.950, z = -0.893, y = -174.130, },
-		['4'] = { index = 4, zone = 254, x = -26.465, z = -0.935, y = -464.546, },
-		['5'] = { index = 5, zone = 254, x = -165.414, z = -32.099, y = 405.608, },
-		['6'] = { index = 6, zone = 254, x = 102.165, z = 16.462, y = 497.289, },
-		['7'] = { index = 7, zone = 254, x = -323.073, z = -127.969, y = 113.653, },
-		['8'] = { index = 8, zone = 254, x = 490.776, z = -5.546, y = 340.563, },
+		['1'] = { index = 1, zone = 254, npc = 599, x = -514, z = 22.417001724243, y = -756.00006103516, h = 63, unknown1 = 65538},
+		['2'] = { index = 2, zone = 254, npc = 600, x = 321.8330078125, z = 31.439001083374, y = -557.98303222656, h = 93, unknown1 = 131074},
+		['3'] = { index = 3, zone = 254, npc = 601, x = 423.95001220703, z = -0.89300006628036, y = -174.13000488281, h = 159, unknown1 = 196610},
+		['4'] = { index = 4, zone = 254, npc = 602, x = -26.465002059937, z = -0.93500006198883, y = -464.54602050781, h = 127, unknown1 = 262146},
+		['5'] = { index = 5, zone = 254, npc = 603, x = -165.41400146484, z = -32.099002838135, y = 405.60803222656, h = 137, unknown1 = 327682},
+		['6'] = { index = 6, zone = 254, npc = 604, x = 102.16500854492, z = 16.461999893188, y = 497.28903198242, h = 254, unknown1 = 393218},
+		['7'] = { index = 7, zone = 254, npc = 605, x = -323.07302856445, z = -127.96900939941, y = 113.65300750732, h = 63, unknown1 = 458754},
+		['8'] = { index = 8, zone = 254, npc = 606, x = 490.77603149414, z = -5.5460004806519, y = 340.56301879883, h = 191, unknown1 = 524290},
 	},
 }
 

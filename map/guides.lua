@@ -6,9 +6,31 @@ return { -- option: 1
 	},
 	help_text = "[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.",
 	sub_zone_targets = S{},
-	build_warp_packets = function(npc, zone, menu, settings)
-		local p = T{}
-		local packet = packets.new('outgoing', 0x05B)
+	build_warp_packets = function(current_activity, zone, p, settings)
+		local actions = T{}
+		local packet = nil
+		local menu = p["Menu ID"]
+		local npc = current_activity.npc
+		local destination = current_activity.activity_settings
+
+		local gil = p["Menu Parameters"]:unpack('i', 9)
+		local valor = p["Menu Parameters"]:unpack('h', 7)	
+
+		debug('gil: '..gil.." valor: "..valor)
+
+		if gil < 1000 then
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 0
+            packet["_unknown1"] = 16384
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, description='cancel menu', message='Not enough Gil!'})
+            return actions
+		end
 
 		-- menu change
 		packet = packets.new('outgoing', 0x05B)
@@ -21,8 +43,7 @@ return { -- option: 1
 		packet["_unknown1"] = 0
 		packet["Automated Message"] = true
 		packet["_unknown2"] = 0
-		packet.debug_desc = 'menu change'
-		p:append(packet)
+        actions:append(T{packet=packet, description='menu change'})
 
 		-- menu change
 		packet = packets.new('outgoing', 0x05B)
@@ -32,11 +53,10 @@ return { -- option: 1
 		packet["Menu ID"] = menu
 
 		packet["Option Index"] = 1
-		packet["_unknown1"] = settings.index
+		packet["_unknown1"] = destination.index
 		packet["Automated Message"] = true
 		packet["_unknown2"] = 0
-		packet.debug_desc = 'menu change'
-		p:append(packet)
+        actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='menu change'})
 	
 		-- request warp
 		packet = packets.new('outgoing', 0x05B)
@@ -46,13 +66,12 @@ return { -- option: 1
 		packet["Menu ID"] = menu
 
 		packet["Option Index"] = 1
-		packet["_unknown1"] = settings.index
+		packet["_unknown1"] = destination.index
 		packet["Automated Message"] = false
 		packet["_unknown2"] = 0
-		packet.debug_desc = 'zone warp request'
-		p:append(packet)
+        actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='hp set request'})
 
-		return p
+		return actions
 	end,
 	["Northern San d'Oria"] = {index=0},
 	["Bastok Mines"] = {index=1},

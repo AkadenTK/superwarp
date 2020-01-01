@@ -6,9 +6,34 @@ return { -- option: 1
 	},
 	help_text = "[sw] un [warp/w] [all/a/@all] zone name -- warp to a designated unity zone. \"all\" sends ipc to all local clients.",
 	sub_zone_targets = S{},
-	build_warp_packets = function(npc, zone, menu, settings)
-		local p = T{}
-		local packet = packets.new('outgoing', 0x05B)
+	build_warp_packets = function(current_activity, zone, p, settings)
+		local actions = T{}
+		local packet = nil
+		local menu = p["Menu ID"]
+		local npc = current_activity.npc
+		local destination = current_activity.activity_settings
+
+		local accolades = p["Menu Parameters"]:unpack('i', 9)
+
+		debug("accolades: "..accolades)
+		if accolades < 100 then
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 0
+            packet["_unknown1"] = 16384
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, description='cancel menu', message='Not enough accolades!'})
+            return actions
+		end
+
+		local popMessage = nil
+		if destination.z and destination.pops then
+			popMessage = "Pops located at: "..destination.z.." "..destination.pops
+		end
 
 		-- menu change
 		packet = packets.new('outgoing', 0x05B)
@@ -21,8 +46,7 @@ return { -- option: 1
 		packet["_unknown1"] = 0
 		packet["Automated Message"] = true
 		packet["_unknown2"] = 0
-		packet.debug_desc = 'menu change'
-		p:append(packet)
+        actions:append(T{packet=packet, description='menu change'})
 
 		-- menu change
 		packet = packets.new('outgoing', 0x05B)
@@ -35,8 +59,7 @@ return { -- option: 1
 		packet["_unknown1"] = 0
 		packet["Automated Message"] = true
 		packet["_unknown2"] = 0
-		packet.debug_desc = 'menu change'
-		p:append(packet)
+        actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='menu change'})
 	
 		-- request warp
 		packet = packets.new('outgoing', 0x05B)
@@ -45,18 +68,13 @@ return { -- option: 1
 		packet["Zone"] = zone
 		packet["Menu ID"] = menu
 
-		packet["Option Index"] = settings.index
+		packet["Option Index"] = destination.index
 		packet["_unknown1"] = 0
 		packet["Automated Message"] = false
 		packet["_unknown2"] = 0
-		packet.debug_desc = 'zone warp request'
-		p:append(packet)
+        actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='zone warp request', message=popMessage})
 
-		if settings.z and settings.pops then
-			log("Pops located at: "..settings.z.." "..settings.pops)
-		end
-
-		return p
+		return actions
 	end,
 	-- some of these are duplicates. They've been commented out.
 	['East Ronfaure'] = { index = 1, },
