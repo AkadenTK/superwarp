@@ -73,7 +73,7 @@ return { -- option: 2
 		packet["_unknown1"] = destination.index
 		packet["Automated Message"] = false
 		packet["_unknown2"] = 0
-        actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='zone warp request'})
+        actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='send options and complete menu'})
 
 		return actions
 	end,

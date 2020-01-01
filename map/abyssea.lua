@@ -137,7 +137,7 @@ return T{
 			packet["_unknown2"] = 0
 			packet["Zone"] = zone
 			packet["Menu ID"] = menu
-        	actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='zone warp request'})
+        	actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='send options and complete menu'})
 		end
 
 		return actions
