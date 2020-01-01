@@ -69,6 +69,7 @@ local defaults = {
 	simulated_response_time = 0,			-- response time (seconds) for selecting a single menu item. Note this can happen multiple times per warp.
 	default_packet_wait_timeout = 5,		-- timeout (seconds) for waiting on a packet response before continuing on.
 	enable_same_zone_teleport = true,		-- enable teleporting between points in the same zone. This is the default behavior in-game. Turning it off will look different than teleporting manually.
+	enable_fast_retry_on_interrupt = false,	-- after an event skip event, attempt a fast-retry that doesn't wait for packets or delay.
 }
 
 local settings = config.load(defaults)
@@ -93,6 +94,7 @@ config.save(settings)
 
 local state = {
 	loop_count = nil,
+	fast_retry = false,
 }
 
 function debug(msg)
@@ -287,19 +289,23 @@ local function do_warp(map_name, zone, sub_zone)
 		local npc, dist = find_npc(map.npc_names.warp)
 
 		if not npc then
-			log('No ' .. map.long_name .. ' found!')
 			if state.loop_count > 0 then
+				log('No ' .. map.long_name .. ' found! Retrying...')
 				do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
 				state.loop_count = state.loop_count - 1
+			else
+				log('No ' .. map.long_name .. ' found!')
 			end
 		elseif dist > 6^2 then
-			log(npc.name .. ' found, but too far!')
 			if state.loop_count > 0 then
+				log(npc.name .. ' found, but too far! Retrying...')
 				do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
 				state.loop_count = state.loop_count - 1
+			else
+				log(npc.name .. ' found, but too far!')
 			end
 		elseif warp_settings.npc == npc.index then
-			log("You are already at "..display_name)
+			log("You are already at "..display_name.."! Teleport canceled.")
 			state.loop_count = 0
 		elseif npc.id and npc.index then
 			current_activity = {type=map_name, npc=npc, activity_settings=warp_settings, zone=zone, sub_zone=sub_zone}
@@ -307,7 +313,6 @@ local function do_warp(map_name, zone, sub_zone)
 			log('Warping via ' .. npc.name .. ' to '..display_name..'.')
 		end
 	else
-		debug("something went wrong")
 		state.loop_count = 0
 	end
 end
@@ -330,6 +335,7 @@ local function handle_warp(warp, args)
 
 	warp = warp:lower()
 	state.loop_count = settings.max_retries
+	state.fast_retry = false
 
 	-- because I can't stop typing "hp warp X" because I've been trained. 
 	if args[1]:lower() == 'warp' or args[1]:lower() == 'w' then args:remove(1) end
@@ -441,7 +447,7 @@ local function perform_next_action()
 			last_activity = current_activity
 			state.loop_count = 0
 			current_activity = nil
-		elseif current_action.wait_packet then
+		elseif not state.fast_retry and current_action.wait_packet then
 			debug("waiting for packet 0x"..current_action.wait_packet:hex().." for action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
 			current_action.wait_start = os.time()
 			if not current_action.timeout then 
@@ -456,7 +462,7 @@ local function perform_next_action()
 			end
 
 			fn:schedule(current_action.timeout, current_activity.action_index, current_activity.wait_packet, current_activity.description)
-		elseif current_action.delay and current_action.delay > 0 then
+		elseif not state.fast_retry and current_action.delay and current_action.delay > 0 then
 			debug("delaying action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
 			local delay_seconds = current_action.delay
 			current_action.delay = nil
@@ -483,7 +489,8 @@ local function perform_next_action()
 			else
 				reset(true)
 				if state.loop_count > 0 then
-					do_wap:schedule(settings.retry_delay, current_activity.type, current_activity.zone, current_activity.sub_zone)
+					log("Teleport aborted. Retrying...")
+					do_warp:schedule(settings.retry_delay, current_activity.type, current_activity.zone, current_activity.sub_zone)
 					state.loop_count = state.loop_count - 1
 				end
 			end
@@ -500,6 +507,21 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 			current_action.wait_packet = nil
 			current_action.incoming_packet = packets.parse('incoming',data)
 			perform_next_action()
+		end
+	end
+
+	if id == 0x052 and current_activity and current_activity.running then
+		local message_type = data:unpack('b4', 5)
+		if message_type == 2 then
+			if state.loop_count > 0 then
+				if settings.enable_fast_retry_on_interrupt then
+					log("Detected event-skip. Retrying (fast)...")
+					state.fast_retry = true
+				else
+					log("Detected event-skip. Retrying...")
+				end
+				do_warp:schedule(0.1, current_activity.type, current_activity.zone, current_activity.sub_zone)
+			end
 		end
 	end
 
