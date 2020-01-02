@@ -104,6 +104,10 @@ function debug(msg)
 	end
 end
 
+function has_bit(data, x)
+  return data:unpack('q', math.floor(x/8)+1, x%8+1)
+end
+
 local function get_delay()
 	-- gets the delay before executing the warp. Based on party list, sorted by name ascending.
     local self = windower.ffxi.get_player().name
@@ -322,7 +326,7 @@ local function do_warp(map_name, zone, sub_zone)
 			else
 				log(npc.name .. ' found, but too far!')
 			end
-		elseif warp_settings.npc == npc.index then
+		elseif warp_settings.npc == npc.index and warp_settings.zone == windower.ffxi.get_info()['zone'] then
 			log("You are already at "..display_name.."! Teleport canceled.")
 			state.loop_count = 0
 		elseif npc.id and npc.index then
@@ -475,12 +479,12 @@ local function perform_next_action()
 			local fn = function(i, p, d)
 				if current_activity and current_activity.action_queue and current_activity.action_index == i then
 					debug("timed out waiting for packet 0x"..p:hex().." for action "..tostring(i)..' '..(d or ''))
-					current_activity.wait_packet = nil
+					current_action.wait_packet = nil
 					perform_next_action()
 				end
 			end
 
-			fn:schedule(current_action.timeout, current_activity.action_index, current_activity.wait_packet, current_activity.description)
+			fn:schedule(current_action.timeout, current_activity.action_index, current_action.wait_packet, current_action.description)
 		elseif not state.fast_retry and current_action.delay and current_action.delay > 0 then
 			debug("delaying action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
 			local delay_seconds = current_action.delay
