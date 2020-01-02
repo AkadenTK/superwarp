@@ -16,9 +16,27 @@ return { -- option: 1
 		local gil = p["Menu Parameters"]:unpack('i', 9)
 		local valor = p["Menu Parameters"]:unpack('h', 7)	
 
+		local thrifty_transit = menu == 8501
+
 		debug('gil: '..gil.." valor: "..valor)
 
-		if gil < 1000 then
+		local currency_stock = gil
+		local currency_name = 'gil'
+		local currency_minimum = 200
+		-- during Thrifty Transit, the gil packet is used, but no gil is removed.
+		local use_tabs_at_survival_guides = not thrifty_transit and settings.use_tabs_at_survival_guides
+		if use_tabs_at_survival_guides then
+			if valor < 10 then
+				log("Valor point stock is too low to use. Using gil instead.")
+				use_tabs_at_survival_guides = false
+			else
+				currency_stock = valor
+				currency_name = 'valor points'
+				currency_minimum = 10
+			end
+		end
+
+		if currency_stock < currency_minimum then
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
             packet["Option Index"] = 0
@@ -28,7 +46,7 @@ return { -- option: 1
             packet["_unknown2"] = 0
             packet["Zone"] = zone
             packet["Menu ID"] = menu
-            actions:append(T{packet=packet, description='cancel menu', message='Not enough Gil!'})
+            actions:append(T{packet=packet, description='cancel menu', message='Not enough '..currency_name..'!'})
             return actions
 		end
 
@@ -65,7 +83,11 @@ return { -- option: 1
 		packet["Zone"] = zone
 		packet["Menu ID"] = menu
 
-		packet["Option Index"] = 1
+		if use_tabs_at_survival_guides then
+			packet["Option Index"] = 257
+		else
+			packet["Option Index"] = 1
+		end
 		packet["_unknown1"] = destination.index
 		packet["Automated Message"] = false
 		packet["_unknown2"] = 0

@@ -70,6 +70,7 @@ local defaults = {
 	default_packet_wait_timeout = 5,		-- timeout (seconds) for waiting on a packet response before continuing on.
 	enable_same_zone_teleport = true,		-- enable teleporting between points in the same zone. This is the default behavior in-game. Turning it off will look different than teleporting manually.
 	enable_fast_retry_on_interrupt = false,	-- after an event skip event, attempt a fast-retry that doesn't wait for packets or delay.
+	use_tabs_at_survival_guides = false, 	-- use tabs instead of gil at survival guides.
 }
 
 local settings = config.load(defaults)
@@ -365,6 +366,7 @@ local function handle_warp(warp, args)
 		windower.send_ipc_message(warp..' '..args:concat(' '))
 
 		local delay = get_delay()
+		debug('delay: '..delay)
 		handle_warp:schedule(delay, warp, args)
 		return
 	end
