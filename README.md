@@ -45,4 +45,19 @@ Note that there are some requirements! The second parameter "hompoint_number" mu
 
 ### In-Zone warping
 When handling the menu through the game's vanilla systems, warping between two homepoints or waypoints in the same zone sends a packet that moves your character without zoning out. Escha/Reis do this too. This is usually accompanied by a fade-to-black animation. When this occurs through Superwarp, no animations are played. It's faster, but it can look jarring. You can disable this behavior for some zones (Escha/Reis cannot be, because of the nature of the zone) with a setting: `<enable_same_zone_teleport>false</enable_same_zone_teleport>`. It is true by default. 
-Note: in-zone warping is planned for the Homepoints, but for now only works with Waypoints and Escha/Reis.
+
+### Updates
+#### v0.96
+- **Feature**: Homepoints now uses same-zone teleporting feature.
+- **Feature**: Homepoints now check enabled expansion content before warping. Before, if you warped to a zone that came in an expansion that is not enabled or installed, the character would get stuck until the expansion was enabled and installed.
+- **Feature**: All warp systems check the currency required to teleport before teleporting. 
+- **Resolved**: Escha and Waypoint systems now correctly consume currency.
+- **Feature**: Survival Guides can now use tabs (Valor Points) to teleport instead of gil. Change the setting `<use_tabs_at_survival_guides>true</use_tabs_at_survival_guides>` to enable. If the character is out of tabs, it will switch back to gil and warn the user. This also respects the Thrifty Transit super kupower. 
+- **Feature**: All warp systems check if you are already at the desired destination before warping.
+- **Feature**: An option to simulate menu choice delay by a fixed number of seconds. Change the setting `<simulated_response_time>0</simulated_response_time>` to a number of seconds to wait between ***EACH*** menu packet sent. Teleports send between 2 and 4 packets that can be affected by this number, so be prepared to wait. This option is specifically designed to make packets sent look more like vanilla behavior.
+- **Resolved**: Teleport packets now respect the game's normal order for sending to the client. The next menu option packets will wait for the response packets before continuing. This makes the teleporting take a little bit longer, but it looks much more like vanilla game behavior. 
+- **Feature**: When Superwarp detects that the event has been skipped while mid-teleport, it can retry immediately. Additionally with a new setting, it will enable "fast" mode for the next attempt. Fast mode does not wait for the response packets and removes any simulated menu choice delays. The hope is to fire off the teleport packets to get you out of there ASAP. To enable this option change the setting `<enable_fast_retry_on_interrupt>true</enable_fast_retry_on_interrupt>`.
+- **Improvement**: The retry system has been improved. Superwarp has more control over when a retry is attempted. This should mean less issues when the client lags. Retries occur when the warp NPC cannot be found, is out of range, or when the event is skipped.
+- **Resolved**: Same-zone teleports now correctly orient your character on arrival. 
+- **Resolved**: All same-zone teleports now have fully accurate arrival coordinates. The packet sent matches vanilla exactly.
+- **Improvement**: The reset functionality when an error occurs with Superwarp has been improved. This should get your character out of "stuck in menu" issue more often. Ideally, you should never have to use this feature.
