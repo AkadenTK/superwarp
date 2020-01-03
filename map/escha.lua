@@ -52,7 +52,7 @@ return T{
 			packet["_unknown1"] = destination.index
 			packet["Automated Message"] = true
 			packet["_unknown2"] = 0
-        	actions:append(T{packet=packet, description='send options'})
+        	actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
 
 			-- request in-zone warp
 			packet = packets.new('outgoing', 0x05C)
@@ -66,7 +66,7 @@ return T{
 			packet["Z"] = destination.z
             packet["_unknown1"] = destination.unknown1
             packet["Rotation"] = destination.h
-        	actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='same-zone move request'})
+        	actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='same-zone move request'})
 
 			-- complete menu
 			packet = packets.new('outgoing', 0x05B)
@@ -79,7 +79,7 @@ return T{
 			packet["_unknown1"] = 0
 			packet["Automated Message"] = false
 			packet["_unknown2"] = 0
-        	actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='complete menu'})
+        	actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='complete menu'})
 		else
 			packet["Target"] = npc.id
 			packet["Option Index"] = 0
@@ -130,7 +130,7 @@ return T{
 	            packet["_unknown2"] = 0
 	            packet["Zone"] = zone
 	            packet["Menu ID"] = menu
-            	actions:append(T{packet=packet, description='send options'})
+            	actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
 
 				packet = packets.new('outgoing', 0x05B)
 	            packet["Target"] = npc.id
@@ -141,7 +141,7 @@ return T{
 	            packet["_unknown2"] = 0
 	            packet["Zone"] = zone
 	            packet["Menu ID"] = menu
-            	actions:append(T{packet=packet, wait_packet=0x052, delay=settings.simulated_response_time, description='complete menu', message='Entering Escha'})
+            	actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Entering Escha'})
 			end
 
 			return actions

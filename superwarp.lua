@@ -67,6 +67,7 @@ local defaults = {
 	max_retries = 6,						-- max retries for loading NPCs.
 	retry_delay = 2,						-- delay (seconds) between retries
 	simulated_response_time = 0,			-- response time (seconds) for selecting a single menu item. Note this can happen multiple times per warp.
+	simulated_response_variation = 0,		-- random variation (seconds) from the base simulated_response_time in either direction (+ or -)
 	default_packet_wait_timeout = 5,		-- timeout (seconds) for waiting on a packet response before continuing on.
 	enable_same_zone_teleport = true,		-- enable teleporting between points in the same zone. This is the default behavior in-game. Turning it off will look different than teleporting manually.
 	enable_fast_retry_on_interrupt = false,	-- after an event skip event, attempt a fast-retry that doesn't wait for packets or delay.
@@ -138,6 +139,10 @@ local function get_delay()
             return (k - 1) * settings.send_all_delay
         end
     end
+end
+
+function wiggle_value(value, variation)
+	return math.max(0, value + (math.random() * 2 * variation - variation))
 end
 
 --- resolve sub-zone target aliases (ah -> auction house, etc.)
@@ -524,7 +529,7 @@ local function perform_next_action()
 				current_action.timeout = settings.default_packet_wait_timeout
 			end
 			local fn = function(i, p, d)
-				if current_activity and current_activity.action_queue and current_activity.action_index == i then
+				if current_activity and current_activity.action_queue and current_activity.action_index == i and current_activity.wait_packet then
 					debug("timed out waiting for packet 0x"..p:hex().." for action "..tostring(i)..' '..(d or ''))
 					current_action.wait_packet = nil
 					perform_next_action()
@@ -533,7 +538,7 @@ local function perform_next_action()
 
 			fn:schedule(current_action.timeout, current_activity.action_index, current_action.wait_packet, current_action.description)
 		elseif not state.fast_retry and current_action.delay and current_action.delay > 0 then
-			debug("delaying action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
+			debug("delaying action "..tostring(current_activity.action_index)..' '..(current_action.description or '')..' for '.. current_action.delay..'s...')
 			local delay_seconds = current_action.delay
 			current_action.delay = nil
 			perform_next_action:schedule(delay_seconds)
