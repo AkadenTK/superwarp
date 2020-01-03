@@ -79,17 +79,32 @@ local settings = config.load(defaults)
 if settings.send_all_delay < 0 then
 	settings.send_all_delay = 0
 end
+if settings.send_all_delay > 5 then
+	settings.send_all_delay = 5
+end
 if settings.max_retries < 1 then
 	settings.max_retries = 1
+end
+if settings.max_retries > 20 then
+	settings.max_retries = 20
 end
 if settings.retry_delay < 1 then
 	settings.retry_delay = 1
 end
+if settings.retry_delay > 10 then
+	settings.retry_delay = 10
+end
 if settings.simulated_response_time < 0 then
 	settings.simulated_response_time = 0
 end
+if settings.simulated_response_time > 5 then
+	settings.simulated_response_time = 5
+end
 if settings.default_packet_wait_timeout < 1 then
 	settings.default_packet_wait_timeout = 1
+end
+if settings.default_packet_wait_timeout > 10 then
+	settings.default_packet_wait_timeout = 10
 end
 config.save(settings)
 
