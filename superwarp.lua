@@ -391,12 +391,12 @@ local function do_warp(map_name, zone, sub_zone)
 	end
 end
 
-local function do_sub_cmd(map_name, sub_cmd)
+local function do_sub_cmd(map_name, sub_cmd, args)
 	local map = maps[map_name]
 
 	local npc, dist = find_npc(map.npc_names[sub_cmd])
 	if npc and npc.id and npc.index and dist <= 6^2 then
-		current_activity = {type=map_name, sub_cmd=sub_cmd, npc=npc}
+		current_activity = {type=map_name, sub_cmd=sub_cmd, args=args, npc=npc}
 		poke_npc(npc.id, npc.index)
 	elseif not npc then
 		log('No '..map.long_name..' found!')
@@ -439,7 +439,8 @@ local function handle_warp(warp, args)
 			end
 
 			if sub_cmd then
-				do_sub_cmd(key, sub_cmd)
+				args:remove(1)
+				do_sub_cmd(key, sub_cmd, args)
 				return
 			else
 				local sub_zone_target = nil
