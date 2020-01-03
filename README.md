@@ -23,8 +23,6 @@ Spaces and punctuation are ignored. So type "southernsand" all you want, buddy. 
 <?xml version="1.1" ?>
 <settings>
     <global>
-        <debug>false</debug>
-        <send_all_delay>0.4</send_all_delay>
         <favorites>
         	<homepoints>
         		<Norg>Auction House</Norg>
@@ -40,8 +38,31 @@ Spaces and punctuation are ignored. So type "southernsand" all you want, buddy. 
 </settings>
 ```
 
-Speaking of editing the map, you can add your own mappings in the map/homepoints.lua (if you dare.)
-Note that there are some requirements! The second parameter "hompoint_number" must be 1-word. No spaces people. And please DON'T re-enable Al Zhabi it's a glitched homepoint. 
+Further customization can be done with the Shortcuts section in the settings file. You can specify a zone only, enabling you to choose the subzone on the fly, or include a subzone and make it a full shortcut. Shortcut names must match exactly (case-insensitive) and must not have spaces.
+```xml
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <shortcuts>
+            <homepoints>
+                <eado>
+                    <sub_zone>Mog House</sub_zone>
+                    <zone>Eastern Adoulin</zone>
+                </eado>
+                <wado>
+                    <zone>Western Adoulin</zone>
+                </wado>
+            </homepoints>
+            <waypoints>
+                <foretjp>
+                    <sub_zone>4</sub_zone>
+                    <zone>Foret de Hennetiel</zone>
+                </foretjp>
+            </waypoints>
+        </shortcuts>
+    </global>
+</settings>
+```
 
 ### In-Zone warping
 When handling the menu through the game's vanilla systems, warping between two homepoints or waypoints in the same zone sends a packet that moves your character without zoning out. Escha/Reis do this too. This is usually accompanied by a fade-to-black animation. When this occurs through Superwarp, no animations are played. It's faster, but it can look jarring. You can disable this behavior for some zones (Escha/Reis cannot be, because of the nature of the zone) with a setting: `<enable_same_zone_teleport>false</enable_same_zone_teleport>`. It is true by default. 
@@ -56,6 +77,7 @@ When handling the menu through the game's vanilla systems, warping between two h
 - **Feature**: All warp systems check if you are already at the desired destination before warping.
 - **Feature**: An option to simulate menu choice delay by a fixed number of seconds. Change the setting `<simulated_response_time>0</simulated_response_time>` to a number of seconds to wait between ***EACH*** menu packet sent. Teleports send between 2 and 4 packets that can be affected by this number, so be prepared to wait. This option is specifically designed to make packets sent look more like vanilla behavior.
 - **Resolved**: Teleport packets now respect the game's normal order for sending to the client. The next menu option packets will wait for the response packets before continuing. This makes the teleporting take a little bit longer, but it looks much more like vanilla game behavior. 
+- **Feature**: Added custom shortcuts. Configured in the settings file, an exact phrase can be specified (e.g. "wado" for "Western Adoulin") that resolves to a zone name or a zone + subzone combination.
 - **Feature**: When Superwarp detects that the event has been skipped while mid-teleport, it can retry immediately. Additionally with a new setting, it will enable "fast" mode for the next attempt. Fast mode does not wait for the response packets and removes any simulated menu choice delays. The hope is to fire off the teleport packets to get you out of there ASAP. To enable this option change the setting `<enable_fast_retry_on_interrupt>true</enable_fast_retry_on_interrupt>`.
 - **Improvement**: The retry system has been improved. Superwarp has more control over when a retry is attempted. This should mean less issues when the client lags. Retries occur when the warp NPC cannot be found, is out of range, or when the event is skipped.
 - **Resolved**: Same-zone teleports now correctly orient your character on arrival. 

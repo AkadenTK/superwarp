@@ -152,7 +152,28 @@ local function resolve_sub_zone_aliases(raw)
 end
 
 function get_fuzzy_name(name)
-	return name:lower():gsub("%s", ""):gsub("%p", "")
+	return tostring(name):lower():gsub("%s", ""):gsub("%p", "")
+end
+
+function get_shortcut_match(map_name, needle)
+	if settings.shortcuts == nil or settings.shortcuts[map_name] == nil then
+		return nil
+	end
+	-- check custom shortcuts
+	local fuzzy_needle = get_fuzzy_name(needle)
+
+	local destination, score
+	for haystack, value in pairs(settings.shortcuts[map_name]) do
+		local fuzzy_haystack = get_fuzzy_name(haystack)
+		if fuzzy_needle:length() >= 3 and fuzzy_haystack == fuzzy_needle then
+			local cur_score = fuzzy_haystack:length() - fuzzy_needle:length()
+			if not destination or cur_score < score then
+				destination = value
+				score = cur_score
+			end
+		end
+	end
+	return destination
 end
 
 function get_closest_match(map, needle)
@@ -173,6 +194,17 @@ function get_closest_match(map, needle)
 end
 
 local function resolve_warp(map_name, zone, sub_zone)
+	local shortcut_result = get_shortcut_match(map_name, zone)
+	if shortcut_result ~= nil then
+		if shortcut_result.sub_zone ~= nil then
+			debug("found custom shortcut: "..zone.." -> "..shortcut_result.zone.." "..shortcut_result.sub_zone)
+			sub_zone = shortcut_result.sub_zone
+		else
+			debug("found custom shortcut: "..zone.." -> "..shortcut_result.zone)
+		end
+		zone = shortcut_result.zone
+	end
+
 	local closest_zone_name = get_closest_match(maps[map_name], zone)
 	if closest_zone_name then
 		local zone_map = maps[map_name][closest_zone_name]
