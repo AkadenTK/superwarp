@@ -1,42 +1,42 @@
 return { -- option: 1
-	short_name = 'sg',
-	long_name = 'survival guide',
-	npc_names = T{
-		warp = T{'Survival Guide'},
-	},
-	help_text = "[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.",
-	sub_zone_targets = S{},
-	build_warp_packets = function(current_activity, zone, p, settings)
-		local actions = T{}
-		local packet = nil
-		local menu = p["Menu ID"]
-		local npc = current_activity.npc
-		local destination = current_activity.activity_settings
+    short_name = 'sg',
+    long_name = 'survival guide',
+    npc_names = T{
+        warp = T{'Survival Guide'},
+    },
+    help_text = "[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.",
+    sub_zone_targets = S{},
+    build_warp_packets = function(current_activity, zone, p, settings)
+        local actions = T{}
+        local packet = nil
+        local menu = p["Menu ID"]
+        local npc = current_activity.npc
+        local destination = current_activity.activity_settings
 
-		local gil = p["Menu Parameters"]:unpack('i', 9)
-		local valor = p["Menu Parameters"]:unpack('h', 7)	
+        local gil = p["Menu Parameters"]:unpack('i', 9)
+        local valor = p["Menu Parameters"]:unpack('h', 7)    
 
-		local thrifty_transit = menu == 8501
+        local thrifty_transit = menu == 8501
 
-		debug('gil: '..gil.." valor: "..valor)
+        debug('gil: '..gil.." valor: "..valor)
 
-		local currency_stock = gil
-		local currency_name = 'gil'
-		local currency_minimum = 200
-		-- during Thrifty Transit, the gil packet is used, but no gil is removed.
-		local use_tabs_at_survival_guides = not thrifty_transit and settings.use_tabs_at_survival_guides
-		if use_tabs_at_survival_guides then
-			if valor < 10 then
-				log("Valor point stock is too low to use. Using gil instead.")
-				use_tabs_at_survival_guides = false
-			else
-				currency_stock = valor
-				currency_name = 'valor points'
-				currency_minimum = 10
-			end
-		end
+        local currency_stock = gil
+        local currency_name = 'gil'
+        local currency_minimum = 200
+        -- during Thrifty Transit, the gil packet is used, but no gil is removed.
+        local use_tabs_at_survival_guides = not thrifty_transit and settings.use_tabs_at_survival_guides
+        if use_tabs_at_survival_guides then
+            if valor < 10 then
+                log("Valor point stock is too low to use. Using gil instead.")
+                use_tabs_at_survival_guides = false
+            else
+                currency_stock = valor
+                currency_name = 'valor points'
+                currency_minimum = 10
+            end
+        end
 
-		if currency_stock < currency_minimum then
+        if currency_stock < currency_minimum then
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
             packet["Option Index"] = 0
@@ -48,62 +48,62 @@ return { -- option: 1
             packet["Menu ID"] = menu
             actions:append(T{packet=packet, description='cancel menu', message='Not enough '..currency_name..'!'})
             return actions
-		end
+        end
 
-    	-- update request
-    	packet = packets.new('outgoing', 0x016)
-    	packet["Target Index"] = windower.ffxi.get_player().index
-    	actions:append(T{packet=packet, description='update request'})
+        -- update request
+        packet = packets.new('outgoing', 0x016)
+        packet["Target Index"] = windower.ffxi.get_player().index
+        actions:append(T{packet=packet, description='update request'})
 
-		-- menu change
-		packet = packets.new('outgoing', 0x05B)
-		packet["Target"] = npc.id
-		packet["Target Index"] = npc.index
-		packet["Zone"] = zone
-		packet["Menu ID"] = menu
+        -- menu change
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
 
-		packet["Option Index"] = 7
-		packet["_unknown1"] = 0
-		packet["Automated Message"] = true
-		packet["_unknown2"] = 0
+        packet["Option Index"] = 7
+        packet["_unknown1"] = 0
+        packet["Automated Message"] = true
+        packet["_unknown2"] = 0
         actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu change'})
 
-		-- request map
-		packet = packets.new('outgoing', 0x114)
-		actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
+        -- request map
+        packet = packets.new('outgoing', 0x114)
+        actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
 
-		-- menu change
-		packet = packets.new('outgoing', 0x05B)
-		packet["Target"] = npc.id
-		packet["Target Index"] = npc.index
-		packet["Zone"] = zone
-		packet["Menu ID"] = menu
+        -- menu change
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
 
-		packet["Option Index"] = 1
-		packet["_unknown1"] = 0
-		packet["Automated Message"] = true
-		packet["_unknown2"] = 0
+        packet["Option Index"] = 1
+        packet["_unknown1"] = 0
+        packet["Automated Message"] = true
+        packet["_unknown2"] = 0
         actions:append(T{packet=packet, delay=0.2, description='menu change'})
-	
-		-- request warp
-		packet = packets.new('outgoing', 0x05B)
-		packet["Target"] = npc.id
-		packet["Target Index"] = npc.index
-		packet["Zone"] = zone
-		packet["Menu ID"] = menu
+    
+        -- request warp
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
 
-		if use_tabs_at_survival_guides then
-			packet["Option Index"] = 257
-		else
-			packet["Option Index"] = 1
-		end
-		packet["_unknown1"] = destination.index
-		packet["Automated Message"] = false
-		packet["_unknown2"] = 0
+        if use_tabs_at_survival_guides then
+            packet["Option Index"] = 257
+        else
+            packet["Option Index"] = 1
+        end
+        packet["_unknown1"] = destination.index
+        packet["Automated Message"] = false
+        packet["_unknown2"] = 0
         actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options and complete menu'})
 
-		return actions
-	end,
+        return actions
+    end,
     ["Northern San d'Oria"] = { index = 0, zone = 231, },
     ["Bastok Mines"] = { index = 1, zone = 234, },
     ["Port Windurst"] = { index = 2, zone = 240, },

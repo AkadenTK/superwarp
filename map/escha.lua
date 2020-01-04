@@ -1,29 +1,29 @@
 return T{
-	short_name = 'ew',
-	long_name = 'eschan portal',
-	npc_names = T{
-		warp = T{'Eschan Portal', 'Ethereal Ingress'},
-		enter = T{'Undulating Confluence', 'Dimensional Portal'},
-		domain = T{'Affi', 'Dremi', 'Shiftrix'},
-	},
-	help_text = "[sw] ew [warp/w] [all/a/@all] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.",
-	sub_zone_targets =  S{'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15' },
-	auto_select_zone = function(zone)
-		if zone == 288 then return 'Escha Zi\'tah' end
-		if zone == 289 then return 'Escha Ru\'an' end
-		if zone == 291 then return 'Reisenjima' end
-	end,
-	build_warp_packets = function(current_activity, zone, p, settings)
-		local actions = T{}
-		local packet = nil
-		local menu = p["Menu ID"]
-		local npc = current_activity.npc
-		local destination = current_activity.activity_settings
+    short_name = 'ew',
+    long_name = 'eschan portal',
+    npc_names = T{
+        warp = T{'Eschan Portal', 'Ethereal Ingress'},
+        enter = T{'Undulating Confluence', 'Dimensional Portal'},
+        domain = T{'Affi', 'Dremi', 'Shiftrix'},
+    },
+    help_text = "[sw] ew [warp/w] [all/a/@all] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.",
+    sub_zone_targets =  S{'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15' },
+    auto_select_zone = function(zone)
+        if zone == 288 then return 'Escha Zi\'tah' end
+        if zone == 289 then return 'Escha Ru\'an' end
+        if zone == 291 then return 'Reisenjima' end
+    end,
+    build_warp_packets = function(current_activity, zone, p, settings)
+        local actions = T{}
+        local packet = nil
+        local menu = p["Menu ID"]
+        local npc = current_activity.npc
+        local destination = current_activity.activity_settings
 
-		local silt_stock = p["Menu Parameters"]:unpack('i', 21)
+        local silt_stock = p["Menu Parameters"]:unpack('i', 21)
 
-		debug('silt '..silt_stock)
-		if silt_stock < 1000 then
+        debug('silt '..silt_stock)
+        if silt_stock < 1000 then
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
             packet["Option Index"] = 0
@@ -35,355 +35,355 @@ return T{
             packet["Menu ID"] = menu
             actions:append(T{packet=packet, description='cancel menu', message='Not enough Silt!'})
             return actions
-		end
+        end
 
-		if zone == destination.zone then
-        	-- update request
-        	packet = packets.new('outgoing', 0x016)
-        	packet["Target Index"] = windower.ffxi.get_player().index
-        	actions:append(T{packet=packet, description='update request'})
+        if zone == destination.zone then
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T{packet=packet, description='update request'})
 
-			-- request map
-			packet = packets.new('outgoing', 0x114)
-    		actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
+            -- request map
+            packet = packets.new('outgoing', 0x114)
+            actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
 
-			-- menu change
-			packet = packets.new('outgoing', 0x05B)
-			packet["Target"] = npc.id
-			packet["Target Index"] = npc.index
-			packet["Zone"] = zone
-			packet["Menu ID"] = menu
+            -- menu change
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
 
-			packet["Option Index"] = 1
-			packet["_unknown1"] = destination.index
-			packet["Automated Message"] = true
-			packet["_unknown2"] = 0
-        	actions:append(T{packet=packet, delay=0.2, description='send options'})
+            packet["Option Index"] = 1
+            packet["_unknown1"] = destination.index
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            actions:append(T{packet=packet, delay=0.2, description='send options'})
 
-			-- request in-zone warp
-			packet = packets.new('outgoing', 0x05C)
-			packet["Target ID"] = npc.id
-			packet["Target Index"] = npc.index
-			packet["Zone"] = zone
-			packet["Menu ID"] = menu
+            -- request in-zone warp
+            packet = packets.new('outgoing', 0x05C)
+            packet["Target ID"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
 
-			packet["X"] = destination.x
-			packet["Y"] = destination.y
-			packet["Z"] = destination.z
+            packet["X"] = destination.x
+            packet["Y"] = destination.y
+            packet["Z"] = destination.z
             packet["_unknown1"] = destination.unknown1
             packet["Rotation"] = destination.h
-        	actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='same-zone move request'})
+            actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='same-zone move request'})
 
-			-- complete menu
-			packet = packets.new('outgoing', 0x05B)
-			packet["Target"] = npc.id
-			packet["Target Index"] = npc.index
-			packet["Zone"] = zone
-			packet["Menu ID"] = menu
+            -- complete menu
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
 
-			packet["Option Index"] = 2
-			packet["_unknown1"] = 0
-			packet["Automated Message"] = false
-			packet["_unknown2"] = 0
-        	actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='complete menu'})
-		else
-			packet["Target"] = npc.id
-			packet["Option Index"] = 0
-			packet["_unknown1"] = 16384
-			packet["Target Index"] = npc.index
-			packet["Automated Message"] = false
-			packet["_unknown2"] = 0
-			packet["Zone"] = zone
-			packet["Menu ID"] = menu
+            packet["Option Index"] = 2
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='complete menu'})
+        else
+            packet["Target"] = npc.id
+            packet["Option Index"] = 0
+            packet["_unknown1"] = 16384
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
             actions:append(T{packet=packet, description='cancel menu', message='WARNING: not in correct zone!'})
-		end
+        end
 
-		return actions
-	end,
-	sub_commands = {
-		enter = function(current_activity, zone, p, settings)
-			local actions = T{}
-			local packet = nil
-			local menu = p["Menu ID"]
-			local npc = current_activity.npc
+        return actions
+    end,
+    sub_commands = {
+        enter = function(current_activity, zone, p, settings)
+            local actions = T{}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
 
-			local oi = 0
+            local oi = 0
 
-			-- qufim or misareaux
-			if zone == 126 or zone == 25 then oi = 1 end
-			-- La theine, konschtat or tahrongi
-			if zone == 102 or zone == 108 or zone == 117 then oi = 2 end
+            -- qufim or misareaux
+            if zone == 126 or zone == 25 then oi = 1 end
+            -- La theine, konschtat or tahrongi
+            if zone == 102 or zone == 108 or zone == 117 then oi = 2 end
 
-			if oi == 0 then -- we're not in an entry zone...
-				-- send the cancel menu packet.
-				packet = packets.new('outgoing', 0x05B)
-				packet["Target"] = npc.id
-				packet["Option Index"] = 0
-				packet["_unknown1"] = 16384
-				packet["Target Index"] = npc.index
-				packet["Automated Message"] = false
-				packet["_unknown2"] = 0
-				packet["Zone"] = zone
-				packet["Menu ID"] = menu
-            	actions:append(T{packet=packet, description='cancel menu', message='WARNING: not in an entry zone!'})
-			else
-				log("Entering Escha...")
-	        	-- update request
-	        	packet = packets.new('outgoing', 0x016)
-	        	packet["Target Index"] = windower.ffxi.get_player().index
-	        	actions:append(T{packet=packet, description='update request'})
+            if oi == 0 then -- we're not in an entry zone...
+                -- send the cancel menu packet.
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 0
+                packet["_unknown1"] = 16384
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = false
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, description='cancel menu', message='WARNING: not in an entry zone!'})
+            else
+                log("Entering Escha...")
+                -- update request
+                packet = packets.new('outgoing', 0x016)
+                packet["Target Index"] = windower.ffxi.get_player().index
+                actions:append(T{packet=packet, description='update request'})
 
-				packet = packets.new('outgoing', 0x05B)
-				packet["Target"] = npc.id
-	            packet["Option Index"] = 0
-	            packet["_unknown1"] = 0
-	            packet["Target Index"] = npc.index
-	            packet["Automated Message"] = true
-	            packet["_unknown2"] = 0
-	            packet["Zone"] = zone
-	            packet["Menu ID"] = menu
-            	actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 0
+                packet["_unknown1"] = 0
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = true
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
 
-				packet = packets.new('outgoing', 0x05B)
-	            packet["Target"] = npc.id
-	            packet["Option Index"] = oi
-	            packet["_unknown1"] = 0
-	            packet["Target Index"] = npc.index
-	            packet["Automated Message"] = false
-	            packet["_unknown2"] = 0
-	            packet["Zone"] = zone
-	            packet["Menu ID"] = menu
-            	actions:append(T{packet=packet, wait_packet=0x052, delay=2, description='complete menu'})
-			end
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = oi
+                packet["_unknown1"] = 0
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = false
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, wait_packet=0x052, delay=2, description='complete menu'})
+            end
 
-			return actions
-		end,
-		domain = function(current_activity, zone, p, settings)
-			local actions = T{}
-			local packet = nil
-			local menu = p["Menu ID"]
-			local npc = current_activity.npc
-    		local args = current_activity.args
+            return actions
+        end,
+        domain = function(current_activity, zone, p, settings)
+            local actions = T{}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
+            local args = current_activity.args
 
-	        local dragon_state = p["Menu Parameters"]:unpack('b2', 1)
-	        local has_elvorseal = p["Menu Parameters"]:unpack('b8', 4) == 0x80
+            local dragon_state = p["Menu Parameters"]:unpack('b2', 1)
+            local has_elvorseal = p["Menu Parameters"]:unpack('b8', 4) == 0x80
 
-    		if #args == 0 or args[1] == 'enter' then
+            if #args == 0 or args[1] == 'enter' then
 
-				log('Checking Domain Invasion state.')
+                log('Checking Domain Invasion state.')
 
-		        if dragon_state == 0 or dragon_state == 3 then
-		        	-- dragon not ready.
+                if dragon_state == 0 or dragon_state == 3 then
+                    -- dragon not ready.
 
-					packet = packets.new('outgoing', 0x05B)
-					packet["Target"] = npc.id
-					packet["Option Index"] = 0
-					packet["_unknown1"] = 16384
-					packet["Target Index"] = npc.index
-					packet["Automated Message"] = false
-					packet["_unknown2"] = 0
-					packet["Zone"] = zone
-					packet["Menu ID"] = menu
-	            	actions:append(T{packet=packet, description='cancel menu', message='Elvorseal is not ready yet.'})	    
-	            	return actions    	
-		        end
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 0
+                    packet["_unknown1"] = 16384
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = false
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, description='cancel menu', message='Elvorseal is not ready yet.'})        
+                    return actions        
+                end
 
-				packet = packets.new('outgoing', 0x05B)
-				packet["Target"] = npc.id
-				packet["Option Index"] = 14
-				packet["_unknown1"] = 0
-				packet["Target Index"] = npc.index
-				packet["Automated Message"] = true
-				packet["_unknown2"] = 0
-				packet["Zone"] = zone
-				packet["Menu ID"] = menu
-            	actions:append(T{packet=packet, description='init menu'})	
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 14
+                packet["_unknown1"] = 0
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = true
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, description='init menu'})    
 
-				packet = packets.new('outgoing', 0x05B)
-				packet["Target"] = npc.id
-				packet["Option Index"] = 8
-				packet["_unknown1"] = 0
-				packet["Target Index"] = npc.index
-				packet["Automated Message"] = true
-				packet["_unknown2"] = 0
-				packet["Zone"] = zone
-				packet["Menu ID"] = menu
-            	actions:append(T{packet=packet, wait_packet=0x052, description='init menu'})	
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 8
+                packet["_unknown1"] = 0
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = true
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, wait_packet=0x052, description='init menu'})    
 
-				packet = packets.new('outgoing', 0x05B)
-				packet["Target"] = npc.id
-				packet["Option Index"] = 9
-				packet["_unknown1"] = 0
-				packet["Target Index"] = npc.index
-				packet["Automated Message"] = true
-				packet["_unknown2"] = 0
-				packet["Zone"] = zone
-				packet["Menu ID"] = menu
-            	actions:append(T{packet=packet, wait_packet=0x052, description='init menu'})	
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 9
+                packet["_unknown1"] = 0
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = true
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, wait_packet=0x052, description='init menu'})    
 
-		        if not has_elvorseal then
-					packet = packets.new('outgoing', 0x05B)
-					packet["Target"] = npc.id
-					packet["Option Index"] = 9
-					packet["_unknown1"] = 0
-					packet["Target Index"] = npc.index
-					packet["Automated Message"] = true
-					packet["_unknown2"] = 0
-					packet["Zone"] = zone
-					packet["Menu ID"] = menu
-	            	actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice elvorseal', message='Getting Elvorseal...'})	
+                if not has_elvorseal then
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 9
+                    packet["_unknown1"] = 0
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = true
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice elvorseal', message='Getting Elvorseal...'})    
 
-					packet = packets.new('outgoing', 0x05B)
-					packet["Target"] = npc.id
-					packet["Option Index"] = 10
-					packet["_unknown1"] = 0
-					packet["Target Index"] = npc.index
-					packet["Automated Message"] = true
-					packet["_unknown2"] = 0    
-					packet["Zone"] = zone
-					packet["Menu ID"] = menu
-	            	actions:append(T{packet=packet, wait_packet=0x052, description='menu choice elvorseal'})	
-	            end
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 10
+                    packet["_unknown1"] = 0
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = true
+                    packet["_unknown2"] = 0    
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, wait_packet=0x052, description='menu choice elvorseal'})    
+                end
 
-				packet = packets.new('outgoing', 0x05B)
-				packet["Target"] = npc.id
-				packet["Option Index"] = 11
-				packet["_unknown1"] = 0
-				packet["Target Index"] = npc.index
-				packet["Automated Message"] = true
-				packet["_unknown2"] = 0
-				packet["Zone"] = zone
-				packet["Menu ID"] = menu
-            	actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice teleport', message='Warping to battle!'})	
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 11
+                packet["_unknown1"] = 0
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = true
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice teleport', message='Warping to battle!'})    
 
-            	-- 0x05C
-				packet = packets.new('outgoing', 0x05C)
-				packet["Target ID"] = npc.id
-				packet["Target Index"] = npc.index
-				packet["Zone"] = zone
-				packet["Menu ID"] = menu
+                -- 0x05C
+                packet = packets.new('outgoing', 0x05C)
+                packet["Target ID"] = npc.id
+                packet["Target Index"] = npc.index
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
 
-				if zone == 288 then -- zitah
-					packet["X"] = -2
-					packet["Z"] = 0
-					packet["Y"] = 59.500003814697
-					packet["_unknown1"] = 12
-					packet["Rotation"] = 63
-				elseif zone == 289 then -- ruaun
-					packet["X"] = 0
-					packet["Z"] = -43.600002288818
-					packet["Y"] = -238.00001525879 
-					packet["_unknown1"] = 12
-					packet["Rotation"] = 191
-				elseif zone == 291 then -- Reisenjima
-					packet["X"] = 640
-					packet["Z"] = -372.00003051758
-					packet["Y"] = -921.00006103516
-					packet["_unknown1"] = 12
-					packet["Rotation"] = 95
-				end
+                if zone == 288 then -- zitah
+                    packet["X"] = -2
+                    packet["Z"] = 0
+                    packet["Y"] = 59.500003814697
+                    packet["_unknown1"] = 12
+                    packet["Rotation"] = 63
+                elseif zone == 289 then -- ruaun
+                    packet["X"] = 0
+                    packet["Z"] = -43.600002288818
+                    packet["Y"] = -238.00001525879 
+                    packet["_unknown1"] = 12
+                    packet["Rotation"] = 191
+                elseif zone == 291 then -- Reisenjima
+                    packet["X"] = 640
+                    packet["Z"] = -372.00003051758
+                    packet["Y"] = -921.00006103516
+                    packet["_unknown1"] = 12
+                    packet["Rotation"] = 95
+                end
 
-	            actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='same-zone move request'})
+                actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='same-zone move request'})
 
-				packet = packets.new('outgoing', 0x05B)
-				packet["Target"] = npc.id
-				packet["Option Index"] = 12
-				packet["_unknown1"] = 0
-				packet["Target Index"] = npc.index
-				packet["Automated Message"] = false
-				packet["_unknown2"] = 0
-				packet["Zone"] = zone
-				packet["Menu ID"] = menu
-            	actions:append(T{packet=packet, wait_packet=0x052, delay = 1, description='complete menu'})	
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 12
+                packet["_unknown1"] = 0
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = false
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, wait_packet=0x052, delay = 1, description='complete menu'})    
 
-	            return actions  
-	        elseif args[1] == 'return' then
-		        if not has_elvorseal then
+                return actions  
+            elseif args[1] == 'return' then
+                if not has_elvorseal then
 
-					packet = packets.new('outgoing', 0x05B)
-					packet["Target"] = npc.id
-					packet["Option Index"] = 0
-					packet["_unknown1"] = 16384
-					packet["Target Index"] = npc.index
-					packet["Automated Message"] = false
-					packet["_unknown2"] = 0
-					packet["Zone"] = zone
-					packet["Menu ID"] = menu
-	            	actions:append(T{packet=packet, description='cancel menu', message='You don\'t have elvorseal.'})	  
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 0
+                    packet["_unknown1"] = 16384
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = false
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, description='cancel menu', message='You don\'t have elvorseal.'})      
 
-	            	return actions
-	            else
-					packet = packets.new('outgoing', 0x05B)
-					packet["Target"] = npc.id
-					packet["Option Index"] = 14
-					packet["_unknown1"] = 0
-					packet["Target Index"] = npc.index
-					packet["Automated Message"] = true
-					packet["_unknown2"] = 0
-					packet["Zone"] = zone
-					packet["Menu ID"] = menu
-	            	actions:append(T{packet=packet, description='init menu'})	
+                    return actions
+                else
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 14
+                    packet["_unknown1"] = 0
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = true
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, description='init menu'})    
 
-					packet = packets.new('outgoing', 0x05B)
-					packet["Target"] = npc.id
-					packet["Option Index"] = 8
-					packet["_unknown1"] = 0
-					packet["Target Index"] = npc.index
-					packet["Automated Message"] = true
-					packet["_unknown2"] = 0
-					packet["Zone"] = zone
-					packet["Menu ID"] = menu
-	            	actions:append(T{packet=packet, delay=.5, description='init menu'})	
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 8
+                    packet["_unknown1"] = 0
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = true
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, delay=.5, description='init menu'})    
 
-					packet = packets.new('outgoing', 0x05B)
-					packet["Target"] = npc.id
-					packet["Option Index"] = 9
-					packet["_unknown1"] = 0
-					packet["Target Index"] = npc.index
-					packet["Automated Message"] = true
-					packet["_unknown2"] = 0
-					packet["Zone"] = zone
-					packet["Menu ID"] = menu
-	            	actions:append(T{packet=packet, delay=.5, description='init menu'})	
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 9
+                    packet["_unknown1"] = 0
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = true
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, delay=.5, description='init menu'})    
 
-					packet = packets.new('outgoing', 0x05B)
-					packet["Target"] = npc.id
-					packet["Option Index"] = 9
-					packet["_unknown1"] = 0
-					packet["Target Index"] = npc.index
-					packet["Automated Message"] = true
-					packet["_unknown2"] = 0
-					packet["Zone"] = zone
-					packet["Menu ID"] = menu
-	            	actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice return', message="Returning Elvorseal."})	
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 9
+                    packet["_unknown1"] = 0
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = true
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice return', message="Returning Elvorseal."})    
 
-					packet = packets.new('outgoing', 0x05B)
-					packet["Target"] = npc.id
-					packet["Option Index"] = 10
-					packet["_unknown1"] = 0
-					packet["Target Index"] = npc.index
-					packet["Automated Message"] = true
-					packet["_unknown2"] = 0
-					packet["Zone"] = zone
-					packet["Menu ID"] = menu
-	            	actions:append(T{packet=packet, wait_packet=0x052, description='menu choice return'})	
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 10
+                    packet["_unknown1"] = 0
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = true
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, wait_packet=0x052, description='menu choice return'})    
 
-					packet = packets.new('outgoing', 0x05B)
-					packet["Target"] = npc.id
-					packet["Option Index"] = 0
-					packet["_unknown1"] = 0
-					packet["Target Index"] = npc.index
-					packet["Automated Message"] = false
-					packet["_unknown2"] = 0
-					packet["Zone"] = zone
-					packet["Menu ID"] = menu
-	            	actions:append(T{packet=packet, wait_packet=0x052, delay = 1, description='complete menu'})	
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 0
+                    packet["_unknown1"] = 0
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = false
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, wait_packet=0x052, delay = 1, description='complete menu'})    
 
-		            return actions
-	            end
-	        end
-		end,
-	},
+                    return actions
+                end
+            end
+        end,
+    },
     ['Escha Zi\'tah'] = T{
         ['1'] = { index = 0, zone = 288, npc = 586, x = -343.00003051758, z = -0.070000000298023, y = -172.00001525879, h = 0, unknown1 = 2},
         ['2'] = { index = 1, zone = 288, npc = 587, x = -303, z = -0.030000001192093, y = 308, h = 191, unknown1 = 65538},
@@ -413,7 +413,7 @@ return T{
         ['15'] = { index = 22, zone = 289, npc = 766, x = -1.2000000476837, z = -52.000003814697, y = -581.5, h = 191, unknown1 = 1441794},
         --elvorseal x = 0, z = -43.600002288818, y = -238.00001525879, h = 48897, unknown1 = 12
     },
-	['Reisenjima'] = T{
+    ['Reisenjima'] = T{
         ['1'] = {  index = 23, zone = 291, npc = 824, x = -495.44003295898, z = -19, y = -476.48001098633, h = 0, unknown1 = 1507330},
         ['2'] = {  index = 24, zone = 291, npc = 825, x = -404.00003051758, z = -55.000003814697, y = 86.000007629395, h = 63, unknown1 = 1572866},
         ['3'] = {  index = 25, zone = 291, npc = 826, x = -530.40002441406, z = -50.000003814697, y = 399.75003051758, h = 95, unknown1 = 1638402},
