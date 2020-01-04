@@ -4,6 +4,7 @@ return T{
 	npc_names = T{
 		warp = T{'Eschan Portal', 'Ethereal Ingress'},
 		enter = T{'Undulating Confluence', 'Dimensional Portal'},
+		domain = T{'Affi', 'Dremi', 'Shiftrix'},
 	},
 	help_text = "[sw] ew [warp/w] [all/a/@all] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.",
 	sub_zone_targets =  S{'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15' },
@@ -156,6 +157,231 @@ return T{
 			end
 
 			return actions
+		end,
+		domain = function(current_activity, zone, p, settings)
+			local actions = T{}
+			local packet = nil
+			local menu = p["Menu ID"]
+			local npc = current_activity.npc
+    		local args = current_activity.args
+
+	        local dragon_state = p["Menu Parameters"]:unpack('b2', 1)
+	        local has_elvorseal = p["Menu Parameters"]:unpack('b8', 4) == 0x80
+
+    		if #args == 0 or args[1] == 'enter' then
+
+				log('Checking Domain Invasion state.')
+
+		        if dragon_state == 0 or dragon_state == 3 then
+		        	-- dragon not ready.
+
+					packet = packets.new('outgoing', 0x05B)
+					packet["Target"] = npc.id
+					packet["Option Index"] = 0
+					packet["_unknown1"] = 16384
+					packet["Target Index"] = npc.index
+					packet["Automated Message"] = false
+					packet["_unknown2"] = 0
+					packet["Zone"] = zone
+					packet["Menu ID"] = menu
+	            	actions:append(T{packet=packet, description='cancel menu', message='Elvorseal is not ready yet.'})	    
+	            	return actions    	
+		        end
+
+				packet = packets.new('outgoing', 0x05B)
+				packet["Target"] = npc.id
+				packet["Option Index"] = 14
+				packet["_unknown1"] = 0
+				packet["Target Index"] = npc.index
+				packet["Automated Message"] = true
+				packet["_unknown2"] = 0
+				packet["Zone"] = zone
+				packet["Menu ID"] = menu
+            	actions:append(T{packet=packet, description='init menu'})	
+
+				packet = packets.new('outgoing', 0x05B)
+				packet["Target"] = npc.id
+				packet["Option Index"] = 8
+				packet["_unknown1"] = 0
+				packet["Target Index"] = npc.index
+				packet["Automated Message"] = true
+				packet["_unknown2"] = 0
+				packet["Zone"] = zone
+				packet["Menu ID"] = menu
+            	actions:append(T{packet=packet, wait_packet=0x052, description='init menu'})	
+
+				packet = packets.new('outgoing', 0x05B)
+				packet["Target"] = npc.id
+				packet["Option Index"] = 9
+				packet["_unknown1"] = 0
+				packet["Target Index"] = npc.index
+				packet["Automated Message"] = true
+				packet["_unknown2"] = 0
+				packet["Zone"] = zone
+				packet["Menu ID"] = menu
+            	actions:append(T{packet=packet, wait_packet=0x052, description='init menu'})	
+
+		        if not has_elvorseal then
+					packet = packets.new('outgoing', 0x05B)
+					packet["Target"] = npc.id
+					packet["Option Index"] = 9
+					packet["_unknown1"] = 0
+					packet["Target Index"] = npc.index
+					packet["Automated Message"] = true
+					packet["_unknown2"] = 0
+					packet["Zone"] = zone
+					packet["Menu ID"] = menu
+	            	actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice elvorseal', message='Getting Elvorseal...'})	
+
+					packet = packets.new('outgoing', 0x05B)
+					packet["Target"] = npc.id
+					packet["Option Index"] = 10
+					packet["_unknown1"] = 0
+					packet["Target Index"] = npc.index
+					packet["Automated Message"] = true
+					packet["_unknown2"] = 0    
+					packet["Zone"] = zone
+					packet["Menu ID"] = menu
+	            	actions:append(T{packet=packet, wait_packet=0x052, description='menu choice elvorseal'})	
+	            end
+
+				packet = packets.new('outgoing', 0x05B)
+				packet["Target"] = npc.id
+				packet["Option Index"] = 11
+				packet["_unknown1"] = 0
+				packet["Target Index"] = npc.index
+				packet["Automated Message"] = true
+				packet["_unknown2"] = 0
+				packet["Zone"] = zone
+				packet["Menu ID"] = menu
+            	actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice teleport', message='Warping to battle!'})	
+
+            	-- 0x05C
+				packet = packets.new('outgoing', 0x05C)
+				packet["Target ID"] = npc.id
+				packet["Target Index"] = npc.index
+				packet["Zone"] = zone
+				packet["Menu ID"] = menu
+
+				if zone == 288 then -- zitah
+					packet["X"] = -2
+					packet["Z"] = 0
+					packet["Y"] = 59.500003814697
+					packet["_unknown1"] = 12
+					packet["Rotation"] = 63
+				elseif zone == 289 then -- ruaun
+					packet["X"] = 0
+					packet["Z"] = -43.600002288818
+					packet["Y"] = -238.00001525879 
+					packet["_unknown1"] = 12
+					packet["Rotation"] = 191
+				elseif zone == 291 then -- Reisenjima
+					packet["X"] = 640
+					packet["Z"] = -372.00003051758
+					packet["Y"] = -921.00006103516
+					packet["_unknown1"] = 12
+					packet["Rotation"] = 95
+				end
+
+	            actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='same-zone move request'})
+
+				packet = packets.new('outgoing', 0x05B)
+				packet["Target"] = npc.id
+				packet["Option Index"] = 12
+				packet["_unknown1"] = 0
+				packet["Target Index"] = npc.index
+				packet["Automated Message"] = false
+				packet["_unknown2"] = 0
+				packet["Zone"] = zone
+				packet["Menu ID"] = menu
+            	actions:append(T{packet=packet, wait_packet=0x052, delay = 1, description='complete menu'})	
+
+	            return actions  
+	        elseif args[1] == 'return' then
+		        if not has_elvorseal then
+
+					packet = packets.new('outgoing', 0x05B)
+					packet["Target"] = npc.id
+					packet["Option Index"] = 0
+					packet["_unknown1"] = 16384
+					packet["Target Index"] = npc.index
+					packet["Automated Message"] = false
+					packet["_unknown2"] = 0
+					packet["Zone"] = zone
+					packet["Menu ID"] = menu
+	            	actions:append(T{packet=packet, description='cancel menu', message='You don\'t have elvorseal.'})	  
+
+	            	return actions
+	            else
+					packet = packets.new('outgoing', 0x05B)
+					packet["Target"] = npc.id
+					packet["Option Index"] = 14
+					packet["_unknown1"] = 0
+					packet["Target Index"] = npc.index
+					packet["Automated Message"] = true
+					packet["_unknown2"] = 0
+					packet["Zone"] = zone
+					packet["Menu ID"] = menu
+	            	actions:append(T{packet=packet, description='init menu'})	
+
+					packet = packets.new('outgoing', 0x05B)
+					packet["Target"] = npc.id
+					packet["Option Index"] = 8
+					packet["_unknown1"] = 0
+					packet["Target Index"] = npc.index
+					packet["Automated Message"] = true
+					packet["_unknown2"] = 0
+					packet["Zone"] = zone
+					packet["Menu ID"] = menu
+	            	actions:append(T{packet=packet, delay=.5, description='init menu'})	
+
+					packet = packets.new('outgoing', 0x05B)
+					packet["Target"] = npc.id
+					packet["Option Index"] = 9
+					packet["_unknown1"] = 0
+					packet["Target Index"] = npc.index
+					packet["Automated Message"] = true
+					packet["_unknown2"] = 0
+					packet["Zone"] = zone
+					packet["Menu ID"] = menu
+	            	actions:append(T{packet=packet, delay=.5, description='init menu'})	
+
+					packet = packets.new('outgoing', 0x05B)
+					packet["Target"] = npc.id
+					packet["Option Index"] = 9
+					packet["_unknown1"] = 0
+					packet["Target Index"] = npc.index
+					packet["Automated Message"] = true
+					packet["_unknown2"] = 0
+					packet["Zone"] = zone
+					packet["Menu ID"] = menu
+	            	actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice return', message="Returning Elvorseal."})	
+
+					packet = packets.new('outgoing', 0x05B)
+					packet["Target"] = npc.id
+					packet["Option Index"] = 10
+					packet["_unknown1"] = 0
+					packet["Target Index"] = npc.index
+					packet["Automated Message"] = true
+					packet["_unknown2"] = 0
+					packet["Zone"] = zone
+					packet["Menu ID"] = menu
+	            	actions:append(T{packet=packet, wait_packet=0x052, description='menu choice return'})	
+
+					packet = packets.new('outgoing', 0x05B)
+					packet["Target"] = npc.id
+					packet["Option Index"] = 0
+					packet["_unknown1"] = 0
+					packet["Target Index"] = npc.index
+					packet["Automated Message"] = false
+					packet["_unknown2"] = 0
+					packet["Zone"] = zone
+					packet["Menu ID"] = menu
+	            	actions:append(T{packet=packet, wait_packet=0x052, delay = 1, description='complete menu'})	
+
+		            return actions
+	            end
+	        end
 		end,
 	},
     ['Escha Zi\'tah'] = T{
