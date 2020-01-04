@@ -72,6 +72,7 @@ local defaults = {
     enable_same_zone_teleport = true,       -- enable teleporting between points in the same zone. This is the default behavior in-game. Turning it off will look different than teleporting manually.
     enable_fast_retry_on_interrupt = false, -- after an event skip event, attempt a fast-retry that doesn't wait for packets or delay.
     use_tabs_at_survival_guides = false,    -- use tabs instead of gil at survival guides.
+    enable_locked_warps = true				-- enables warp destinations not unlocked yet. 
 }
 
 local settings = config.load(defaults)
@@ -602,7 +603,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
     end
 
     if id == 0x034 or id == 0x032 then
-        local p = packets.parse('incoming',data)
+        local p = packets.parse('incoming', data)
         
         if current_activity and not current_activity.running then
             local zone = windower.ffxi.get_info()['zone']

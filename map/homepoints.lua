@@ -15,6 +15,23 @@ return { -- option: 2
         local destination = current_activity.activity_settings
 
         local gil = p["Menu Parameters"]:unpack('i', 21)
+        local unlock_bit_start = 32
+
+        debug('homepoint is unlocked: '..tostring(has_bit(p["Menu Parameters"], unlock_bit_start + destination.index)))
+
+        if not settings.enable_locked_warps and not has_bit(p["Menu Parameters"], unlock_bit_start + destination.index) then
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 0
+            packet["_unknown1"] = 16384
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, description='cancel menu', message='Destination Homepoint is not unlocked yet!'})
+            return actions
+        end
 
         debug('gil: '..gil)
 
