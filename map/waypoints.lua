@@ -100,7 +100,7 @@ return T{
 			packet["_unknown1"] = 'b5b8':pack(0, teleport_cost):unpack('b13')
 			packet["Automated Message"] = true
 			packet["_unknown2"] = 0
-            actions:append(T{packet=packet, description='send options'})
+            actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
 
 			-- request in-zone warp
 			packet = packets.new('outgoing', 0x05C)
@@ -132,7 +132,10 @@ return T{
             actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='complete menu'})
 		else
 
-			-- dezone teleport packets
+        	-- update request
+        	packet = packets.new('outgoing', 0x016)
+        	packet["Target Index"] = windower.ffxi.get_player().index
+        	actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='update request'})
 
 			-- menu change
 			packet = packets.new('outgoing', 0x05B)
