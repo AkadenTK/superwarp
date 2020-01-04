@@ -48,11 +48,13 @@ return { -- option: 2
             return actions
 		end
 
-		-- request map
-		packet = packets.new('outgoing', 0x114)
-        actions:append(T{packet=packet, description='request map'})
-
         if zone == destination.zone and destination.x and destination.y and destination.z then
+
+        	-- update request
+        	packet = packets.new('outgoing', 0x016)
+        	packet["Target Index"] = windower.ffxi.get_player().index
+        	actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='update request'})
+
 			-- menu change
 			packet = packets.new('outgoing', 0x05B)
 			packet["Target"] = npc.id
@@ -64,11 +66,11 @@ return { -- option: 2
 			packet["_unknown1"] = 0
 			packet["Automated Message"] = true
 			packet["_unknown2"] = 0
-	        actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu change'})
+	        actions:append(T{packet=packet, description='menu change'})
 
 			-- request map
 			packet = packets.new('outgoing', 0x114)
-    		actions:append(T{packet=packet, description='request map'})
+    		actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
 
 			-- menu change
 			packet = packets.new('outgoing', 0x05B)
@@ -81,7 +83,7 @@ return { -- option: 2
 			packet["_unknown1"] = destination.index
 			packet["Automated Message"] = true
 			packet["_unknown2"] = 0
-	        actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
+	        actions:append(T{packet=packet, delay=0.2, description='send options'})
 
 			-- request in-zone warp
 			packet = packets.new('outgoing', 0x05C)
@@ -95,7 +97,7 @@ return { -- option: 2
 			packet["Z"] = destination.z
 			packet["_unknown1"] = destination.unknown1
 			packet["Rotation"] = destination.h
-            actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='same-zone move request'})
+            actions:append(T{packet=packet,  wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='same-zone move request'})
 
 			-- complete menu
 			packet = packets.new('outgoing', 0x05B)
@@ -111,6 +113,12 @@ return { -- option: 2
             actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='complete menu'})
 
         else
+
+        	-- update request
+        	packet = packets.new('outgoing', 0x016)
+        	packet["Target Index"] = windower.ffxi.get_player().index
+        	actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='update request'})
+
 			-- menu change
 			packet = packets.new('outgoing', 0x05B)
 			packet["Target"] = npc.id
@@ -122,11 +130,11 @@ return { -- option: 2
 			packet["_unknown1"] = 0
 			packet["Automated Message"] = true
 			packet["_unknown2"] = 0
-	        actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu change'})
+	        actions:append(T{packet=packet, description='menu change'})
 	        
 			-- request map
 			packet = packets.new('outgoing', 0x114)
-    		actions:append(T{packet=packet, description='request map'})
+    		actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
 
 			-- menu change
 			packet = packets.new('outgoing', 0x05B)
@@ -136,10 +144,10 @@ return { -- option: 2
 			packet["Menu ID"] = menu
 
 			packet["Option Index"] = 2
-			packet["_unknown1"] = 0
+			packet["_unknown1"] = destination.index
 			packet["Automated Message"] = true
 			packet["_unknown2"] = 0
-	        actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu change'})
+	        actions:append(T{packet=packet, delay=0.2, description='menu change'})
 		
 			-- request warp
 			packet = packets.new('outgoing', 0x05B)
