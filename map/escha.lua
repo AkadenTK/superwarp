@@ -6,7 +6,7 @@ return T{
         enter = T{'Undulating Confluence', 'Dimensional Portal'},
         domain = T{'Affi', 'Dremi', 'Shiftrix'},
     },
-    help_text = "[sw] ew [warp/w] [all/a/@all] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.",
+    help_text = "[sw] ew [warp/w] [all/a/@all] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.\n[sw] ew [all/a/@all] domain -- get Elvorseal if needed and warp to the domain invasion arena.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.",
     sub_zone_targets =  S{'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15' },
     auto_select_zone = function(zone)
         if zone == 288 then return 'Escha Zi\'tah' end
