@@ -35,6 +35,11 @@ return { -- option: 1
 			popMessage = "Pops located at: "..destination.z.." "..destination.pops
 		end
 
+    	-- update request
+    	packet = packets.new('outgoing', 0x016)
+    	packet["Target Index"] = windower.ffxi.get_player().index
+    	actions:append(T{packet=packet, description='update request'})
+
 		-- menu change
 		packet = packets.new('outgoing', 0x05B)
 		packet["Target"] = npc.id
@@ -46,7 +51,7 @@ return { -- option: 1
 		packet["_unknown1"] = 0
 		packet["Automated Message"] = true
 		packet["_unknown2"] = 0
-        actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu change'})
+        actions:append(T{packet=packet, description='menu change'})
 
 		-- menu change
 		packet = packets.new('outgoing', 0x05B)
@@ -115,7 +120,7 @@ return { -- option: 1
 	['Temple of Uggalepih'] = { index = 1121, },
 	['Quicksand Caves'] = { index = 1153, },
 	['Wajaom Woodlands'] = { index = 1185, },
-	['Lufaise Meadows'] = { index = 1217, },
+	--['Lufaise Meadows'] = { index = 1217, },
 	['Cape Teriggan'] = { index = 1249, },
 	['Uleguerand Range'] = { index = 1313, },
 	['Den of Rancor'] = { index = 1345, },
@@ -171,7 +176,7 @@ return { -- option: 1
 	['Muut'] = { index = 929, z = "Attohwa Chasm", pops = "(F-7), (E-8), (G-9)", },
 	['Specter Worm'] = { index = 1057, z = "Kuftal Tunnel", pops = "(F-9), (H-5), (J-11)", },
 	['Strix'] = { index = 737, z = "Rolanberry Fields", pops = "(E-11), (F-8), (J-8)", },
-	['Vermillion Fishfly'] = { index = 385, z = "Lufaise Meadows", pops = "(G-7), (J-9), (K-9)", },
+	['Vermillion Fishfly'] = { index = 1217, z = "Lufaise Meadows", pops = "(G-7), (J-9), (K-9)", },
 	['Azrael'] = { index = 1345, z = "Den of Rancor", pops = "(H-5), (G-10), (G-9)", },
 	['Borealis Shadow'] = { index = 1377, z = "Fei'Yin", pops = "(I-7), (J-8), (F-9)", },
 	['Camahueto'] = { index = 1313, z = "Uleguerand Range", pops = "(G-10), (D-9), (D-8)", },
@@ -179,14 +184,14 @@ return { -- option: 1
 	['Grand Grenade'] = { index = 1505, z = "Mount Zhayolm", pops = "(D-5), (C-6), (E-7)", },
 	['Vedrfolnir'] = { index = 1249, z = "Cape Teriggan", pops = "(I-7), (H-8), (I-8)", },
 	['Vidmapire'] = { index = 1441, z = "Alzadaal Undersea Ruins", pops = "Map 5: (F-7), (F-10), (I-10)", },
-	['Volatile Cluster'] = { index = 609, z = "Misareaux Coast", pops = "(G-8), (F-8), (I-11)", },
+	['Volatile Cluster'] = { index = 1473, z = "Misareaux Coast", pops = "(G-8), (F-8), (I-11)", },
 	['Glazemane'] = { index = 1249, z = "Cape Teriggan", pops = "(I-7), (H-8), (I-8)", },
 	['Wyvernhunter Bambrox'] = { index = 1537, z = "Gustav Tunnel", pops = "Map 2 : (H-6), (G-8), (F-7)", },
-	['Hidhaegg'] = { index = 1025, z = "The Boyahda Tree", pops = "Map 1 : (D-6), Map 2 : (I-10), Map 3 : (F-6)", },
+	['Hidhaegg'] = { index = 1601, z = "The Boyahda Tree", pops = "Map 1 : (D-6), Map 2 : (I-10), Map 3 : (F-6)", },
 	['Sovereign Behemoth'] = { index = 1569, z = "Behemoth's Dominion", pops = "(E-8), (G-8), (J-9)", },
 	['Tolba'] = { index = 1633, z = "Valley of Sorrows", pops = "(G-8), (F-9), (G-9)", },
-	['Thu\'ban'] = { index = 1185, z = "Wajaom Woodlands", pops = "(K-9), (I-8), (I-9)", },
-	['Sarama'] = { index = 1505, z = "Mount Zhayolm", pops = "(D-5), (C-6), (E-7)", },
+	['Thu\'ban'] = { index = 1655, z = "Wajaom Woodlands", pops = "(K-9), (I-8), (I-9)", },
+	['Sarama'] = { index = 1697, z = "Mount Zhayolm", pops = "(D-5), (C-6), (E-7)", },
 	['Shedu'] = { index = 1729, z = "Caedarva Mire", pops = "Map 4 : (H-7), (G-8), (I-7)", },
 	['Tumult Curator'] = { index = 1761, z = "Aydeewa Subterrane", pops = "Map 2 : (J-9), (K-7), (L-8)", },
 }
