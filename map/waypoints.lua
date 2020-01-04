@@ -15,6 +15,23 @@ return T{
 
         local kinetic_units_stock = p["Menu Parameters"]:unpack('h', 3)
         local current_waypoint_index = p["Menu Parameters"]:unpack('b8', 1)
+        local unlock_bit_start = 31
+
+        debug('waypoint is unlocked: '..tostring(has_bit(p["Menu Parameters"], unlock_bit_start + destination.index)))
+
+        if not settings.enable_locked_warps and not has_bit(p["Menu Parameters"], unlock_bit_start + destination.index) then
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 0
+            packet["_unknown1"] = 16384
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, description='cancel menu', message='Destination Waypoint is not unlocked yet!'})
+            return actions
+        end
 
         local courier_edi_level = p['Menu Parameters']:unpack('b4', 2, 4)
 
