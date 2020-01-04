@@ -84,7 +84,10 @@ return T{
 
 		if settings.enable_same_zone_teleport and destination.zone == zone and destination.x and destination.y and destination.z  then
 
-			-- same-zone teleport packets.
+        	-- update request
+        	packet = packets.new('outgoing', 0x016)
+        	packet["Target Index"] = windower.ffxi.get_player().index
+        	actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='update request'})
 
 			-- send options and KU cost
 			packet = packets.new('outgoing', 0x05B)
@@ -97,7 +100,7 @@ return T{
 			packet["_unknown1"] = 'b5b8':pack(0, teleport_cost):unpack('b13')
 			packet["Automated Message"] = true
 			packet["_unknown2"] = 0
-            actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
+            actions:append(T{packet=packet, description='send options'})
 
 			-- request in-zone warp
 			packet = packets.new('outgoing', 0x05C)
