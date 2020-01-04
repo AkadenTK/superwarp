@@ -72,7 +72,7 @@ local defaults = {
     enable_same_zone_teleport = true,       -- enable teleporting between points in the same zone. This is the default behavior in-game. Turning it off will look different than teleporting manually.
     enable_fast_retry_on_interrupt = false, -- after an event skip event, attempt a fast-retry that doesn't wait for packets or delay.
     use_tabs_at_survival_guides = false,    -- use tabs instead of gil at survival guides.
-    enable_locked_warps = true				-- enables warp destinations not unlocked yet. 
+    enable_locked_warps = true,             -- enables warp destinations not unlocked yet. 
 }
 
 local settings = config.load(defaults)
@@ -406,11 +406,15 @@ local function do_sub_cmd(map_name, sub_cmd, args)
     end
 end
 
-local function handle_warp(warp, args)
+local function handle_warp(warp, args, fast_retry, retries_remaining)
 
     warp = warp:lower()
-    state.loop_count = settings.max_retries
-    state.fast_retry = false
+    if retries_remaining == nil then
+        state.loop_count = settings.max_retries
+    else
+        state.loop_count = retries_remaining
+    end
+    state.fast_retry = fast_retry
 
     -- because I can't stop typing "hp warp X" because I've been trained. 
     if args[1]:lower() == 'warp' or args[1]:lower() == 'w' then args:remove(1) end
@@ -427,6 +431,9 @@ local function handle_warp(warp, args)
         handle_warp:schedule(delay, warp, args)
         return
     end
+
+    state.current_warp = warp
+    state.current_args = args
 
     for key,map in pairs(maps) do
         if map.short_name == warp then
@@ -530,15 +537,22 @@ local function perform_next_action()
             if not current_action.timeout then 
                 current_action.timeout = settings.default_packet_wait_timeout
             end
-            local fn = function(i, p, d)
-                if current_activity and current_activity.action_queue and current_activity.action_index == i and current_activity.wait_packet then
+            local fn = function(s, ca, i, p, d)
+                if ca and ca.action_index == i then
                     debug("timed out waiting for packet 0x"..p:hex().." for action "..tostring(i)..' '..(d or ''))
-                    current_action.wait_packet = nil
-                    perform_next_action()
+
+                    if s.loop_count > 0 then
+                        reset(true)
+                        log("Timed out waiting for response from the menu. Retrying...")
+                        handle_warp:schedule(settings.retry_delay, s.current_warp, s.current_args, false, s.loop_count - 1)
+                    else
+                        reset(true)
+                        log("Timed out waiting for response from the menu.")
+                    end
                 end
             end
 
-            fn:schedule(current_action.timeout, current_activity.action_index, current_action.wait_packet, current_action.description)
+            fn:schedule(current_action.timeout, state, current_activity, current_activity.action_index, current_action.wait_packet, current_action.description)
         elseif not state.fast_retry and current_action.delay and current_action.delay > 0 then
             debug("delaying action "..tostring(current_activity.action_index)..' '..(current_action.description or '')..' for '.. current_action.delay..'s...')
             local delay_seconds = current_action.delay
@@ -567,8 +581,7 @@ local function perform_next_action()
                 reset(true)
                 if state.loop_count > 0 then
                     log("Teleport aborted. Retrying...")
-                    do_warp:schedule(settings.retry_delay, current_activity.type, current_activity.zone, current_activity.sub_zone)
-                    state.loop_count = state.loop_count - 1
+                    handle_warp:schedule(settings.retry_delay, state.current_warp, state.current_args, false, state.loop_count - 1)
                 end
             end
         end
@@ -593,11 +606,11 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             if state.loop_count > 0 then
                 if settings.enable_fast_retry_on_interrupt then
                     log("Detected event-skip. Retrying (fast)...")
-                    state.fast_retry = true
+                    handle_warp:schedule(0.1, state.current_warp, state.current_args, true, state.loop_count - 1)
                 else
                     log("Detected event-skip. Retrying...")
+                    handle_warp:schedule(0.1, state.current_warp, state.current_args, false, state.loop_count - 1)
                 end
-                do_warp:schedule(0.1, current_activity.type, current_activity.zone, current_activity.sub_zone)
             end
         end
     end
