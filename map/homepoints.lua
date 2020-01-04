@@ -65,7 +65,7 @@ return { -- option: 2
             return actions
         end
 
-        if zone == destination.zone and destination.x and destination.y and destination.z then
+        if settings.enable_same_zone_teleport and zone == destination.zone and destination.x and destination.y and destination.z then
 
             -- update request
             packet = packets.new('outgoing', 0x016)
