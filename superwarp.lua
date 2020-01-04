@@ -310,7 +310,7 @@ local function find_npc(needles)
 end
 
 -- Thanks to Ivaar for these two:
-function desperate_release()
+function general_release()
     windower.packets.inject_incoming(0x052, string.char(0,0,0,0,0,0,0,0))
     windower.packets.inject_incoming(0x052, string.char(0,0,0,0,1,0,0,0))
 end
@@ -322,7 +322,7 @@ end
 
 local function reset(quiet)
     if last_npc ~= nil and last_menu ~= nil then
-        desperate_release()
+        general_release()
         release(last_menu)
         local packet = packets.new('outgoing', 0x05B)
         packet["Target"]=last_npc
@@ -344,7 +344,7 @@ local function reset(quiet)
             log('Should be reset now. Please try again. If still locked, try a second reset.')
         end
     else
-        desperate_release()
+        general_release()
         last_npc = nil
         last_npc_index = nil
         last_menu = nil
