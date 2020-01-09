@@ -13,8 +13,8 @@ return { -- option: 1
         local npc = current_activity.npc
         local destination = current_activity.activity_settings
 
-        local gil = p["Menu Parameters"]:unpack('i', 9)
-        local valor = p["Menu Parameters"]:unpack('h', 7)    
+        local gil = p["Menu Parameters"]:unpack('I', 9)
+        local valor = p["Menu Parameters"]:unpack('H', 7)    
 
         local thrifty_transit = menu == 8501
 

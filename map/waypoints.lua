@@ -13,7 +13,7 @@ return T{
         local npc = current_activity.npc
         local destination = current_activity.activity_settings
 
-        local kinetic_units_stock = p["Menu Parameters"]:unpack('h', 3)
+        local kinetic_units_stock = p["Menu Parameters"]:unpack('H', 3)
         local current_waypoint_index = p["Menu Parameters"]:unpack('b8', 1)
         local unlock_bit_start = 32
 

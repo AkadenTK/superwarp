@@ -14,7 +14,7 @@ return { -- option: 2
         local npc = current_activity.npc
         local destination = current_activity.activity_settings
 
-        local gil = p["Menu Parameters"]:unpack('i', 21)
+        local gil = p["Menu Parameters"]:unpack('I', 21)
         local unlock_bit_start = 32
 
         debug('homepoint is unlocked: '..tostring(has_bit(p["Menu Parameters"], unlock_bit_start + destination.index)))

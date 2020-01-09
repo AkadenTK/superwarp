@@ -34,7 +34,7 @@ return T{
         if zone == destination.zone then
 
             -- have xyz data and within zone. must be conflux.
-            local cruor = p["Menu Parameters"]:unpack('i', 29)
+            local cruor = p["Menu Parameters"]:unpack('I', 29)
 
             debug("cruor: "..cruor)
 
