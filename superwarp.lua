@@ -301,7 +301,7 @@ local function find_npc(needles)
     for i, v in pairs(windower.ffxi.get_mob_array()) do
         local d = distance_sqd(windower.ffxi.get_mob_by_index(i), p)
         for i, needle in ipairs(needles) do
-            if v.valid_target and (not target_npc or d < distance) and string.find(v.name, needle) then
+            if v.valid_target and (not target_npc or d < distance) and string.find(get_fuzzy_name(v.name), "^"..get_fuzzy_name(needle)) then
                 target_npc = v
                 distance = d
             end
