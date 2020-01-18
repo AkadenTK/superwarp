@@ -213,8 +213,8 @@ return T{
         ['5'] = { index = 5, offset = 4, zone = 256, npc = 184, op_z = 1, op_i = 5, x = -68.099006652832, z = 4, y = -73.672004699707, h = 28, unknown1 = 0},
         ['6'] = { index = 6, offset = 5, zone = 256, npc = 185, op_z = 1, op_i = 6, x = 5.7310004234314, z = 0, y = -123.04300689697, h = 127, unknown1 = 0},
         ['7'] = { index = 7, offset = 6, zone = 256, npc = 186, op_z = 1, op_i = 7, x = 174.78300476074, z = 3.8500001430511, y = -35.78800201416, h = 63, unknown1 = 0},
-        ['8'] = { index = 8, offset = 7, zone = 256, npc = 187, op_z = 1, op_i = 7, x = 14.586000442505, z = 0, y = 162.60800170898, h = 191, unknown1 = 0},
-        ['9'] = { index = 9, offset = 8, zone = 256, npc = 188, op_z = 1, op_i = 1, x = 51.09400177002, z = 32, y = 126.29900360107, h = 191, unknown1 = 0},
+        ['8'] = { index = 8, offset = 7, zone = 256, npc = 187, op_z = 1, op_i = 8, x = 14.586000442505, z = 0, y = 162.60800170898, h = 191, unknown1 = 0},
+        ['9'] = { index = 9, offset = 8, zone = 256, npc = 188, op_z = 1, op_i = 9, x = 51.09400177002, z = 32, y = 126.29900360107, h = 191, unknown1 = 0},
     },
     ['Eastern Adoulin'] = {
         ['Peacekeepers'] = { shortcut = '1' },
@@ -239,8 +239,8 @@ return T{
         ['5'] = { index = 25, offset = 19, zone = 257, npc = 130, op_z = 2, op_i = 5, x = -61.865001678467, z = -0.15000000596046, y = -120.81000518799, h = 127, unknown1 = 0},
         ['6'] = { index = 26, offset = 20, zone = 257, npc = 131, op_z = 2, op_i = 6, x = -42.065002441406, z = -0.15000000596046, y = -89.97900390625, h = 191, unknown1 = 0},
         ['7'] = { index = 27, offset = 21, zone = 257, npc = 132, op_z = 2, op_i = 7, x = 11.681000709534, z = -22.150001525879, y = 29.976001739502, h = 127, unknown1 = 0},
-        ['8'] = { index = 28, offset = 22, zone = 257, npc = 133, op_z = 2, op_i = 7, x = 27.124000549316, z = -40.150001525879, y = -60.84400177002, h = 127, unknown1 = 0},
-        ['9'] = { index = 29, offset = 23, zone = 257, npc = 134, op_z = 2, op_i = 1, x = 95.994003295898, z = -40.150001525879, y = -74.541000366211, h = 0, unknown1 = 0},
+        ['8'] = { index = 28, offset = 22, zone = 257, npc = 133, op_z = 2, op_i = 8, x = 27.124000549316, z = -40.150001525879, y = -60.84400177002, h = 127, unknown1 = 0},
+        ['9'] = { index = 29, offset = 23, zone = 257, npc = 134, op_z = 2, op_i = 9, x = 95.994003295898, z = -40.150001525879, y = -74.541000366211, h = 0, unknown1 = 0},
     },
     ['Yahse Hunting Grounds'] = {
         ['Frontier Station'] = { index = 31, offset = 70, zone = 260, npc = 517, op_z = 4, op_i = 1, x = 321, z = 0, y = -199.80000305176, h = 127, unknown1 = 0},
