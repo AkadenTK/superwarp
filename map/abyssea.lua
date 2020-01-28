@@ -117,6 +117,32 @@ return T{
                 return actions
             end
 
+
+            local unlock_bit_start = 0
+
+            local destination_unlocked = false
+            if destination.offset ~= nil then
+                destination_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset)
+            --elseif destination.invoffset then
+            --    destination_unlocked = not has_bit(p["Menu Parameters"], unlock_bit_start + destination.invoffset)
+            end
+
+            debug('zone is unlocked: '..tostring(destination_unlocked))
+
+            if not settings.enable_locked_warps and not destination_unlocked then
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 0
+                packet["_unknown1"] = 16384
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = false
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, description='cancel menu', message='Destination Zone is not unlocked yet!'})
+                return actions
+            end
+
             -- update request
             packet = packets.new('outgoing', 0x016)
             packet["Target Index"] = windower.ffxi.get_player().index
@@ -201,7 +227,7 @@ return T{
         end,
     },
     ['Abyssea - La Theine'] = T{
-        ['Cavernous Maw'] = { index = 260 }, 
+        ['Cavernous Maw'] = { index = 260, offset=64 }, 
         ['1'] = { index = 1, zone = 132, npc = 701, x = -480.00003051758, z = -0.40000000596046, y = 764.00006103516, h = 63, unknown1 = 65538},
         ['2'] = { index = 2, zone = 132, npc = 702, x = -593.81103515625, z = -16.300001144409, y = 30.151000976563, h = 180, unknown1 = 131074},
         ['3'] = { index = 3, zone = 132, npc = 703, x = -122.96600341797, z = -8.6000003814697, y = -38.954002380371, h = 31, unknown1 = 196610},
@@ -212,7 +238,7 @@ return T{
         ['8'] = { index = 8, zone = 132, npc = 708, x = 215.14500427246, z = 15.800001144409, y = -198.91801452637, h = 53, unknown1 = 524290},
     },
     ['Abyssea - Konschtat'] = T{
-        ['Cavernous Maw'] = { index = 264 }, 
+        ['Cavernous Maw'] = { index = 264, offset=65 }, 
         ['1'] = { index = 1, zone = 15, npc = 538, x = 126.00000762939, z = -72.800003051758, y = -834.00006103516, h = 223, unknown1 = 65538},
         ['2'] = { index = 2, zone = 15, npc = 539, x = -164.00001525879, z = -32.700000762939, y = -276, h = 159, unknown1 = 131074},
         ['3'] = { index = 3, zone = 15, npc = 540, x = -644.00006103516, z = -0.70000004768372, y = 124.00000762939, h = 159, unknown1 = 196610},
@@ -223,7 +249,7 @@ return T{
         ['8'] = { index = 8, zone = 15, npc = 545, x = 244.00001525879, z = 39.200000762939, y = 636, h = 31, unknown1 = 524290},
     },
     ['Abyssea - Tahrongi'] = T{
-        ['Cavernous Maw'] = { index = 268 }, 
+        ['Cavernous Maw'] = { index = 268, offset=66 }, 
         ['1'] = { index = 1, zone = 45, npc = 535, x = 7.826000213623, z = 31.515001296997, y = -636.83404541016, h = 81, unknown1 = 65538},
         ['2'] = { index = 2, zone = 45, npc = 536, x = 24.010000228882, z = -16.682001113892, y = -171.58700561523, h = 162, unknown1 = 131074},
         ['3'] = { index = 3, zone = 45, npc = 537, x = -290.78402709961, z = -25.574001312256, y = -171.65501403809, h = 201, unknown1 = 196610},
@@ -234,7 +260,7 @@ return T{
         ['8'] = { index = 8, zone = 45, npc = 542, x = 324.22500610352, z = 39.661003112793, y = 433.3330078125, h = 159, unknown1 = 524290},
     },
     ['Abyssea - Vunkerl'] = T{
-        ['Cavernous Maw'] = { index = 272 }, 
+        ['Cavernous Maw'] = { index = 272, offset=96 }, 
         ['1'] = { index = 1, zone = 217, npc = 647, x = -322.00003051758, z = -40.523002624512, y = 676.00006103516, h = 127, unknown1 = 65538},
         ['2'] = { index = 2, zone = 217, npc = 648, x = -24.502000808716, z = -34.138999938965, y = 370.20001220703, h = 95, unknown1 = 131074},
         ['3'] = { index = 3, zone = 217, npc = 649, x = 202.53201293945, z = -31.807001113892, y = 312.14300537109, h = 159, unknown1 = 196610},
@@ -246,7 +272,7 @@ return T{
         ['00'] = { index = 9, zone = 217, npc = 666, x = 158, z = -38.100002288818, y = -158, h = 159, unknown1 = 589826},
     },
     ['Abyssea - Misareaux'] = T{
-        ['Cavernous Maw'] = { index = 276 }, 
+        ['Cavernous Maw'] = { index = 276, offset=97 }, 
         ['1'] = { index = 1, zone = 216, npc = 723, x = 634, z = -16.5, y = 286, h = 159, unknown1 = 65538},
         ['2'] = { index = 2, zone = 216, npc = 724, x = 399.44900512695, z = -6.7550001144409, y = 33.19100189209, h = 156, unknown1 = 131074},
         ['3'] = { index = 3, zone = 216, npc = 725, x = -96.818000793457, z = -33.828002929688, y = 254.32000732422, h = 249, unknown1 = 196610},
@@ -258,7 +284,7 @@ return T{
         ['00'] = { index = 9, zone = 216, npc = 742, x = 276, z = -16.342000961304, y = 236.00001525879, h = 63, unknown1 = 589826},
     },
     ['Abyssea - Attohwa'] = T{
-        ['Cavernous Maw'] = { index = 280 }, 
+        ['Cavernous Maw'] = { index = 280, offset=98 }, 
         ['1'] = { index = 1, zone = 215, npc = 614, x = -140, z = 19.5, y = -200.00001525879, h = 191, unknown1 = 65538},
         ['2'] = { index = 2, zone = 215, npc = 615, x = -485.50402832031, z = -3.996000289917, y = -4.9400000572205, h = 223, unknown1 = 131074},
         ['3'] = { index = 3, zone = 215, npc = 616, x = 258.90902709961, z = 20.94100189209, y = -21.157001495361, h = 131, unknown1 = 196610},
@@ -270,7 +296,7 @@ return T{
         ['00'] = { index = 9, zone = 215, npc = 633, x = -280, z = -4.5, y = 0, h = 191, unknown1 = 589826},
     },
     ['Abyssea - Altepa'] = T{
-        ['Cavernous Maw'] = { index = 284 }, 
+        ['Cavernous Maw'] = { index = 284, offset=128 }, 
         ['1'] = { index = 1, zone = 218, npc = 563, x = 404.00003051758, z = -0.30000001192093, y = 288, h = 127, unknown1 = 65538},
         ['2'] = { index = 2, zone = 218, npc = 564, x = 639, z = 0, y = -126.00000762939, h = 159, unknown1 = 131074},
         ['3'] = { index = 3, zone = 218, npc = 565, x = -80, z = 0, y = 437.00003051758, h = 63, unknown1 = 196610},
@@ -281,7 +307,7 @@ return T{
         ['8'] = { index = 8, zone = 218, npc = 570, x = -826.00006103516, z = -10, y = -591, h = 159, unknown1 = 524290},
     },
     ['Abyssea - Uleguerand'] = T{
-        ['Cavernous Maw'] = { index = 288 }, 
+        ['Cavernous Maw'] = { index = 288, offset=129 }, 
         ['1'] = { index = 1, zone = 253, npc = 563, x = -202.00001525879, z = -39.900001525879, y = -506.00003051758, h = 31, unknown1 = 65538},
         ['2'] = { index = 2, zone = 253, npc = 564, x = -381.05502319336, z = -25.283000946045, y = -169.20001220703, h = 204, unknown1 = 131074},
         ['3'] = { index = 3, zone = 253, npc = 565, x = -300.77301025391, z = -53.509002685547, y = -34.171001434326, h = 58, unknown1 = 196610},
@@ -292,7 +318,7 @@ return T{
         ['8'] = { index = 8, zone = 253, npc = 570, x = -582.97705078125, z = -40.378002166748, y = 45.543003082275, h = 89, unknown1 = 524290},
     },
     ['Abyssea - Grauberg'] = T{
-        ['Cavernous Maw'] = { index = 292 }, 
+        ['Cavernous Maw'] = { index = 292, offset=130 }, 
         ['1'] = { index = 1, zone = 254, npc = 599, x = -514, z = 22.417001724243, y = -756.00006103516, h = 63, unknown1 = 65538},
         ['2'] = { index = 2, zone = 254, npc = 600, x = 321.8330078125, z = 31.439001083374, y = -557.98303222656, h = 93, unknown1 = 131074},
         ['3'] = { index = 3, zone = 254, npc = 601, x = 423.95001220703, z = -0.89300006628036, y = -174.13000488281, h = 159, unknown1 = 196610},
