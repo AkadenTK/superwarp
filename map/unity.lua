@@ -17,7 +17,7 @@ return { -- option: 1
 
         local unlock_bit_start = (0x20 - 0x08) * 8
 
-        local destination_unlocked = false
+        local destination_unlocked = true
         if destination.offset ~= nil then
         	destination_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset)
         --elseif destination.invoffset then
