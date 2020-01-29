@@ -38,6 +38,31 @@ return T{
         end
 
         if zone == destination.zone then
+            local unlock_bit_start = 32
+
+            local destination_unlocked = false
+            if destination.offset ~= nil then
+                destination_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset)
+            --elseif destination.invoffset then
+            --    destination_unlocked = not has_bit(p["Menu Parameters"], unlock_bit_start + destination.invoffset)
+            end
+
+            debug('portal is unlocked: '..tostring(destination_unlocked))
+
+            if not settings.enable_locked_warps and not destination_unlocked then
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 0
+                packet["_unknown1"] = 16384
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = false
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, description='cancel menu', message='Destination Portal is not unlocked yet!'})
+                return actions
+            end
+
             -- update request
             packet = packets.new('outgoing', 0x016)
             packet["Target Index"] = windower.ffxi.get_player().index
@@ -385,44 +410,44 @@ return T{
         end,
     },
     ['Escha Zi\'tah'] = T{
-        ['1'] = { index = 0, zone = 288, npc = 586, x = -343.00003051758, z = -0.070000000298023, y = -172.00001525879, h = 0, unknown1 = 2},
-        ['2'] = { index = 1, zone = 288, npc = 587, x = -303, z = -0.030000001192093, y = 308, h = 191, unknown1 = 65538},
-        ['3'] = { index = 2, zone = 288, npc = 588, x = -261, z = 0.6700000166893, y = -16, h = 191, unknown1 = 131074},
-        ['4'] = { index = 3, zone = 288, npc = 589, x = -110.00000762939, z = 0.12000000476837, y = -241.00001525879, h = 63, unknown1 = 196610},
-        ['5'] = { index = 4, zone = 288, npc = 590, x = 245.00001525879, z = 0.27000001072884, y = -148, h = 0, unknown1 = 262146},
-        ['6'] = { index = 5, zone = 288, npc = 591, x = 452.00003051758, z = 1.3900001049042, y = -344.00003051758, h = 191, unknown1 = 327682},
-        ['7'] = { index = 6, zone = 288, npc = 592, x = 191.00001525879, z = 0.20000000298023, y = -318, h = 0, unknown1 = 393218},
-        ['8'] = { index = 7, zone = 288, npc = 593, x = -134, z = 1.8000000715256, y = -454.00003051758, h = 159, unknown1 = 458754},
+        ['1'] = { index = 0, zone = 288, npc = 586, offset = 0, x = -343.00003051758, z = -0.070000000298023, y = -172.00001525879, h = 0, unknown1 = 2},
+        ['2'] = { index = 1, zone = 288, npc = 587, offset = 1, x = -303, z = -0.030000001192093, y = 308, h = 191, unknown1 = 65538},
+        ['3'] = { index = 2, zone = 288, npc = 588, offset = 2, x = -261, z = 0.6700000166893, y = -16, h = 191, unknown1 = 131074},
+        ['4'] = { index = 3, zone = 288, npc = 589, offset = 3, x = -110.00000762939, z = 0.12000000476837, y = -241.00001525879, h = 63, unknown1 = 196610},
+        ['5'] = { index = 4, zone = 288, npc = 590, offset = 4, x = 245.00001525879, z = 0.27000001072884, y = -148, h = 0, unknown1 = 262146},
+        ['6'] = { index = 5, zone = 288, npc = 591, offset = 5, x = 452.00003051758, z = 1.3900001049042, y = -344.00003051758, h = 191, unknown1 = 327682},
+        ['7'] = { index = 6, zone = 288, npc = 592, offset = 6, x = 191.00001525879, z = 0.20000000298023, y = -318, h = 0, unknown1 = 393218},
+        ['8'] = { index = 7, zone = 288, npc = 593, offset = 7, x = -134, z = 1.8000000715256, y = -454.00003051758, h = 159, unknown1 = 458754},
         --elvorseal x = -2, z = 0, y = 59.500003814697, h = 16129, unknown1 = 12
     },
     ['Escha Ru\'an'] = T{
-        ['1'] = { index = 8,   zone = 289, npc = 752, x = 10, z = -34, y = -464.00003051758, h = 191, unknown1 = 524290},
-        ['2'] = { index = 9,   zone = 289, npc = 753, x = -275.5, z = -40.500003814697, y = -378.50003051758, h = 223, unknown1 = 589826},
-        ['3'] = { index = 10,  zone = 289, npc = 754, x = -454.00003051758, z = -3.5000002384186, y = -147.5, h = 127, unknown1 = 655362},
-        ['4'] = { index = 11,  zone = 289, npc = 755, x = -452.50003051758, z = -71.42000579834, y = -307.5, h = 223, unknown1 = 720898},
-        ['5'] = { index = 12,  zone = 289, npc = 756, x = -444.50003051758, z = -40.500003814697, y = 144, h = 0, unknown1 = 786434},
-        ['6'] = { index = 13,  zone = 289, npc = 757, x = -280.5, z = -3.5000002384186, y = 386.50003051758, h = 159, unknown1 = 851970},
-        ['7'] = { index = 14,  zone = 289, npc = 758, x = -431.50003051758, z = -71.850006103516, y = 335.50003051758, h = 31, unknown1 = 917506},
-        ['8'] = { index = 15,  zone = 289, npc = 759, x = 0, z = -40.500003814697, y = 466.50003051758, h = 63, unknown1 = 983042},
-        ['9'] = { index = 16,  zone = 289, npc = 760, x = 278.5, z = -3.6300001144409, y = 384.00003051758, h = 223, unknown1 = 1048578},
-        ['10'] = { index = 17, zone = 289, npc = 761, x = 186.00001525879, z = -71.850006103516, y = 514.5, h = 95, unknown1 = 1114114},
-        ['11'] = { index = 18, zone = 289, npc = 762, x = 444.50003051758, z = -40, y = 144, h = 127, unknown1 = 1179650},
-        ['12'] = { index = 19, zone = 289, npc = 763, x = 454.50003051758, z = -3.6000001430511, y = -147.5, h = 0, unknown1 = 1245186},
-        ['13'] = { index = 20, zone = 289, npc = 764, x = 546.5, z = -71.5, y = -17, h = 127, unknown1 = 1310722},
-        ['14'] = { index = 21, zone = 289, npc = 765, x = 275, z = -40.500003814697, y = -377.50003051758, h = 159, unknown1 = 1376258},
-        ['15'] = { index = 22, zone = 289, npc = 766, x = -1.2000000476837, z = -52.000003814697, y = -581.5, h = 191, unknown1 = 1441794},
+        ['1'] = { index = 8,   zone = 289, npc = 752, offset = 8,  x = 10, z = -34, y = -464.00003051758, h = 191, unknown1 = 524290},
+        ['2'] = { index = 9,   zone = 289, npc = 753, offset = 9,  x = -275.5, z = -40.500003814697, y = -378.50003051758, h = 223, unknown1 = 589826},
+        ['3'] = { index = 10,  zone = 289, npc = 754, offset = 10, x = -454.00003051758, z = -3.5000002384186, y = -147.5, h = 127, unknown1 = 655362},
+        ['4'] = { index = 11,  zone = 289, npc = 755, offset = 11, x = -452.50003051758, z = -71.42000579834, y = -307.5, h = 223, unknown1 = 720898},
+        ['5'] = { index = 12,  zone = 289, npc = 756, offset = 12, x = -444.50003051758, z = -40.500003814697, y = 144, h = 0, unknown1 = 786434},
+        ['6'] = { index = 13,  zone = 289, npc = 757, offset = 13, x = -280.5, z = -3.5000002384186, y = 386.50003051758, h = 159, unknown1 = 851970},
+        ['7'] = { index = 14,  zone = 289, npc = 758, offset = 14, x = -431.50003051758, z = -71.850006103516, y = 335.50003051758, h = 31, unknown1 = 917506},
+        ['8'] = { index = 15,  zone = 289, npc = 759, offset = 15, x = 0, z = -40.500003814697, y = 466.50003051758, h = 63, unknown1 = 983042},
+        ['9'] = { index = 16,  zone = 289, npc = 760, offset = 16, x = 278.5, z = -3.6300001144409, y = 384.00003051758, h = 223, unknown1 = 1048578},
+        ['10'] = { index = 17, zone = 289, npc = 761, offset = 17, x = 186.00001525879, z = -71.850006103516, y = 514.5, h = 95, unknown1 = 1114114},
+        ['11'] = { index = 18, zone = 289, npc = 762, offset = 18, x = 444.50003051758, z = -40, y = 144, h = 127, unknown1 = 1179650},
+        ['12'] = { index = 19, zone = 289, npc = 763, offset = 19, x = 454.50003051758, z = -3.6000001430511, y = -147.5, h = 0, unknown1 = 1245186},
+        ['13'] = { index = 20, zone = 289, npc = 764, offset = 20, x = 546.5, z = -71.5, y = -17, h = 127, unknown1 = 1310722},
+        ['14'] = { index = 21, zone = 289, npc = 765, offset = 21, x = 275, z = -40.500003814697, y = -377.50003051758, h = 159, unknown1 = 1376258},
+        ['15'] = { index = 22, zone = 289, npc = 766, offset = 22, x = -1.2000000476837, z = -52.000003814697, y = -581.5, h = 191, unknown1 = 1441794},
         --elvorseal x = 0, z = -43.600002288818, y = -238.00001525879, h = 48897, unknown1 = 12
     },
     ['Reisenjima'] = T{
-        ['1'] = {  index = 23, zone = 291, npc = 824, x = -495.44003295898, z = -19, y = -476.48001098633, h = 0, unknown1 = 1507330},
-        ['2'] = {  index = 24, zone = 291, npc = 825, x = -404.00003051758, z = -55.000003814697, y = 86.000007629395, h = 63, unknown1 = 1572866},
-        ['3'] = {  index = 25, zone = 291, npc = 826, x = -530.40002441406, z = -50.000003814697, y = 399.75003051758, h = 95, unknown1 = 1638402},
-        ['4'] = {  index = 26, zone = 291, npc = 827, x = -554.40002441406, z = -48.750003814697, y = 602, h = 191, unknown1 = 1703938},
-        ['5'] = {  index = 27, zone = 291, npc = 828, x = 107.00000762939, z = -75.400001525879, y = 599, h = 63, unknown1 = 1769474},
-        ['6'] = {  index = 28, zone = 291, npc = 829, x = 243.50001525879, z = -87.400001525879, y = 106.00000762939, h = 127, unknown1 = 1835010},
-        ['7'] = {  index = 29, zone = 291, npc = 830, x = 641.60003662109, z = -374.00003051758, y = -912.20007324219, h = 159, unknown1 = 1900546},
+        ['1'] = {  index = 23, zone = 291, npc = 824, offset = 23, x = -495.44003295898, z = -19, y = -476.48001098633, h = 0, unknown1 = 1507330},
+        ['2'] = {  index = 24, zone = 291, npc = 825, offset = 24, x = -404.00003051758, z = -55.000003814697, y = 86.000007629395, h = 63, unknown1 = 1572866},
+        ['3'] = {  index = 25, zone = 291, npc = 826, offset = 25, x = -530.40002441406, z = -50.000003814697, y = 399.75003051758, h = 95, unknown1 = 1638402},
+        ['4'] = {  index = 26, zone = 291, npc = 827, offset = 26, x = -554.40002441406, z = -48.750003814697, y = 602, h = 191, unknown1 = 1703938},
+        ['5'] = {  index = 27, zone = 291, npc = 828, offset = 27, x = 107.00000762939, z = -75.400001525879, y = 599, h = 63, unknown1 = 1769474},
+        ['6'] = {  index = 28, zone = 291, npc = 829, offset = 28, x = 243.50001525879, z = -87.400001525879, y = 106.00000762939, h = 127, unknown1 = 1835010},
+        ['7'] = {  index = 29, zone = 291, npc = 830, offset = 29, x = 641.60003662109, z = -374.00003051758, y = -912.20007324219, h = 159, unknown1 = 1900546},
         ['8'] = {  index = 30, zone = 291, npc = 831, x = -368.72003173828, z = -113.30000305176, y = 212.45001220703, h = 63, unknown1 = 1966082},
-        ['9'] = {  index = 31, zone = 291, npc = 832, x = -581, z = -417.40002441406, y = -1065, h = 0, unknown1 = 2031618},
+        ['9'] = {  index = 31, zone = 291, npc = 832, offset = 31, x = -581, z = -417.40002441406, y = -1065, h = 0, unknown1 = 2031618},
         ['10'] = { index = 32, zone = 291, npc = 833, x = -390.22003173828, z = -439.71002197266, y = -835.13006591797, h = 0, unknown1 = 2097156},
         --elvorseal x = 640, z = -372.00003051758, y = -921.00006103516, h = 24321, unknown1 = 12
     },
