@@ -1,10 +1,10 @@
 return T{
-    short_name = 'pw',
+    short_name = 'pwp',
     long_name = 'proto-waypoint',
     npc_names = T{
         warp = T{'Proto-Waypoint'},
     },
-    help_text = "[sw] pw [warp/w] [all/a/@all] zone name -- warp to a designated geomagnetic fount. \"all\" sends ipc to all local clients.",
+    help_text = "[sw] pwp [warp/w] [all/a/@all] zone name -- warp to a designated geomagnetic fount. \"all\" sends ipc to all local clients.",
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
         local packet = nil

@@ -336,6 +336,7 @@ local function reset(quiet)
         packet["Menu ID"]=last_menu
         packets.inject(packet)
         last_activity = activity
+        current_activity.canceled = true
         current_activity = nil
         last_npc = nil
         last_npc_index = nil
@@ -474,6 +475,14 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
     end
 end
 
+local function received_warp_command(cmd, args)
+	if current_activity ~= nil then
+		log('Superwarp is currently busy. To cancel the last request try "//sw cancel"')
+	else
+		handle_warp(cmd, args)
+	end
+end
+
 
 windower.register_event('addon command', function(...)
     local args = T{...}
@@ -483,12 +492,19 @@ windower.register_event('addon command', function(...)
     local item = table.concat(args," "):lower()
 
     if warp_list:contains(cmd) then
-        handle_warp(cmd, args)
+        received_warp_command(cmd, args)
+    elseif cmd == 'cancel' then
+    	reset()
+        if args[1] and args[1]:lower() == 'all' then
+            windower.send_ipc_message('reset')
+        end
+
     elseif cmd == 'reset' then
         reset()    
         if args[1] and args[1]:lower() == 'all' then
             windower.send_ipc_message('reset')
         end
+
     elseif cmd == 'debug' then
         settings.debug = not settings.debug
         log('Debug is now '..tostring(settings.debug))
@@ -505,7 +521,7 @@ windower.register_event('unhandled command', function(cmd, ...)
     local args = T{...}
     for i,v in pairs(args) do args[i]=windower.convert_auto_trans(args[i]) end
     if warp_list:contains(cmd:lower()) then
-        handle_warp(cmd, args)
+        received_warp_command(cmd, args)
     end
 end)
 
@@ -519,7 +535,7 @@ windower.register_event('ipc message', function(msg)
     elseif warp_list:contains(cmd) then
         local delay = get_delay()
         debug('received ipc: '..msg..'. executing in '..tostring(delay)..'s.')
-        handle_warp:schedule(delay, cmd, args)
+        received_warp_command:schedule(delay, cmd, args)
     end
 end)
 
@@ -538,7 +554,7 @@ local function perform_next_action()
                 current_action.timeout = settings.default_packet_wait_timeout
             end
             local fn = function(s, ca, i, p, d)
-                if ca and ca.action_index == i then
+                if ca and ca.action_index == i and not ca.canceled then
                     debug("timed out waiting for packet 0x"..p:hex().." for action "..tostring(i)..' '..(d or ''))
 
                     if s.loop_count > 0 then
