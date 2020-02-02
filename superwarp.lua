@@ -113,11 +113,14 @@ config.save(settings)
 local state = {
     loop_count = nil,
     fast_retry = false,
+    debug_stack = T{},
 }
 
 function debug(msg)
     if settings.debug then
         log('debug: '..msg)
+    else
+    	state.debug_stack:append('debug: '..msg)
     end
 end
 
@@ -493,6 +496,7 @@ local function received_warp_command(cmd, args)
 	if current_activity ~= nil then
 		log('Superwarp is currently busy. To cancel the last request try "//sw cancel"')
 	else
+		state.debug_stack = T{}
 		handle_warp(cmd, args)
 	end
 end
@@ -523,6 +527,11 @@ windower.register_event('addon command', function(...)
         settings.debug = not settings.debug
         log('Debug is now '..tostring(settings.debug))
         settings:save()
+        if settings.debug then 
+        	for _, m in ipairs(state.debug_stack) do
+        		log(m)
+        	end
+        end
     else
         for key, map in pairs(maps) do
             log(map.help_text)
