@@ -673,6 +673,17 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
     end
 
 end)
+windower.register_event('outgoing chunk',function(id,data,modified,injected,blocked)
+	if id == 0x01A and not injected and current_activity and not current_activity.canceled then
+		-- USER poked something and we were in the middle of something.
+		-- we can't cancel that poke. The client is execting it already. We MUST cancel the current task.
+		log('Detected user interaction. Canceling current warp...')
+
+		reset(true)
+		coroutine.sleep(1)
+		return false
+	end
+end)
 
 
 -- debugging
