@@ -277,8 +277,20 @@ local function resolve_warp(map_name, zone, sub_zone)
 end 
 
 function poke_npc(id, index)
-    if id and index then
+	local first_poke = true
+    while id and index and current_activity and not current_activity.caught_poke do
+        if not first_poke then
+			if state.loop_count > 0 then
+				state.loop_count = state.loop_count - 1
+            	log("Timed out waiting for response from the poke. Retrying...")
+            else 
+                log("Timed out waiting for response from the poke.")
+            	return
+            end
+        end
+
         debug("poke npc: "..tostring(id)..' '..tostring(index))
+        first_poke = false
         local packet = packets.new('outgoing', 0x01A, {
             ["Target"]=id,
             ["Target Index"]=index,
@@ -286,6 +298,8 @@ function poke_npc(id, index)
             ["Param"]=0,
             ["_unknown1"]=0})
         packets.inject(packet)
+
+		coroutine.sleep(settings.default_packet_wait_timeout)
     end
 end
 
@@ -385,8 +399,8 @@ local function do_warp(map_name, zone, sub_zone)
             state.loop_count = 0
         elseif npc.id and npc.index then
             current_activity = {type=map_name, npc=npc, activity_settings=warp_settings, zone=zone, sub_zone=sub_zone}
-            poke_npc(npc.id, npc.index)
             log('Warping via ' .. npc.name .. ' to '..display_name..'.')
+            poke_npc(npc.id, npc.index)
         end
     else
         state.loop_count = 0
@@ -635,6 +649,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
         local p = packets.parse('incoming', data)
         
         if current_activity and not current_activity.running then
+        	current_activity.caught_poke = true
             local zone = windower.ffxi.get_info()['zone']
             local map = maps[current_activity.type]
 
