@@ -19,6 +19,9 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 | //[sw] un [warp] [all] zone_name  | Warp to a specified zone or the correct zone for a specified Unity NM. If an NM is specified, Superwarp will display the coordinates for the spawn NPCs. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
 | //[sw] ab [warp] [all] zone_name_or_conflux  | Warp to a specified abyssea entry zone or conflux number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
 | //[sw] ab [all] enter  | Enter the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
+| //sw debug  | Toggles debug mode which displays debug messages in the log. If debug mode was off, will display the debug logs of the last warp command as well.   |
+| //sw cancel [all]  | Cancels the current in-progress warp.   |
+| //sw reset [all]  | Resets client menu lock. This should be exceedingly rare, but it's here in case it's needed.   |
 
 ### Fuzzy Zone Names
 
@@ -74,6 +77,13 @@ When handling the menu through the game's vanilla systems, warping between two h
 ### Locked homepoints and waypoints
 Superwarp by default allows teleporting to homepoints that have yet to be reached. But in the event that the user wants to disable this feature for safety, edit the setting in the data/settings.xml file as such: `<enable_locked_warps>false</enable_locked_warps>`.
 
+### Special thanks
+Thanks to Ivaar and Thorny for their work on figuring out the waypoint currency data packs. Without them the waypoint system wouldn't function properly at all.
+
+Thanks to Kenshi for helping collect data about same-zone warp coordinates accurately.
+
+Thanks to Ivaar for also helping with the elvorseal state and receive packets, data for unlocked homepoints, waypoints and survival guides, and for helping with the client menu-lock reset functions.
+
 ### Updates
 #### v0.96
 - **Feature**: Homepoints now uses same-zone teleporting feature.
@@ -95,3 +105,4 @@ Superwarp by default allows teleporting to homepoints that have yet to be reache
 - **Resolved**: All same-zone teleports now have fully accurate arrival coordinates. The packet sent matches vanilla exactly.
 - **Improvement**: The reset functionality when an error occurs with Superwarp has been improved. This should get your character out of "stuck in menu" issue more often. Ideally, you should never have to use this feature.
 - **Imprevement**: When submitting multiple actions accidentally, superwarp will prevent the second attempt. To cancel an in-progress warp type `//sw cancel` or `//sw cancel all`. 
+- **Improvement**: Client menu locks should be far less frequent (they were quite infrequent before, but it should be less frequent still). If the warp somehow manages to stall, don't talk to the NPC manually. Instead do `//sw reset` to reset the menu lock before reattempting.

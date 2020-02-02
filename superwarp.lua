@@ -28,9 +28,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
 
+--[[
+	Special thanks to those that have helped with specific areas of Superwarp: 
+		Waypoint currency calculations: Ivaar, Thorny
+		Same-Zone warp data collection: Kenshi
+		Escha domain elvorseal packets: Ivaar
+		Unlocked warp point data packs: Ivaar
+		Menu locked state reset functs: Ivaar
+]]
+
 _addon.name = 'superwarp'
 
-_addon.author = 'core: Akaden; waypoints: Ivaar, Thorny; data: Akaden, Kenshi'
+_addon.author = 'Akaden'
 
 _addon.version = '0.96'
 
@@ -665,7 +674,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             last_menu = p["Menu ID"]
             last_npc = p["NPC"]
             last_npc_index = p["NPC Index"]
-            debug("recorded reset params: "..last_menu.." "..last_npc)
+            --debug("recorded reset params: "..last_menu.." "..last_npc)
 
             current_activity.action_queue = nil
             current_activity.action_index = 1
