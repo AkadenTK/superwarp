@@ -428,7 +428,7 @@ local function do_sub_cmd(map_name, sub_cmd, args)
         poke_npc(npc.id, npc.index)
     elseif not npc then
         log('No '..map.long_name..' found!')
-    elseif distance > 6^2 then
+    elseif dist > 6^2 then
         log(npc.name..' found, but too far!')
     end
 end
