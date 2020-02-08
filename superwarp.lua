@@ -460,7 +460,7 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
     end
 
     state.current_warp = warp
-    state.current_args = args
+    state.current_args = args:copy()
 
     for key,map in pairs(maps) do
         if map.short_name == warp then
