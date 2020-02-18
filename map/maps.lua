@@ -5,4 +5,5 @@ return {
 	['escha'] = require('map/escha'),
 	['unity'] = require('map/unity'),
 	['abyssea'] = require('map/abyssea'),
+	['protowaypoints'] = require('map/protowaypoints')
 }
