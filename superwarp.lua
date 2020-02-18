@@ -297,6 +297,7 @@ function poke_npc(id, index)
             	log("Timed out waiting for response from the poke. Retrying...")
             else 
                 log("Timed out waiting for response from the poke.")
+                current_activity = nil
             	return
             end
         end
