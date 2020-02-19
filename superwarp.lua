@@ -365,7 +365,9 @@ local function reset(quiet)
         packet["Menu ID"]=last_menu
         packets.inject(packet)
         last_activity = activity
-        current_activity.canceled = true
+        if current_activity then
+	        current_activity.canceled = true
+	    end
         current_activity = nil
         last_npc = nil
         last_npc_index = nil
