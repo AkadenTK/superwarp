@@ -9,6 +9,28 @@ return T{
         warp = T{'Veridical Conflux', 'Ernst', 'Ivan', 'Willis', 'Horst', 'Kierron', 'Vincent'},
         enter = T{'Cavernous Maw'},
     },
+    validate_menu = function(menu_id)
+        return -- npc warps:
+               menu_id == 404 or --  Ernst
+               menu_id == 795 or -- Ivan
+               menu_id == 873 or -- Willis
+               menu_id == 339 or -- Horst
+               menu_id == 433 or -- Kierron
+               menu_id == 10185 or -- Vincent
+               -- maws:
+               menu_id == 107 or -- Konschtat
+               menu_id == 100 or -- Tahrongi
+               menu_id == 218 or -- La Theine
+               menu_id == 61 or -- Attohwa
+               menu_id == 55 or -- Misareaux
+               menu_id == 47 or -- Vunkerl
+               menu_id == 914 or -- Altepa
+               menu_id == 204 or -- Uleguerand
+               menu_id == 908 or -- Grauberg
+               -- confluxes: 
+              (menu_id >= 2132 and menu_id <= 2139) or -- confluxes
+               menu_id == 123 -- conflux 00
+    end,
     help_text = "[sw] ab [warp/w] [all/a/@all] conflux number -- warp to a designated conflux in your current abyssea zone.\n[sw] ab [all/a/@all] enter -- enter the abyssea zone corresponding to the entrance zone.",
     sub_zone_targets =  S{'00', '0', '1', '2', '3', '4', '5', '6', '7', '8', 'Cavernous Maw'},
     auto_select_zone = function(zone)

@@ -291,6 +291,8 @@ end
 function poke_npc(id, index)
 	local first_poke = true
     while id and index and current_activity and not current_activity.caught_poke do
+    	current_activity.poked_npc_index = index
+    	current_activity.poked_npc_id = id
         if not first_poke then
 			if state.loop_count > 0 then
 				state.loop_count = state.loop_count - 1
@@ -671,6 +673,21 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
         	current_activity.caught_poke = true
             local zone = windower.ffxi.get_info()['zone']
             local map = maps[current_activity.type]
+            if map.validate_menu and not map.validate_menu(p["Menu ID"]) then
+            	log("Incorrect menu detected. Canceling action.")
+                last_activity = current_activity
+                state.loop_count = 0
+                current_activity = nil
+            	return false
+            end
+
+            if current_activity.poked_npc_id ~= p["NPC"] or current_activity.poked_npc_index ~= p["NPC Index"] then
+            	log("Incorrect npc detected. Canceling action.")
+                last_activity = current_activity
+                state.loop_count = 0
+                current_activity = nil
+            	return false
+            end
 
             last_menu = p["Menu ID"]
             last_npc = p["NPC"]

@@ -4,6 +4,14 @@ return { -- option: 1
     npc_names = T{
         warp = T{"Igsli", "Urbiolaine", "Teldro-Kesdrodo", "Yonolala", "Nunaarl Bthtrogg"},
     },
+    validate_menu = function(menu_id)
+        return -- NPCs:
+               menu_id == 598 or -- Igsli
+               menu_id == 3529 or -- Urbiolaine
+               menu_id == 879 or -- Teldro-Kesdrodo
+               menu_id == 879 or -- Yonolala
+               menu_id == 5149 -- Nunaarl Bthtrogg
+    end,
     help_text = "[sw] un [warp/w] [all/a/@all] zone name -- warp to a designated unity zone. \"all\" sends ipc to all local clients.",
     sub_zone_targets = S{},
     build_warp_packets = function(current_activity, zone, p, settings)

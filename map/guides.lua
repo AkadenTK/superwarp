@@ -4,6 +4,9 @@ return { -- option: 1
     npc_names = T{
         warp = T{'Survival Guide'},
     },
+    validate_menu = function(menu_id)
+        return menu_id == 8500
+    end,
     help_text = "[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.",
     sub_zone_targets = S{},
     build_warp_packets = function(current_activity, zone, p, settings)

@@ -4,6 +4,14 @@ return T{
     npc_names = T{
         warp = T{'Proto-Waypoint'},
     },
+    validate_menu = function(menu_id)
+        return 
+               menu_id == 10209 or -- Ru'Lude Gardens
+               menu_id == 10012 or -- Selbina
+               menu_id == 345 or -- Mhaura
+               menu_id == 266 or -- Norg
+               menu_id == 141 -- Rabao
+    end,
     help_text = "[sw] pwp [warp/w] [all/a/@all] zone name -- warp to a designated geomagnetic fount. \"all\" sends ipc to all local clients.",
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
