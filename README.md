@@ -4,21 +4,51 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 
 ### Commands:
 
+#### Homepoint Commands
 | Command | Action |
 | --- | --- |
 | //[sw] hp [warp] [all] zone_name [homepoint_number]  | Warp to a specified homepoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "entrance" (or simpler "e"), "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the homepoint_number is omitted, the first homepoint will be chosen (from the mapping). |
 | //[sw] hp [all] set  | Set the nearest homepoint as your home point. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck). |
+
+
+#### Waypoint Commands
+| Command | Action |
+| --- | --- |
 | //[sw] wp [warp] [all] zone_name [waypoint_number]  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "fs", "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the waypoint_number is omitted, the first waypoint will be chosen (from the mapping). |
 | //[sw] pwp [warp] [all] zone_name  | Warp to a specified proto-waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck). |
-| //[sw] pw [warp] [all] zone_name  | Warp to a specified geomagnetic fount. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck). |
+
+
+#### Survival Guide Commands
+| Command | Action |
+| --- | --- |
 | //[sw] sg [warp] [all] zone_name  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
+
+
+#### Escha Commands
+| Command | Action |
+| --- | --- |
 | //[sw] ew [warp] [all] portal_number  | Warp to a specified portal in Escha/Reis zones. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
 | //[sw] ew [all] enter  | Enters the Escha/Reis zones from the NPC in Qufim/Misareaux/Crags. "sw" is optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
 | //[sw] ew [all] domain  | Aquires Elvorseal if it is available and your character does not already have it, then teleports to the area where the Domain Invasion dragon will apper.  |
 | //[sw] ew [all] domain return  | Returns the Elvorseal status effect if your character has it.  |
+
+
+#### Unity Commands
+| Command | Action |
+| --- | --- |
 | //[sw] un [warp] [all] zone_name  | Warp to a specified zone or the correct zone for a specified Unity NM. If an NM is specified, Superwarp will display the coordinates for the spawn NPCs. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
+
+
+#### Abyssea Commands
+| Command | Action |
+| --- | --- |
 | //[sw] ab [warp] [all] zone_name_or_conflux  | Warp to a specified abyssea entry zone or conflux number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
 | //[sw] ab [all] enter  | Enter the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
+
+
+#### Misc. Commands
+| Command | Action |
+| --- | --- |
 | //sw debug  | Toggles debug mode which displays debug messages in the log. If debug mode was off, will display the debug logs of the last warp command as well.   |
 | //sw cancel [all]  | Cancels the current in-progress warp.   |
 | //sw reset [all]  | Resets client menu lock. This should be exceedingly rare, but it's here in case it's needed.   |
@@ -106,3 +136,4 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 - **Improvement**: The reset functionality when an error occurs with Superwarp has been improved. This should get your character out of "stuck in menu" issue more often. Ideally, you should never have to use this feature.
 - **Imprevement**: When submitting multiple actions accidentally, superwarp will prevent the second attempt. To cancel an in-progress warp type `//sw cancel` or `//sw cancel all`. 
 - **Improvement**: Client menu locks should be far less frequent (they were quite infrequent before, but it should be less frequent still). If the warp somehow manages to stall, don't talk to the NPC manually. Instead do `//sw reset` to reset the menu lock before reattempting.
+- **Improvement**: Menu ID and NPC IDs are validated when a new menu packet arrives. Odd out-of order things happen sometimes, this aims to prevent issues. 
