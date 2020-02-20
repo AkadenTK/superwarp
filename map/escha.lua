@@ -5,20 +5,25 @@ return T{
         warp = T{'Eschan Portal', 'Ethereal Ingress'},
         enter = T{'Undulating Confluence', 'Dimensional Portal'},
         domain = T{'Affi', 'Dremi', 'Shiftrix'},
+        exit= T{'Undulating Confluence', 'Dimensional Portal'},
     },
     validate_menu = function(menu_id)
         return -- NPCs:
                menu_id == 9701 or 
-               -- Confluence/Portal:
+               -- enter: Confluence/Portal:
                menu_id == 65 or -- Qufim
                menu_id == 14 or -- Misareaux
                menu_id == 926 or -- Tahrongi
                menu_id == 222 or -- La Theine
                menu_id == 926 or -- Konschtat
+               -- exit: Confluence/Portal
+               menu_id == 4 or -- Escha - Zi'tah
+               menu_id == 1 or -- Escha - Ru'aun
+               menu_id == 14 or -- Reisenjima
                -- portal/ingress: 
                menu_id == 9100 
     end,
-    help_text = "[sw] ew [warp/w] [all/a/@all] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.\n[sw] ew [all/a/@all] domain -- get Elvorseal if needed and warp to the domain invasion arena.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.",
+    help_text = "[sw] ew [warp/w] [all/a/@all] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.\n[sw] ew [all/a/@all] domain -- get Elvorseal if needed and warp to the domain invasion arena.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.\n[sw] ew [all/a/@all] exit -- leave escha.",
     sub_zone_targets =  S{'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15' },
     auto_select_zone = function(zone)
         if zone == 288 then return 'Escha Zi\'tah' end
@@ -165,6 +170,61 @@ return T{
                 actions:append(T{packet=packet, description='cancel menu', message='WARNING: not in an entry zone!'})
             else
                 log("Entering Escha...")
+                -- update request
+                packet = packets.new('outgoing', 0x016)
+                packet["Target Index"] = windower.ffxi.get_player().index
+                actions:append(T{packet=packet, description='update request'})
+
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 0
+                packet["_unknown1"] = 0
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = true
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
+
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = oi
+                packet["_unknown1"] = 0
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = false
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, wait_packet=0x052, delay=2, description='complete menu'})
+            end
+
+            return actions
+        end,
+        exit = function(current_activity, zone, p, settings)
+            local actions = T{}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
+
+            local oi = 0
+
+            -- in an escha/reis zone
+            if zone == 288 or zone == 289 or zone == 291 then oi = 1 end
+
+            if oi == 0 then -- we're not in an exit zone...
+                -- send the cancel menu packet.
+                packet = packets.new('outgoing', 0x05B)
+                packet["Target"] = npc.id
+                packet["Option Index"] = 0
+                packet["_unknown1"] = 16384
+                packet["Target Index"] = npc.index
+                packet["Automated Message"] = false
+                packet["_unknown2"] = 0
+                packet["Zone"] = zone
+                packet["Menu ID"] = menu
+                actions:append(T{packet=packet, description='cancel menu', message='WARNING: not in an escha zone!'})
+            else
+                log("Leaving Escha...")
                 -- update request
                 packet = packets.new('outgoing', 0x016)
                 packet["Target Index"] = windower.ffxi.get_player().index
