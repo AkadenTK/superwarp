@@ -151,3 +151,4 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 - **Feature**: Escha and Abyssea systems now have an Exit subcommand.
 - **Feature**: Added ability to disable autorun and /follow before starting a warp or using a sub command
 - **Feature**: Added ability to run a windower command before starting a warp or using a sub command as well as at arrival time. A delay option is also in place for timing the arrival command.
+- **Resolved**: Outdoor Adoulin areas send the correct final menu packet when warping between waypoints in the same zone. No change in anything noticable, but it's nice to be exactly correct.
