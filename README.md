@@ -109,6 +109,13 @@ When handling the menu through the game's vanilla systems, warping between two h
 ### Locked homepoints and waypoints
 Superwarp by default allows teleporting to homepoints that have yet to be reached. But in the event that the user wants to disable this feature for safety, edit the setting in the data/settings.xml file as such: `<enable_locked_warps>false</enable_locked_warps>`.
 
+### Multi-boxing features
+Every command can be sent to all characters by prepending the "all" keyword before the zone name and sub-zone destination or the sub-command. This will send the same command to all characters on the same machine and delay their responses to prevent Square-Enix's servers from rejecting duplicate packets.
+
+The default behavior of Superwarp is to cancel the in-game follow and autorun during a warp/sub-command event. But to disable this (for some reason), there is an option in the settings.xml file.
+
+An option is available to apply a windower command before a warp/sub-command begins as well as on arrival. The use case is really infinite, but the goal was to enable the user to disable follow addons during a warp or sub-command event. Bonus feature! Prank your friends by setting the command before starting a warp to `sw cancel`. (Don't actually, I'm the one that will get a message about it not working)
+
 ### Special thanks
 Thanks to Ivaar and Thorny for their work on figuring out the waypoint currency data packs. Without them the waypoint system wouldn't function properly at all.
 
@@ -142,3 +149,5 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 
 #### v0.96.1
 - **Feature**: Escha and Abyssea systems now have an Exit subcommand.
+- **Feature**: Added ability to disable autorun and /follow before starting a warp or using a sub command
+- **Feature**: Added ability to run a windower command before starting a warp or using a sub command as well as at arrival time. A delay option is also in place for timing the arrival command.

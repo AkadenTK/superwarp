@@ -82,6 +82,10 @@ local defaults = {
     enable_fast_retry_on_interrupt = false, -- after an event skip event, attempt a fast-retry that doesn't wait for packets or delay.
     use_tabs_at_survival_guides = false,    -- use tabs instead of gil at survival guides.
     enable_locked_warps = true,             -- enables warp destinations not unlocked yet. 
+    stop_autorun_before_warp = true,        -- stop autorunning before using any warp system or subcommand
+    command_before_warp = '',               -- inject this windower command before using any warp system or subcommand
+    command_delay_on_arrival = 5,           -- delay before running command_on_arrival
+    command_on_arrival = '',                -- inject this windower command on arriving at the next location.
 }
 
 local settings = config.load(defaults)
@@ -388,6 +392,25 @@ local function reset(quiet)
     end
 end
 
+local function handle_autorun_command_before_warp()
+    if settings.stop_autorun_before_warp then
+        debug('stopping autorun before warp')
+        windower.ffxi.follow() -- with no index, stops auto following.
+        windower.ffxi.run(false) -- stop autorun
+    end
+    if settings.command_before_warp and type(settings.command_before_warp) == 'string' and settings.command_before_warp ~= '' then
+        debug('running command before warp: '..settings.command_before_warp)
+        windower.send_command(settings.command_before_warp)
+    end
+end
+
+local function handle_command_on_arrival()
+    if settings.command_on_arrival and type(settings.command_on_arrival) == 'string' and settings.command_on_arrival ~= '' then
+        debug('running command on arrival: '..settings.command_on_arrival)
+        windower.send_command(settings.command_on_arrival)
+    end
+end
+
 local function do_warp(map_name, zone, sub_zone)
     local map = maps[map_name]
 
@@ -416,6 +439,7 @@ local function do_warp(map_name, zone, sub_zone)
             state.loop_count = 0
         elseif npc.id and npc.index then
             current_activity = {type=map_name, npc=npc, activity_settings=warp_settings, zone=zone, sub_zone=sub_zone}
+            handle_autorun_command_before_warp()
             log('Warping via ' .. npc.name .. ' to '..display_name..'.')
             poke_npc(npc.id, npc.index)
         end
@@ -430,6 +454,7 @@ local function do_sub_cmd(map_name, sub_cmd, args)
     local npc, dist = find_npc(map.npc_names[sub_cmd])
     if npc and npc.id and npc.index and dist <= 6^2 then
         current_activity = {type=map_name, sub_cmd=sub_cmd, args=args, npc=npc}
+        handle_autorun_command_before_warp()
         poke_npc(npc.id, npc.index)
     elseif not npc then
         log('No '..map.long_name..' found!')
@@ -581,6 +606,16 @@ local function perform_next_action()
         local current_action = current_activity.action_queue[current_activity.action_index]
         if current_action == nil then
             debug("all actions complete")
+
+            if current_activity.activity_settings and (not current_activity.activity_settings.zone or windower.ffxi.get_info().zone ~= current_activity.activity_settings.zone) then
+                debug("expecting zone")
+                -- we're going to zone. 
+                expecting_zone = true
+            else
+                -- not zoning. Just run the command now + delay
+                handle_command_on_arrival:schedule(math.max(0, settings.command_delay_on_arrival))
+            end
+
             last_activity = current_activity
             state.loop_count = 0
             current_activity = nil
@@ -645,7 +680,7 @@ end
 windower.register_event('incoming chunk',function(id,data,modified,injected,blocked)
     if current_activity and current_activity.action_queue and current_activity.running then
         local current_action = current_activity.action_queue[current_activity.action_index]
-        if current_action.wait_packet and current_action.wait_packet == id then
+        if current_action and current_action.wait_packet and current_action.wait_packet == id then
             debug("received packet 0x"..id:hex().." for action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
             current_action.wait_packet = nil
             current_action.incoming_packet = packets.parse('incoming',data)
@@ -736,6 +771,12 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
         coroutine.sleep(1)
         return false
     end
+end)
+windower.register_event('zone change',function(id,data,modified,injected,blocked)
+    if expecting_zone then 
+        handle_command_on_arrival:schedule(math.max(0, settings.command_delay_on_arrival))
+    end
+    expecting_zone = false
 end)
 
 
