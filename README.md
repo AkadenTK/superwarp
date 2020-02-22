@@ -63,15 +63,15 @@ Spaces and punctuation are ignored. So type "southernsand" all you want, buddy. 
 <settings>
     <global>
         <favorites>
-        	<homepoints>
-        		<Norg>Auction House</Norg>
-        		<PortBastok>Mog House</PortBastok>
-        		<PortJeuno>2</PortJeuno>
-        		<RuludeGardens>Auction House</RuludeGardens>
-        	</homepoints>
-        	<waypoints>
-        		<ForetdeHennetiel>4</ForetdeHennetiel>
-        	</waypoints>
+            <homepoints>
+                <Norg>Auction House</Norg>
+                <PortBastok>Mog House</PortBastok>
+                <PortJeuno>2</PortJeuno>
+                <RuludeGardens>Auction House</RuludeGardens>
+            </homepoints>
+            <waypoints>
+                <ForetdeHennetiel>4</ForetdeHennetiel>
+            </waypoints>
         </favorites>
     </global>
 </settings>

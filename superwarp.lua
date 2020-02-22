@@ -29,12 +29,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 --[[
-	Special thanks to those that have helped with specific areas of Superwarp: 
-		Waypoint currency calculations: Ivaar, Thorny
-		Same-Zone warp data collection: Kenshi
-		Escha domain elvorseal packets: Ivaar
-		Unlocked warp point data packs: Ivaar
-		Menu locked state reset functs: Ivaar
+    Special thanks to those that have helped with specific areas of Superwarp: 
+        Waypoint currency calculations: Ivaar, Thorny
+        Same-Zone warp data collection: Kenshi
+        Escha domain elvorseal packets: Ivaar
+        Unlocked warp point data packs: Ivaar
+        Menu locked state reset functs: Ivaar
 ]]
 
 _addon.name = 'superwarp'
@@ -129,7 +129,7 @@ function debug(msg)
     if settings.debug then
         log('debug: '..msg)
     else
-    	state.debug_stack:append('debug: '..msg)
+        state.debug_stack:append('debug: '..msg)
     end
 end
 
@@ -289,18 +289,18 @@ local function resolve_warp(map_name, zone, sub_zone)
 end 
 
 function poke_npc(id, index)
-	local first_poke = true
+    local first_poke = true
     while id and index and current_activity and not current_activity.caught_poke do
-    	current_activity.poked_npc_index = index
-    	current_activity.poked_npc_id = id
+        current_activity.poked_npc_index = index
+        current_activity.poked_npc_id = id
         if not first_poke then
-			if state.loop_count > 0 then
-				state.loop_count = state.loop_count - 1
-            	log("Timed out waiting for response from the poke. Retrying...")
+            if state.loop_count > 0 then
+                state.loop_count = state.loop_count - 1
+                log("Timed out waiting for response from the poke. Retrying...")
             else 
                 log("Timed out waiting for response from the poke.")
                 current_activity = nil
-            	return
+                return
             end
         end
 
@@ -314,7 +314,7 @@ function poke_npc(id, index)
             ["_unknown1"]=0})
         packets.inject(packet)
 
-		coroutine.sleep(settings.default_packet_wait_timeout)
+        coroutine.sleep(settings.default_packet_wait_timeout)
     end
 end
 
@@ -366,8 +366,8 @@ local function reset(quiet)
         packets.inject(packet)
         last_activity = activity
         if current_activity then
-	        current_activity.canceled = true
-	    end
+            current_activity.canceled = true
+        end
         current_activity = nil
         last_npc = nil
         last_npc_index = nil
@@ -507,12 +507,12 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
 end
 
 local function received_warp_command(cmd, args)
-	if current_activity ~= nil then
-		log('Superwarp is currently busy. To cancel the last request try "//sw cancel"')
-	else
-		state.debug_stack = T{}
-		handle_warp(cmd, args)
-	end
+    if current_activity ~= nil then
+        log('Superwarp is currently busy. To cancel the last request try "//sw cancel"')
+    else
+        state.debug_stack = T{}
+        handle_warp(cmd, args)
+    end
 end
 
 
@@ -526,7 +526,7 @@ windower.register_event('addon command', function(...)
     if warp_list:contains(cmd) then
         received_warp_command(cmd, args)
     elseif cmd == 'cancel' then
-    	reset()
+        reset()
         if args[1] and args[1]:lower() == 'all' then
             windower.send_ipc_message('reset')
         end
@@ -542,9 +542,9 @@ windower.register_event('addon command', function(...)
         log('Debug is now '..tostring(settings.debug))
         settings:save()
         if settings.debug then 
-        	for _, m in ipairs(state.debug_stack) do
-        		log(m)
-        	end
+            for _, m in ipairs(state.debug_stack) do
+                log(m)
+            end
         end
     else
         for key, map in pairs(maps) do
@@ -672,23 +672,23 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
         local p = packets.parse('incoming', data)
         
         if current_activity and not current_activity.running then
-        	current_activity.caught_poke = true
+            current_activity.caught_poke = true
             local zone = windower.ffxi.get_info()['zone']
             local map = maps[current_activity.type]
             if map.validate_menu and not map.validate_menu(p["Menu ID"]) then
-            	log("Incorrect menu detected. Canceling action.")
+                log("Incorrect menu detected. Canceling action.")
                 last_activity = current_activity
                 state.loop_count = 0
                 current_activity = nil
-            	return false
+                return false
             end
 
             if current_activity.poked_npc_id ~= p["NPC"] or current_activity.poked_npc_index ~= p["NPC Index"] then
-            	log("Incorrect npc detected. Canceling action.")
+                log("Incorrect npc detected. Canceling action.")
                 last_activity = current_activity
                 state.loop_count = 0
                 current_activity = nil
-            	return false
+                return false
             end
 
             last_menu = p["Menu ID"]
@@ -727,15 +727,15 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 
 end)
 windower.register_event('outgoing chunk',function(id,data,modified,injected,blocked)
-	if id == 0x01A and not injected and current_activity and not current_activity.canceled then
-		-- USER poked something and we were in the middle of something.
-		-- we can't cancel that poke. The client is execting it already. We MUST cancel the current task.
-		log('Detected user interaction. Canceling current warp...')
+    if id == 0x01A and not injected and current_activity and not current_activity.canceled then
+        -- USER poked something and we were in the middle of something.
+        -- we can't cancel that poke. The client is execting it already. We MUST cancel the current task.
+        log('Detected user interaction. Canceling current warp...')
 
-		reset(true)
-		coroutine.sleep(1)
-		return false
-	end
+        reset(true)
+        coroutine.sleep(1)
+        return false
+    end
 end)
 
 

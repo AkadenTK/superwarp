@@ -27,9 +27,9 @@ return { -- option: 1
 
         local destination_unlocked = true
         if destination.offset ~= nil then
-        	destination_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset)
+            destination_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset)
         --elseif destination.invoffset then
-        --	destination_unlocked = not has_bit(p["Menu Parameters"], unlock_bit_start + destination.invoffset)
+        --    destination_unlocked = not has_bit(p["Menu Parameters"], unlock_bit_start + destination.invoffset)
         end
 
         debug('unity warp is unlocked: '..tostring(destination_unlocked))

@@ -22,9 +22,9 @@ return T{
 
         local destination_unlocked = false
         if destination.offset ~= nil then
-        	destination_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset)
+            destination_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset)
         elseif destination.invoffset then
-        	destination_unlocked = not has_bit(p["Menu Parameters"], unlock_bit_start + destination.invoffset)
+            destination_unlocked = not has_bit(p["Menu Parameters"], unlock_bit_start + destination.invoffset)
         end
 
         debug('waypoint is unlocked: '..tostring(destination_unlocked))

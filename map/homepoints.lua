@@ -6,8 +6,8 @@ return { -- option: 2
         set = T{'Home Point'},
     },
     validate_menu = function(menu_id)
-    	return menu_id >= 8700 and menu_id <= 8704
-	end,
+        return menu_id >= 8700 and menu_id <= 8704
+    end,
     help_text = "[sw] hp [warp/w] [all/a/@all] zone name [homepoint_number] -- warp to a designated homepoint. \"all\" sends ipc to all local clients.\n[sw] hp [all/a/@all] set -- set the closest homepoint as your return homepoint",
     sub_zone_targets = S{'entrance', 'mog house', 'auction house', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
     build_warp_packets = function(current_activity, zone, p, settings)

@@ -25,7 +25,7 @@ return T{
 
         local destination_unlocked = false
         if destination.offset ~= nil then
-        	destination_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset)
+            destination_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset)
         end
 
         debug('geomagnetic fount is unlocked: '..tostring(destination_unlocked))
