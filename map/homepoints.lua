@@ -90,7 +90,7 @@ return { -- option: 2
 
             -- request map
             packet = packets.new('outgoing', 0x114)
-            actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
+            actions:append(T{packet=packet, wait_packet=0x05C, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
 
             -- menu change
             packet = packets.new('outgoing', 0x05B)
@@ -117,7 +117,7 @@ return { -- option: 2
             packet["Z"] = destination.z
             packet["_unknown1"] = destination.unknown1
             packet["Rotation"] = destination.h
-            actions:append(T{packet=packet,  wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='same-zone move request'})
+            actions:append(T{packet=packet,  wait_packet=0x05C, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='same-zone move request'})
 
             -- complete menu
             packet = packets.new('outgoing', 0x05B)
@@ -130,7 +130,7 @@ return { -- option: 2
             packet["_unknown1"] = 0
             packet["Automated Message"] = false
             packet["_unknown2"] = 0
-            actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='complete menu'})
+            actions:append(T{packet=packet, wait_packet=0x05C, delay=1, description='complete menu'})
 
         else
 
@@ -154,7 +154,7 @@ return { -- option: 2
             
             -- request map
             packet = packets.new('outgoing', 0x114)
-            actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
+            actions:append(T{packet=packet, wait_packet=0x05C, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
 
             -- menu change
             packet = packets.new('outgoing', 0x05B)
@@ -180,7 +180,7 @@ return { -- option: 2
             packet["_unknown1"] = destination.index
             packet["Automated Message"] = false
             packet["_unknown2"] = 0
-            actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options and complete menu'})
+            actions:append(T{packet=packet, wait_packet=0x05C, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options and complete menu'})
         end
 
         return actions

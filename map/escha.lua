@@ -305,7 +305,7 @@ return T{
                 packet["_unknown2"] = 0
                 packet["Zone"] = zone
                 packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x052, description='init menu'})    
+                actions:append(T{packet=packet, wait_packet=0x05C, description='init menu'})    
 
                 packet = packets.new('outgoing', 0x05B)
                 packet["Target"] = npc.id
@@ -316,7 +316,7 @@ return T{
                 packet["_unknown2"] = 0
                 packet["Zone"] = zone
                 packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x052, description='init menu'})    
+                actions:append(T{packet=packet, wait_packet=0x05C, description='init menu'})    
 
                 if not has_elvorseal then
                     packet = packets.new('outgoing', 0x05B)
@@ -328,7 +328,7 @@ return T{
                     packet["_unknown2"] = 0
                     packet["Zone"] = zone
                     packet["Menu ID"] = menu
-                    actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice elvorseal', message='Getting Elvorseal...'})    
+                    actions:append(T{packet=packet, wait_packet=0x05C, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice elvorseal', message='Getting Elvorseal...'})    
 
                     packet = packets.new('outgoing', 0x05B)
                     packet["Target"] = npc.id
@@ -339,7 +339,7 @@ return T{
                     packet["_unknown2"] = 0    
                     packet["Zone"] = zone
                     packet["Menu ID"] = menu
-                    actions:append(T{packet=packet, wait_packet=0x052, description='menu choice elvorseal'})    
+                    actions:append(T{packet=packet, wait_packet=0x05C, description='menu choice elvorseal'})    
                 end
 
                 packet = packets.new('outgoing', 0x05B)
@@ -351,7 +351,7 @@ return T{
                 packet["_unknown2"] = 0
                 packet["Zone"] = zone
                 packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice teleport', message='Warping to battle!'})    
+                actions:append(T{packet=packet, wait_packet=0x05C, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='menu choice teleport', message='Warping to battle!'})    
 
                 -- 0x05C
                 packet = packets.new('outgoing', 0x05C)
@@ -380,7 +380,7 @@ return T{
                     packet["Rotation"] = 95
                 end
 
-                actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='same-zone move request'})
+                actions:append(T{packet=packet, wait_packet=0x05C, delay=1, description='same-zone move request'})
 
                 packet = packets.new('outgoing', 0x05B)
                 packet["Target"] = npc.id
@@ -391,7 +391,7 @@ return T{
                 packet["_unknown2"] = 0
                 packet["Zone"] = zone
                 packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x052, delay = 1, description='complete menu'})    
+                actions:append(T{packet=packet, wait_packet=0x05C, delay = 1, description='complete menu'})    
 
                 return actions  
             elseif args[1] == 'return' then
@@ -463,7 +463,7 @@ return T{
                     packet["_unknown2"] = 0
                     packet["Zone"] = zone
                     packet["Menu ID"] = menu
-                    actions:append(T{packet=packet, wait_packet=0x052, description='menu choice return'})    
+                    actions:append(T{packet=packet, wait_packet=0x05C, description='menu choice return'})    
 
                     packet = packets.new('outgoing', 0x05B)
                     packet["Target"] = npc.id
@@ -474,7 +474,7 @@ return T{
                     packet["_unknown2"] = 0
                     packet["Zone"] = zone
                     packet["Menu ID"] = menu
-                    actions:append(T{packet=packet, wait_packet=0x052, delay = 1, description='complete menu'})    
+                    actions:append(T{packet=packet, wait_packet=0x05C, delay = 1, description='complete menu'})    
 
                     return actions
                 end
