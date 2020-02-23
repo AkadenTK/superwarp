@@ -41,7 +41,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.96.1'
+_addon.version = '0.96.2'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -86,6 +86,8 @@ local defaults = {
     command_before_warp = '',               -- inject this windower command before using any warp system or subcommand
     command_delay_on_arrival = 5,           -- delay before running command_on_arrival
     command_on_arrival = '',                -- inject this windower command on arriving at the next location.
+    target_npc = true,                      -- locally target the warp/subcommand npc.
+    simulate_client_lock = false,           -- lock the local client during a warp/subcommand, simulating menu behavior.
 }
 
 local settings = config.load(defaults)
@@ -127,6 +129,7 @@ local state = {
     loop_count = nil,
     fast_retry = false,
     debug_stack = T{},
+    client_lock = false,
 }
 
 function debug(msg)
@@ -322,6 +325,30 @@ function poke_npc(id, index)
     end
 end
 
+function set_target(index)
+    local player = windower.ffxi.get_mob_by_target('me')
+    local target = windower.ffxi.get_mob_by_index(index)
+    if not (player and target) then return end
+    packets.inject(packets.new('incoming', 0x58, {
+        ['Player'] = player.id,
+        ['Target'] = target.id,
+        ['Player Index'] = player.index,
+    }))
+end
+
+function client_lock(target_index)
+    state.client_lock = not (not target_index)
+    local data, ts = windower.packets.last_incoming(0x37)
+    local p = packets.parse('incoming', data)
+    if state.client_lock then
+        set_target(tonumber(target_index))
+        p['_flags3'] = bit.bor(p['_flags3'], 2)
+    else
+        p['_flags3'] = bit.band(p['_flags3'], bit.bnot(2))
+    end
+    packets.inject(p)
+end
+
 local function distance_sqd(a, b)
     local dx, dy = b.x-a.x, b.y-a.y
     return dy*dy + dx*dx
@@ -355,6 +382,7 @@ function release(menu_id)
 end
 
 local function reset(quiet)
+	client_lock()
     if last_npc ~= nil and last_menu ~= nil then
         general_release()
         release(last_menu)
@@ -392,7 +420,7 @@ local function reset(quiet)
     end
 end
 
-local function handle_autorun_command_before_warp()
+local function handle_before_warp()
     if settings.stop_autorun_before_warp then
         debug('stopping autorun before warp')
         windower.ffxi.follow() -- with no index, stops auto following.
@@ -402,9 +430,16 @@ local function handle_autorun_command_before_warp()
         debug('running command before warp: '..settings.command_before_warp)
         windower.send_command(settings.command_before_warp)
     end
+    if (settings.target_npc or settings.simulate_client_lock) and current_activity and current_activity.npc then
+    	set_target(current_activity.npc.index)
+    	coroutine.sleep(0.2) -- give target time to work.
+    end
+    if settings.simulate_client_lock and current_activity and current_activity.npc then
+    	client_lock(current_activity.npc.index)
+    end
 end
 
-local function handle_command_on_arrival()
+local function handle_on_arrival()
     if settings.command_on_arrival and type(settings.command_on_arrival) == 'string' and settings.command_on_arrival ~= '' then
         debug('running command on arrival: '..settings.command_on_arrival)
         windower.send_command(settings.command_on_arrival)
@@ -439,7 +474,7 @@ local function do_warp(map_name, zone, sub_zone)
             state.loop_count = 0
         elseif npc.id and npc.index then
             current_activity = {type=map_name, npc=npc, activity_settings=warp_settings, zone=zone, sub_zone=sub_zone}
-            handle_autorun_command_before_warp()
+            handle_before_warp()
             log('Warping via ' .. npc.name .. ' to '..display_name..'.')
             poke_npc(npc.id, npc.index)
         end
@@ -454,7 +489,7 @@ local function do_sub_cmd(map_name, sub_cmd, args)
     local npc, dist = find_npc(map.npc_names[sub_cmd])
     if npc and npc.id and npc.index and dist <= 6^2 then
         current_activity = {type=map_name, sub_cmd=sub_cmd, args=args, npc=npc}
-        handle_autorun_command_before_warp()
+        handle_before_warp()
         poke_npc(npc.id, npc.index)
     elseif not npc then
         log('No '..map.long_name..' found!')
@@ -606,14 +641,14 @@ local function perform_next_action()
         local current_action = current_activity.action_queue[current_activity.action_index]
         if current_action == nil then
             debug("all actions complete")
-
             if last_action and last_action.expecting_zone then
                 debug("expecting zone")
                 -- we're going to zone. 
                 expecting_zone = true
             else
+                client_lock()
                 -- not zoning. Just run the command now + delay
-                handle_command_on_arrival:schedule(math.max(0, settings.command_delay_on_arrival))
+                handle_on_arrival:schedule(math.max(0, settings.command_delay_on_arrival))
             end
 
             last_activity = current_activity
@@ -690,6 +725,12 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             current_action.incoming_packet = packets.parse('incoming',data)
             perform_next_action()
         end
+    end 
+
+    if id == 0x37 and not injected and state.client_lock then
+        local p = packets.parse('incoming', data)
+        p['_flags3'] = bit.bor(p['_flags3'], 2)
+        return packets.build(p)
     end
 
     if id == 0x052 and current_activity and current_activity.running then
@@ -778,7 +819,8 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
 end)
 windower.register_event('zone change',function(id,data,modified,injected,blocked)
     if expecting_zone then 
-        handle_command_on_arrival:schedule(math.max(0, settings.command_delay_on_arrival))
+        client_lock()
+        handle_on_arrival:schedule(math.max(0, settings.command_delay_on_arrival))
     end
     expecting_zone = false
 end)

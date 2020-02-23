@@ -152,3 +152,8 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 - **Feature**: Added ability to disable autorun and /follow before starting a warp or using a sub command
 - **Feature**: Added ability to run a windower command before starting a warp or using a sub command as well as at arrival time. A delay option is also in place for timing the arrival command.
 - **Resolved**: Outdoor Adoulin areas send the correct final menu packet when warping between waypoints in the same zone. No change in anything noticable, but it's nice to be exactly correct.
+
+#### v0.96.2
+- **Resolved**: Exiting Abyssea should work again.
+- **Feature**: Added option to target warp NPC before initiating. 
+- **Feature**: Added option to simulate client lock during a warp. This will prevent your character from moving until the warp is complete. //sw reset will also clear this state.
