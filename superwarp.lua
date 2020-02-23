@@ -646,7 +646,7 @@ local function perform_next_action()
                 -- we're going to zone. 
                 expecting_zone = true
             else
-                client_lock()
+            	state.client_lock = false
                 -- not zoning. Just run the command now + delay
                 handle_on_arrival:schedule(math.max(0, settings.command_delay_on_arrival))
             end
@@ -818,8 +818,8 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
     end
 end)
 windower.register_event('zone change',function(id,data,modified,injected,blocked)
+	state.client_lock = false
     if expecting_zone then 
-        client_lock()
         handle_on_arrival:schedule(math.max(0, settings.command_delay_on_arrival))
     end
     expecting_zone = false
