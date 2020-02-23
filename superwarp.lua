@@ -607,7 +607,7 @@ local function perform_next_action()
         if current_action == nil then
             debug("all actions complete")
 
-            if current_activity.activity_settings and (not current_activity.activity_settings.zone or windower.ffxi.get_info().zone ~= current_activity.activity_settings.zone) then
+            if last_action and last_action.expecting_zone then
                 debug("expecting zone")
                 -- we're going to zone. 
                 expecting_zone = true
@@ -619,6 +619,7 @@ local function perform_next_action()
             last_activity = current_activity
             state.loop_count = 0
             current_activity = nil
+            last_action = nil
         elseif not state.fast_retry and current_action.wait_packet then
             debug("waiting for packet 0x"..current_action.wait_packet:hex().." for action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
             current_action.wait_start = os.time()
@@ -645,6 +646,7 @@ local function perform_next_action()
             debug("delaying action "..tostring(current_activity.action_index)..' '..(current_action.description or '')..' for '.. current_action.delay..'s...')
             local delay_seconds = current_action.delay
             current_action.delay = nil
+            last_action = current_action
             perform_next_action:schedule(delay_seconds)
         elseif current_action.packet then
             -- just a packet, inject it.
@@ -654,6 +656,7 @@ local function perform_next_action()
             if current_action.message then
                 log(current_action.message)
             end
+            last_action = current_action
             perform_next_action()
         elseif current_action.fn ~= nil then
             -- has a function, pass along params.
@@ -663,6 +666,7 @@ local function perform_next_action()
             if current_action.message then
                 log(current_action.message)
             end
+            last_action = current_action
             if continue then
                 perform_next_action()
             else

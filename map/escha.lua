@@ -127,7 +127,7 @@ return T{
             packet["_unknown1"] = 0
             packet["Automated Message"] = false
             packet["_unknown2"] = 0
-            actions:append(T{packet=packet, wait_packet=0x052, delay=1, description='complete menu'})
+            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=false, delay=1, description='complete menu'})
         else
             packet["Target"] = npc.id
             packet["Option Index"] = 0
@@ -195,7 +195,7 @@ return T{
                 packet["_unknown2"] = 0
                 packet["Zone"] = zone
                 packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x052, delay=2, description='complete menu'})
+                actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=2, description='complete menu'})
             end
 
             return actions
@@ -250,7 +250,7 @@ return T{
                 packet["_unknown2"] = 0
                 packet["Zone"] = zone
                 packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x052, delay=2, description='complete menu'})
+                actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=2, description='complete menu'})
             end
 
             return actions
@@ -391,7 +391,7 @@ return T{
                 packet["_unknown2"] = 0
                 packet["Zone"] = zone
                 packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x05C, delay = 1, description='complete menu'})    
+                actions:append(T{packet=packet, wait_packet=0x05C, expecting_zone=false, delay = 1, description='complete menu'})    
 
                 return actions  
             elseif args[1] == 'return' then
@@ -474,7 +474,7 @@ return T{
                     packet["_unknown2"] = 0
                     packet["Zone"] = zone
                     packet["Menu ID"] = menu
-                    actions:append(T{packet=packet, wait_packet=0x05C, delay = 1, description='complete menu'})    
+                    actions:append(T{packet=packet, wait_packet=0x05C, delay = 1, expecting_zone=false, description='complete menu'})    
 
                     return actions
                 end

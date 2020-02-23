@@ -87,7 +87,7 @@ return T{
         packet["_unknown1"] = 0
         packet["Automated Message"] = false
         packet["_unknown2"] = 0
-        actions:append(T{packet=packet, wait_packet=0x05C, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options and complete menu'})
+        actions:append(T{packet=packet, wait_packet=0x05C, expecting_zone=true, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options and complete menu'})
 
 
         return actions

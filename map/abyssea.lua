@@ -145,7 +145,7 @@ return T{
             packet["_unknown1"] = 0
             packet["Automated Message"] = false
             packet["_unknown2"] = 0
-            actions:append(T{packet=packet, wait_packet=0x05C, delay=1, description='complete menu'})
+            actions:append(T{packet=packet, wait_packet=0x05C, expecting_zone=false, delay=1, description='complete menu'})
             
         else
             -- no xyz data, must be a zone warp.
@@ -218,7 +218,7 @@ return T{
             packet["_unknown2"] = 0
             packet["Zone"] = zone
             packet["Menu ID"] = menu
-            actions:append(T{packet=packet, wait_packet=0x05C, delay=1, description='send options and complete menu'})
+            actions:append(T{packet=packet, wait_packet=0x05C, expecting_zone=true, delay=1, description='send options and complete menu'})
         end
 
         return actions
@@ -270,7 +270,7 @@ return T{
                 packet["_unknown2"] = 0
                 packet["Zone"] = zone
                 packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x05C, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Entering Abyssea'})
+                actions:append(T{packet=packet, wait_packet=0x05C, expecting_zone=true, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Entering Abyssea'})
             end
 
             return actions
@@ -320,7 +320,7 @@ return T{
                 packet["_unknown2"] = 0
                 packet["Zone"] = zone
                 packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x05C, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Leaving Abyssea'})
+                actions:append(T{packet=packet, wait_packet=0x05C, expecting_zone=true, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Leaving Abyssea'})
             end
 
             return actions
