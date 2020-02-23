@@ -842,3 +842,7 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
         --debug("out 0x05B: "..t.name.." oi:"..tostring(p['Option Index']).." _u1:"..tostring(p['_unknown1']).." _u2:"..tostring(p['_unknown2']).." menu:"..tostring(p['Menu ID']).." auto:"..tostring(p['Automated Message']))
     end
 end)
+
+windower.register_event('unload', function()
+	reset(true)
+end)
