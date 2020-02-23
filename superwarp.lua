@@ -456,16 +456,16 @@ local function do_warp(map_name, zone, sub_zone)
         if not npc then
             if state.loop_count > 0 then
                 log('No ' .. map.long_name .. ' found! Retrying...')
-                do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
                 state.loop_count = state.loop_count - 1
+                do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
             else
                 log('No ' .. map.long_name .. ' found!')
             end
         elseif dist > 6^2 then
             if state.loop_count > 0 then
                 log(npc.name .. ' found, but too far! Retrying...')
-                do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
                 state.loop_count = state.loop_count - 1
+                do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
             else
                 log(npc.name .. ' found, but too far!')
             end
@@ -487,14 +487,27 @@ local function do_sub_cmd(map_name, sub_cmd, args)
     local map = maps[map_name]
 
     local npc, dist = find_npc(map.npc_names[sub_cmd])
-    if npc and npc.id and npc.index and dist <= 6^2 then
+
+    if not npc then
+        if state.loop_count > 0 then
+        	log('No '..map.long_name..' found! Retrying...')
+            state.loop_count = state.loop_count - 1
+        	do_sub_cmd:schedule(settings.retry_delay, map_name, sub_cmd, args)
+        else
+        	log('No '..map.long_name..' found!')
+        end
+    elseif dist > 6^2 then
+        if state.loop_count > 0 then
+            log(npc.name..' found, but too far! Retrying...')
+            state.loop_count = state.loop_count - 1
+        	do_sub_cmd:schedule(settings.retry_delay, map_name, sub_cmd, args)
+        else
+            log(npc.name..' found, but too far!')
+        end
+    elseif npc and npc.id and npc.index and dist <= 6^2 then
         current_activity = {type=map_name, sub_cmd=sub_cmd, args=args, npc=npc}
         handle_before_warp()
         poke_npc(npc.id, npc.index)
-    elseif not npc then
-        log('No '..map.long_name..' found!')
-    elseif dist > 6^2 then
-        log(npc.name..' found, but too far!')
     end
 end
 
