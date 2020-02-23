@@ -320,7 +320,7 @@ return T{
                 packet["_unknown2"] = 0
                 packet["Zone"] = zone
                 packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x05C, expecting_zone=true, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Leaving Abyssea'})
+                actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Leaving Abyssea'})
             end
 
             return actions
