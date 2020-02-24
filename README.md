@@ -159,3 +159,4 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 - **Feature**: Added option to simulate client lock during a warp. This will prevent your character from moving until the warp is complete. //sw reset will also clear this state.
 - **Resolved**: Somehow managing to unload superwarp during a warp/subcommand will now reset the state first (to prevent soft and client locks).
 - **Resolved**: Sub commands will now retry if the npc hasn't loaded yet or isn't near, like warp systems.
+- **Resolved**: Survival guides under thrifty transit now work with the menu id validation
