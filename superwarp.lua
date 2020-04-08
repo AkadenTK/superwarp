@@ -176,6 +176,19 @@ local function order_participants(participants)
     return participants
 end
 
+local function get_party_members(local_members)
+    local members = T{}
+    for k, v in pairs(windower.ffxi.get_party()) do
+        if type(v) == 'table' then
+            if local_members:contains(v.name) then
+                members:append(v.name)
+            end
+        end
+    end
+
+    return members
+end
+
 function wiggle_value(value, variation)
     return math.max(0, value + (math.random() * 2 * variation - variation))
 end
@@ -539,11 +552,17 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
     -- because I can't stop typing "hp warp X" because I've been trained. 
     if args[1]:lower() == 'warp' or args[1]:lower() == 'w' then args:remove(1) end
 
-    local all = args[1]:lower() == 'all' or args[1]:lower() == 'a' or args[1]:lower() == '@all'
-    if all then 
+    local all = S{'all','a','@all'}:contains(args[1]:lower())
+    local party = S{'party','p','@party'}:contains(args[1]:lower())
+    if all or party then 
         args:remove(1) 
 
-        local participants = get_participants()
+        local participants = nil
+        if all then
+            participants = get_participants()
+        elseif party then
+            participants = get_party_members(get_participants())
+        end
         participants = order_participants(participants)
         debug('sending warp to all: '..participants:concat(', '))
         --windower.send_ipc_message(warp..' '..args:concat(' '))
