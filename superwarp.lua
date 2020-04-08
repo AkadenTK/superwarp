@@ -51,6 +51,7 @@ require('functions')
 packets = require('packets')
 require('coroutine')
 config = require('config')
+require('sendall')
 
 maps = require('map/maps')
 
@@ -87,6 +88,7 @@ local defaults = {
     command_on_arrival = '',                -- inject this windower command on arriving at the next location.
     target_npc = true,                      -- locally target the warp/subcommand npc.
     simulate_client_lock = false,           -- lock the local client during a warp/subcommand, simulating menu behavior.
+    send_all_order_mode = 'melast'          -- order modes: melast, mefirst, alphabetical
 }
 
 local settings = config.load(defaults)
@@ -158,6 +160,20 @@ local function get_delay()
             return (k - 1) * settings.send_all_delay
         end
     end
+end
+
+local function order_participants(participants)
+    local player = windower.ffxi.get_player().name
+    if settings.send_all_order_mode ~= 'alphabetical' then
+        participants:delete(player)
+    end
+    table.sort(participants)
+    if settings.send_all_order_mode == 'melast' then
+        participants:append(player)
+    elseif settings.send_all_order_mode == 'mefirst' then
+        participants = T{player}:extend(participants)
+    end
+    return participants
 end
 
 function wiggle_value(value, variation)
@@ -527,12 +543,16 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
     if all then 
         args:remove(1) 
 
-        debug('sending warp to all.')
-        windower.send_ipc_message(warp..' '..args:concat(' '))
+        local participants = get_participants()
+        participants = order_participants(participants)
+        debug('sending warp to all: '..participants:concat(', '))
+        --windower.send_ipc_message(warp..' '..args:concat(' '))
 
-        local delay = get_delay()
-        debug('delay: '..delay)
-        handle_warp:schedule(delay, warp, args)
+        send_all(warp..' '..args:concat(' '), settings.send_all_delay, participants)
+
+        --local delay = get_delay()
+        --debug('delay: '..delay)
+        --handle_warp:schedule(delay, warp, args)
         return
     end
 
@@ -595,7 +615,7 @@ windower.register_event('addon command', function(...)
     for i,v in pairs(args) do args[i]=windower.convert_auto_trans(args[i]) end
     local item = table.concat(args," "):lower()
 
-    if warp_list:contains(cmd) then
+    if warp_list:contains(cmd:lower()) then
         received_warp_command(cmd, args)
     elseif cmd == 'cancel' then
         reset()
@@ -635,18 +655,29 @@ windower.register_event('unhandled command', function(cmd, ...)
 end)
 
 -- handle ipc message
-windower.register_event('ipc message', function(msg) 
+--windower.register_event('ipc message', function(msg) 
+--    local args = msg:split(' ')
+--    local cmd = args[1]
+--    args:remove(1)
+--    if cmd == 'reset' then
+--        reset()
+--    elseif warp_list:contains(cmd) then
+--        local delay = get_delay()
+--        debug('received ipc: '..msg..'. executing in '..tostring(delay)..'s.')
+--        received_warp_command:schedule(delay, cmd, args)
+--    end
+--end)
+
+function receive_send_all(msg)
     local args = msg:split(' ')
     local cmd = args[1]
     args:remove(1)
     if cmd == 'reset' then
         reset()
     elseif warp_list:contains(cmd) then
-        local delay = get_delay()
-        debug('received ipc: '..msg..'. executing in '..tostring(delay)..'s.')
-        received_warp_command:schedule(delay, cmd, args)
+        received_warp_command(cmd, args)
     end
-end)
+end
 
 local function perform_next_action()
     if current_activity and current_activity.running and current_activity.action_queue and current_activity.action_index > 0 then
