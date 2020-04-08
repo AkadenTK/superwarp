@@ -4,8 +4,11 @@ return T{
     npc_names = T{
         warp = T{'Waypoint'},
     },
-    validate_menu = function(menu_id)
-        return menu_id >= 5000 and menu_id <= 5008
+    validate = function(menu_id, zone, current_activity)
+        if not ((menu_id >= 5000 and menu_id <= 5008) or menu_id == 10121) then
+            return "Incorrect menu detected!"
+        end
+        return nil
     end,
     help_text = "[sw] wp [warp/w] [all/a/@all] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.",
     sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'couriers', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enigmatic device'},

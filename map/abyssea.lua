@@ -10,29 +10,40 @@ return T{
         enter = T{'Cavernous Maw'},
         exit = T{'Cavernous Maw'},
     },
-    validate_menu = function(menu_id)
-        return -- npc warps:
-               menu_id == 404 or --  Ernst
-               menu_id == 795 or -- Ivan
-               menu_id == 873 or -- Willis
-               menu_id == 339 or -- Horst
-               menu_id == 433 or -- Kierron
-               menu_id == 10185 or -- Vincent
-               -- enter: maws
-               menu_id == 107 or -- Konschtat
-               menu_id == 100 or -- Tahrongi
-               menu_id == 218 or -- La Theine
-               menu_id == 61 or -- Attohwa
-               menu_id == 55 or -- Misareaux
-               menu_id == 47 or -- Vunkerl
-               menu_id == 914 or -- Altepa
-               menu_id == 204 or -- Uleguerand
-               menu_id == 908 or -- Grauberg
-               -- exit: maws
-               menu_id == 200 or
-               -- confluxes: 
-              (menu_id >= 2132 and menu_id <= 2139) or -- confluxes
-               menu_id == 123 -- conflux 00
+    validate = function(menu_id, zone, current_activity)
+                -- npc warps:
+        if not (menu_id == 404 or --  Ernst
+                menu_id == 795 or -- Ivan
+                menu_id == 873 or -- Willis
+                menu_id == 339 or -- Horst
+                menu_id == 433 or -- Kierron
+                menu_id == 10185 or -- Vincent
+                -- enter: maws
+                menu_id == 107 or -- Konschtat
+                menu_id == 100 or -- Tahrongi
+                menu_id == 218 or -- La Theine
+                menu_id == 61 or -- Attohwa
+                menu_id == 55 or -- Misareaux
+                menu_id == 47 or -- Vunkerl
+                menu_id == 914 or -- Altepa
+                menu_id == 204 or -- Uleguerand
+                menu_id == 908 or -- Grauberg
+                -- exit: maws
+                menu_id == 200 or
+                -- confluxes: 
+               (menu_id >= 2132 and menu_id <= 2139) or -- confluxes
+                menu_id == 123) then -- conflux 00
+            return "Incorrect menu detected!"
+        end
+
+        if current_activity.sub_cmd == 'enter' and not entry_zones:contains(zone) then
+            return "Not in an entry zone!"
+        end
+   
+        if current_activity.sub_cmd == 'exit' and not abyssea_zones:contains(zone) then
+            return "Not in an Abyssea zone!"
+        end
+        return nil
     end,
     help_text = "[sw] ab [warp/w] [all/a/@all] conflux number -- warp to a designated conflux in your current abyssea zone.\n[sw] ab [all/a/@all] enter -- enter the abyssea zone corresponding to the entrance zone.\n[sw] ab [all/a/@all] exit -- exit the abyssea zone.",
     sub_zone_targets =  S{'00', '0', '1', '2', '3', '4', '5', '6', '7', '8', 'Cavernous Maw'},
@@ -230,48 +241,33 @@ return T{
             local menu = p["Menu ID"]
             local npc = current_activity.npc
 
-            -- La theine, konschtat or tahrongi, Buburimu, Valkurm, or Jugner, South Gustaberg, Xarcabard or Qufim
-            if not entry_zones:contains(zone) then -- we're not in an entry zone...
-                -- send the cancel menu packet.
-                packet = packets.new('outgoing', 0x05B)
-                packet["Target"] = npc.id
-                packet["Option Index"] = 0
-                packet["_unknown1"] = 16384
-                packet["Target Index"] = npc.index
-                packet["Automated Message"] = false
-                packet["_unknown2"] = 0
-                packet["Zone"] = zone
-                packet["Menu ID"] = menu
-                actions:append(T{packet=packet, description='cancel menu', message='WARNING: not in an entry zone!'})
-            else
+            
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T{packet=packet, description='update request'})
 
-                -- update request
-                packet = packets.new('outgoing', 0x016)
-                packet["Target Index"] = windower.ffxi.get_player().index
-                actions:append(T{packet=packet, description='update request'})
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 0
+            packet["_unknown1"] = 0
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, description='send options'})
 
-                packet = packets.new('outgoing', 0x05B)
-                packet["Target"] = npc.id
-                packet["Option Index"] = 0
-                packet["_unknown1"] = 0
-                packet["Target Index"] = npc.index
-                packet["Automated Message"] = true
-                packet["_unknown2"] = 0
-                packet["Zone"] = zone
-                packet["Menu ID"] = menu
-                actions:append(T{packet=packet, description='send options'})
-
-                packet = packets.new('outgoing', 0x05B)
-                packet["Target"] = npc.id
-                packet["Option Index"] = 1
-                packet["_unknown1"] = 0
-                packet["Target Index"] = npc.index
-                packet["Automated Message"] = false
-                packet["_unknown2"] = 0
-                packet["Zone"] = zone
-                packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x05C, expecting_zone=true, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Entering Abyssea'})
-            end
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 1
+            packet["_unknown1"] = 0
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, wait_packet=0x05C, expecting_zone=true, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Entering Abyssea'})
 
             return actions
         end,
@@ -281,47 +277,33 @@ return T{
             local menu = p["Menu ID"]
             local npc = current_activity.npc
 
-            if not abyssea_zones:contains(zone) then -- we're not in an abyssea zone...
-                -- send the cancel menu packet.
-                packet = packets.new('outgoing', 0x05B)
-                packet["Target"] = npc.id
-                packet["Option Index"] = 0
-                packet["_unknown1"] = 16384
-                packet["Target Index"] = npc.index
-                packet["Automated Message"] = false
-                packet["_unknown2"] = 0
-                packet["Zone"] = zone
-                packet["Menu ID"] = menu
-                actions:append(T{packet=packet, description='cancel menu', message='WARNING: not in an entry zone!'})
-            else
 
                 -- update request
-                packet = packets.new('outgoing', 0x016)
-                packet["Target Index"] = windower.ffxi.get_player().index
-                actions:append(T{packet=packet, description='update request'})
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T{packet=packet, description='update request'})
 
-                packet = packets.new('outgoing', 0x05B)
-                packet["Target"] = npc.id
-                packet["Option Index"] = 0
-                packet["_unknown1"] = 0
-                packet["Target Index"] = npc.index
-                packet["Automated Message"] = true
-                packet["_unknown2"] = 0
-                packet["Zone"] = zone
-                packet["Menu ID"] = menu
-                actions:append(T{packet=packet, description='send options'})
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 0
+            packet["_unknown1"] = 0
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, description='send options'})
 
-                packet = packets.new('outgoing', 0x05B)
-                packet["Target"] = npc.id
-                packet["Option Index"] = 1
-                packet["_unknown1"] = 0
-                packet["Target Index"] = npc.index
-                packet["Automated Message"] = false
-                packet["_unknown2"] = 0
-                packet["Zone"] = zone
-                packet["Menu ID"] = menu
-                actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Leaving Abyssea'})
-            end
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 1
+            packet["_unknown1"] = 0
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu', message='Leaving Abyssea'})
 
             return actions
         end,

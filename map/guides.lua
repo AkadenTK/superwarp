@@ -4,8 +4,11 @@ return { -- option: 1
     npc_names = T{
         warp = T{'Survival Guide'},
     },
-    validate_menu = function(menu_id)
-        return menu_id == 8500 or menu_id == 8501
+    validate = function(menu_id, zone, current_activity)
+        if not(menu_id == 8500 or menu_id == 8501) then
+            return "Incorrect menu detected!"
+        end
+        return nil
     end,
     help_text = "[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.",
     sub_zone_targets = S{},

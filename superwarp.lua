@@ -438,7 +438,7 @@ end
 local function handle_before_warp()
     if settings.stop_autorun_before_warp then
         debug('stopping autorun before warp')
-        windower.ffxi.follow() -- with no index, stops auto following.
+        --windower.ffxi.follow() -- with no index, stops auto following.
         windower.ffxi.run(false) -- stop autorun
     end
     if settings.command_before_warp and type(settings.command_before_warp) == 'string' and settings.command_before_warp ~= '' then
@@ -798,13 +798,6 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             current_activity.caught_poke = true
             local zone = windower.ffxi.get_info()['zone']
             local map = maps[current_activity.type]
-            if map.validate_menu and not map.validate_menu(p["Menu ID"]) then
-                log("Incorrect menu detected. Canceling action.")
-                last_activity = current_activity
-                state.loop_count = 0
-                current_activity = nil
-                return false
-            end
 
             if current_activity.poked_npc_id ~= p["NPC"] or current_activity.poked_npc_index ~= p["NPC Index"] then
                 log("Incorrect npc detected. Canceling action.")
@@ -818,6 +811,17 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             last_npc = p["NPC"]
             last_npc_index = p["NPC Index"]
             --debug("recorded reset params: "..last_menu.." "..last_npc)
+
+            local validation_message = nil
+            if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity) end
+            if validation_message ~= nil then
+                log("WARNING: "..validation_message.." Canceling action.")
+                last_activity = current_activity
+                state.loop_count = 0
+                current_activity = nil
+                reset(true)
+                return true
+            end
 
             current_activity.action_queue = nil
             current_activity.action_index = 1
