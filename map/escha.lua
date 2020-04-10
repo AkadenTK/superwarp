@@ -25,7 +25,7 @@ return T{
                menu_id == 14 or -- Reisenjima
                -- portal/ingress: 
                menu_id == 9100 ) then
-            return 'Incorrect menu detected!'
+            return "Incorrect menu detected! Menu ID: "..menu_id
         end
 
         if current_activity.sub_cmd == nil and zone ~= destination.zone then

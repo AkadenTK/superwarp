@@ -10,7 +10,7 @@ return { -- option: 1
                menu_id == 879 or -- Teldro-Kesdrodo
                menu_id == 879 or -- Yonolala
                menu_id == 5149) then -- Nunaarl Bthtrogg
-            return "Incorrect menu detected!"
+            return "Incorrect menu detected! Menu ID: "..menu_id
         end
         return nil
     end,

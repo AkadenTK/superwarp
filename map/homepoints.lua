@@ -7,7 +7,7 @@ return { -- option: 2
     },
     validate = function(menu_id, zone, current_activity)
         if not(menu_id >= 8700 and menu_id <= 8704) then
-            return "Incorrect menu detected!"
+            return "Incorrect menu detected! Menu ID: "..menu_id
         end
         return nil
     end,

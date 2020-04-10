@@ -33,7 +33,7 @@ return T{
                 -- confluxes: 
                (menu_id >= 2132 and menu_id <= 2139) or -- confluxes
                 menu_id == 123) then -- conflux 00
-            return "Incorrect menu detected!"
+            return "Incorrect menu detected! Menu ID: "..menu_id
         end
 
         if current_activity.sub_cmd == 'enter' and not entry_zones:contains(zone) then

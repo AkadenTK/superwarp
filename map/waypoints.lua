@@ -6,7 +6,7 @@ return T{
     },
     validate = function(menu_id, zone, current_activity)
         if not ((menu_id >= 5000 and menu_id <= 5008) or menu_id == 10121) then
-            return "Incorrect menu detected!"
+            return "Incorrect menu detected! Menu ID: "..menu_id
         end
         return nil
     end,

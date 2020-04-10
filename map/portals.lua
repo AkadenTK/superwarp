@@ -23,7 +23,7 @@ return T{
                menu_id == 109 or -- Lebros
                menu_id == 109 or -- Ilrusi
                menu_id == 117 or menu_id == 118) then -- Nyzul 
-            return "Incorrect menu detected."
+            return "Incorrect menu detected! Menu ID: "..menu_id
         end
 
         if current_activity.sub_cmd == nil and menu_id ~= 101 then

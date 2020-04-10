@@ -10,7 +10,7 @@ return T{
                menu_id == 345 or -- Mhaura
                menu_id == 266 or -- Norg
                menu_id == 141) then -- Rabao
-            return "Incorrect menu detected!"
+            return "Incorrect menu detected! Menu ID: "..menu_id
         end
         return nil
     end,
