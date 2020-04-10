@@ -27,7 +27,7 @@ return T{
         end
 
         if current_activity.sub_cmd == nil and menu_id ~= 101 then
-            return "Assault orders active. Use ""po assault"" to be taken to your assault destination."
+            return "Assault orders active. Use \"po assault\" to be taken to your assault destination."
         end
         if current_activity.sub_cmd == 'assault' and menu_id == 101 then
             return "No assault orders active."
