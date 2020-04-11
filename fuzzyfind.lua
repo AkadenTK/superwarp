@@ -77,6 +77,7 @@ end
 -- and chooses lowest one. If they're still the same it just keeps first match.
 function fmatch(needle,haystack)
     local A = {}
+    local needle = needle:gsub('%W','')
     for i=1,string.len(needle) do
         A[i] = string.sub(needle, i, i)
     end
@@ -102,15 +103,17 @@ function fmatch(needle,haystack)
             result = v
             resultvalue = m
         elseif m == resultvalue and result then
+            --print('  double match:',string.lower(result),vl)
             local d1 = LEV(needle,string.lower(result))
             local d2 = LEV(needle,vl)
            
             local med = d1
-            if d2 < d1 then
+            if d2 < d1 or (d2 == d1 and #vl < #result) then
                 result = v
                 resultvalue = m
                 med = d2
             end
+            --print('  picked:',result,'-dist:',med)
         end
     end
     return result
