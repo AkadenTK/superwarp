@@ -175,3 +175,4 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 - **Improvement**: New option to send to all characters in an order mode (me-first, me-last, or just alphabetical)
 - **Feature**: New option to send to just party members. Other key words that work: party, p, @party. Uses above order mode too.
 - **Improvement**: Separated sendall logic into a copyable library. Enjoy!
+- **Improvement**: Added fuzzy logic from Lili. Thanks!
