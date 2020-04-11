@@ -150,18 +150,20 @@ return T{
             return actions
         end,
     },
-    ['Azouph Isle'] = T{ index = 1},
-    ['Leujaoam Sanctum'] = T{ index = 1},
+    warpdata = T{
+        ['Azouph Isle'] = T{ index = 1},
+        ['Leujaoam Sanctum'] = T{ index = 1},
 
-    ['Dvucca Isle'] = T{ index = 2},
-    ['Periqia'] = T{ index = 2},
+        ['Dvucca Isle'] = T{ index = 2},
+        ['Periqia'] = T{ index = 2},
 
-    ['Mamool Ja Training Grounds'] = T{ index = 3},
+        ['Mamool Ja Training Grounds'] = T{ index = 3},
 
-    ['Halvung'] = T{ index = 4},
-    ['Lebros Caverns'] = T{ index = 4},
+        ['Halvung'] = T{ index = 4},
+        ['Lebros Caverns'] = T{ index = 4},
 
-    ['Ilrusi Atoll'] = T{ index = 5},
+        ['Ilrusi Atoll'] = T{ index = 5},
 
-    ['Nyzul Isle'] = T{ index = 6},
+        ['Nyzul Isle'] = T{ index = 6},
+    },
 }

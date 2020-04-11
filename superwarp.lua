@@ -51,7 +51,9 @@ require('functions')
 packets = require('packets')
 require('coroutine')
 config = require('config')
+
 require('sendall')
+require('fuzzyfind')
 
 maps = require('map/maps')
 
@@ -145,21 +147,12 @@ function has_bit(data, x)
   return data:unpack('q', math.floor(x/8)+1, x%8+1)
 end
 
-local function get_delay()
-    -- gets the delay before executing the warp. Based on party list, sorted by name ascending.
-    local self = windower.ffxi.get_player().name
-    local members = {}
-    for k, v in pairs(windower.ffxi.get_party()) do
-        if type(v) == 'table' then
-            members[#members + 1] = v.name
-        end
+local function get_keys(t)
+    local keys = T{}
+    for k, v in pairs(t) do
+        keys:append(k)
     end
-    table.sort(members)
-    for k, v in pairs(members) do
-        if v == self then
-            return (k - 1) * settings.send_all_delay
-        end
-    end
+    return keys
 end
 
 local function order_participants(participants)
@@ -204,74 +197,35 @@ local function resolve_sub_zone_aliases(raw)
     return raw
 end
 
-function get_fuzzy_name(name)
-    return tostring(name):lower():gsub("%s", ""):gsub("%p", "")
-end
+local function resolve_shortcuts(t, selection)
+    if selection.shortcut == nil then return selection end
 
-function get_shortcut_match(map_name, needle)
-    if settings.shortcuts == nil or settings.shortcuts[map_name] == nil then
-        return nil
-    end
-    -- check custom shortcuts
-    local fuzzy_needle = get_fuzzy_name(needle)
-
-    local destination, score
-    for haystack, value in pairs(settings.shortcuts[map_name]) do
-        local fuzzy_haystack = get_fuzzy_name(haystack)
-        if fuzzy_needle:length() >= 3 and fuzzy_haystack == fuzzy_needle then
-            local cur_score = fuzzy_haystack:length() - fuzzy_needle:length()
-            if not destination or cur_score < score then
-                destination = value
-                score = cur_score
-            end
-        end
-    end
-    return destination
-end
-
-function get_closest_match(map, needle)
-    local fuzzy_needle = get_fuzzy_name(needle)
-
-    local key, score
-    for haystack, value in pairs(map) do
-        local fuzzy_haystack = get_fuzzy_name(haystack)
-        if (fuzzy_needle:length() >= 3 and fuzzy_haystack:contains(fuzzy_needle)) or fuzzy_haystack == fuzzy_needle then
-            local cur_score = fuzzy_haystack:length() - fuzzy_needle:length()
-            if not key or cur_score < score then
-                key = haystack
-                score = cur_score
-            end
-        end
-    end
-    return key
+    return resolve_shortcuts(t, t[selection.shortcut])
 end
 
 local function resolve_warp(map_name, zone, sub_zone)
-    local shortcut_result = get_shortcut_match(map_name, zone)
-    if shortcut_result ~= nil then
-        if shortcut_result.sub_zone ~= nil then
-            debug("found custom shortcut: "..zone.." -> "..shortcut_result.zone.." "..shortcut_result.sub_zone)
-            sub_zone = shortcut_result.sub_zone
-        else
-            debug("found custom shortcut: "..zone.." -> "..shortcut_result.zone)
+    if settings.shortcuts and settings.shortcuts[map_name] then
+        local shortcut_map = settings.shortcuts[map_name][zone]
+        if shortcut_map ~= nil then
+            if shortcut_map.sub_zone ~= nil then
+                debug("found custom shortcut: "..zone.." -> "..shortcut_map.zone.." "..shortcut_map.sub_zone)
+                sub_zone = shortcut_map.sub_zone
+            else
+                debug("found custom shortcut: "..zone.." -> "..shortcut_map.zone)
+            end
+            zone = shortcut_map.zone
         end
-        zone = shortcut_result.zone
     end
 
-    local closest_zone_name = get_closest_match(maps[map_name], zone)
+    local closest_zone_name = fmatch(zone, get_keys(maps[map_name].warpdata))
     if closest_zone_name then
-        local zone_map = maps[map_name][closest_zone_name]
+        local zone_map = maps[map_name].warpdata[closest_zone_name]
         if type(zone_map) == 'table' and not (zone_map.index or zone_map.shortcut) then
             if sub_zone ~= nil then
-                local closest_sub_zone_name = get_closest_match(zone_map, sub_zone)
+                local closest_sub_zone_name = fmatch(sub_zone, get_keys(zone_map))
                 local sub_zone_map = zone_map[closest_sub_zone_name]
                 if sub_zone_map then
-                    if sub_zone_map.shortcut then
-                        if zone_map[sub_zone_map.shortcut] and type(zone_map[sub_zone_map.shortcut]) == 'table' then
-                            debug('found shortcut: '..sub_zone_map.shortcut)
-                            sub_zone_map = zone_map[sub_zone_map.shortcut]
-                        end
-                    end
+                    sub_zone_map = resolve_shortcuts(zone_map, sub_zone_map)
                     if sub_zone_map.index then
                         debug('found warp index: '..closest_zone_name..'/'..closest_sub_zone_name..' ('..sub_zone_map.index..')')
                         return sub_zone_map, closest_zone_name..' - '..closest_sub_zone_name
@@ -285,22 +239,33 @@ local function resolve_warp(map_name, zone, sub_zone)
                 end
             else
                 if settings.favorites and settings.favorites[map_name] then
-                    for fz, fsz in pairs(settings.favorites[map_name]) do
-                        if get_fuzzy_name(fz) == get_fuzzy_name(closest_zone_name) then
-                            for sz, sub_zone_map in pairs(zone_map) do
-                                if sz == tostring(resolve_sub_zone_aliases(fsz)) then
-                                    if sub_zone_map.shortcut then
-                                        if zone_map[sub_zone_map.shortcut] and type(zone_map[sub_zone_map.shortcut]) == 'table' then
-                                            debug ('found shortcut: '..sub_zone_map.shortcut)
-                                            sub_zone_map = zone_map[sub_zone_map.shortcut]
-                                        end
-                                    end
-                                    debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using favorite ('..sz..')')
-                                    return sub_zone_map, closest_zone_name..' - '..sz.." (F)"
-                                end
-                            end
+                    local favorite_result = settings.favorites[map_name][get_fuzzy_name(closest_zone_name)]
+                    if favorite_result then
+                        local fr = tostring(resolve_sub_zone_aliases(favorite_result))
+                        local sub_zone_map = zone_map[fr]
+                        if sub_zone_map then
+                            sub_zone_map = resolve_shortcuts(zone_map, sub_zone_map)
+
+                            debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using favorite ('..fr..')')
+                            return sub_zone_map, closest_zone_name..' - '..fr.." (F)"
                         end
                     end
+                    --for fz, fsz in pairs(settings.favorites[map_name]) do
+                    --    if get_fuzzy_name(fz) == get_fuzzy_name(closest_zone_name) then
+                    --        for sz, sub_zone_map in pairs(zone_map) do
+                    --            if sz == tostring(resolve_sub_zone_aliases(fsz)) then
+                    --                if sub_zone_map.shortcut then
+                    --                    if zone_map[sub_zone_map.shortcut] and type(zone_map[sub_zone_map.shortcut]) == 'table' then
+                    --                        debug ('found shortcut: '..sub_zone_map.shortcut)
+                    --                        sub_zone_map = zone_map[sub_zone_map.shortcut]
+                    --                    end
+                    --                end
+                    --                debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using favorite ('..sz..')')
+                    --                return sub_zone_map, closest_zone_name..' - '..sz.." (F)"
+                    --            end
+                    --        end
+                    --    end
+                    --end
                 end
                 for sz, sub_zone_map in pairs(zone_map) do
                     if sub_zone_map.shortcut then
@@ -380,6 +345,10 @@ end
 local function distance_sqd(a, b)
     local dx, dy = b.x-a.x, b.y-a.y
     return dy*dy + dx*dx
+end
+
+function get_fuzzy_name(name)
+    return tostring(name):lower():gsub("%s", ""):gsub("%p", "")
 end
 
 local function find_npc(needles)
@@ -565,13 +534,9 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
         end
         participants = order_participants(participants)
         debug('sending warp to all: '..participants:concat(', '))
-        --windower.send_ipc_message(warp..' '..args:concat(' '))
 
         send_all(warp..' '..args:concat(' '), settings.send_all_delay, participants)
 
-        --local delay = get_delay()
-        --debug('delay: '..delay)
-        --handle_warp:schedule(delay, warp, args)
         return
     end
 
@@ -672,20 +637,6 @@ windower.register_event('unhandled command', function(cmd, ...)
         received_warp_command(cmd, args)
     end
 end)
-
--- handle ipc message
---windower.register_event('ipc message', function(msg) 
---    local args = msg:split(' ')
---    local cmd = args[1]
---    args:remove(1)
---    if cmd == 'reset' then
---        reset()
---    elseif warp_list:contains(cmd) then
---        local delay = get_delay()
---        debug('received ipc: '..msg..'. executing in '..tostring(delay)..'s.')
---        received_warp_command:schedule(delay, cmd, args)
---    end
---end)
 
 function receive_send_all(msg)
     local args = msg:split(' ')
