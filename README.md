@@ -116,7 +116,7 @@ When handling the menu through the game's vanilla systems, warping between two h
 Superwarp is no longer able to warp to locations you have not unlocked yet. Square has started checking serverside. 
 
 ### Multi-boxing features
-Every command can be sent to all characters by prepending the "all" keyword before the zone name and sub-zone destination or the sub-command. This will send the same command to all characters on the same machine and delay their responses to prevent Square-Enix's servers from rejecting duplicate packets.
+Every command can be sent to all characters by prepending the "all" or "party" keyword before the zone name and sub-zone destination or the sub-command. This will send the same command to all characters on the same machine or all characters on the same machine in the same party and delay their responses to prevent Square-Enix's servers from rejecting duplicate packets.
 
 The default behavior of Superwarp is to cancel the in-game follow and autorun during a warp/sub-command event. But to disable this (for some reason), there is an option in the settings.xml file.
 
@@ -128,6 +128,8 @@ Thanks to Ivaar and Thorny for their work on figuring out the waypoint currency 
 Thanks to Kenshi for helping collect data about same-zone warp coordinates accurately.
 
 Thanks to Ivaar for also helping with the elvorseal state and receive packets, data for unlocked homepoints, waypoints and survival guides, and for helping with the client menu-lock reset functions.
+
+Thanks to Lili for researching a better fuzzy matching logic.
 
 ### Updates
 #### v0.96

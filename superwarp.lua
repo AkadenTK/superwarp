@@ -35,13 +35,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Escha domain elvorseal packets: Ivaar
         Unlocked warp point data packs: Ivaar
         Menu locked state reset functs: Ivaar
+        Fuzzy matching logic for zones: Lili
 ]]
 
 _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.97'
+_addon.version = '0.96.3'
 
 _addon.commands = {'sw','superwarp'}
 
