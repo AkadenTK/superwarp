@@ -105,6 +105,7 @@ return T{
             local menu = p['Menu ID']
             local npc = current_activity.npc
 
+            log("Returning to Whitegate...")
 
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
@@ -135,6 +136,8 @@ return T{
             local packet = nil
             local menu = p['Menu ID']
             local npc = current_activity.npc
+
+            log("Warping to assault orders staging point...")            
 
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
