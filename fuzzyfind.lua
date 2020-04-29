@@ -45,15 +45,15 @@ local function path_extract1(L, A, i, B, j)
         end
     end
 end
- 
+
 -- https://en.wikipedia.org/wiki/Levenshtein_distance
-local function LEV(a,a)
+function LEV(a,b)
   local M = {}
-  local row,col = #a+1,#a+1
-  for i = 1,row do
+  local row,col = #a+1,#b+1
+  for i = 1,row do 
     M[i] = {}
-    for j = 1,col do
-        M[i][j] = 0
+    for j = 1,col do 
+        M[i][j] = 0 
     end
   end
   for i = 1,row do M[i][1] = i-1 end
@@ -61,7 +61,7 @@ local function LEV(a,a)
   local cost = 0
   for i = 2,row do
     for j = 2,col do
-      if (a:sub(i-1,i-1) == a:sub(j-1,j-1)) then cost = 0 --not too happy about :sub
+      if (a:sub(i-1,i-1) == b:sub(j-1,j-1)) then cost = 0 --not too happy about :sub
       --if (A[i-1][i-1] == B[j-1][j-1]) then cost = 0
       else cost = 1
       end
@@ -70,14 +70,17 @@ local function LEV(a,a)
   end
   return M[row][col]
 end
- 
+
 -- fmatch(string needle, table haystack)
--- iterates haystack to look for longest LCS
+-- iterates haystack 
+-- if perfect match is found, return it immediately and stop
+-- otherwise look for longest LCS (perfect substrings score #needle+1)
 -- when two are found with same LCS, calculates Levenshtein distance for both
--- and chooses lowest one. If they're still the same it just keeps first match.
+-- and chooses lowest one. If they're still the same it chooses the shortest string.
+-- If they're the same length it just keeps first match.
 function fmatch(needle,haystack)
     local A = {}
-    local needle = needle:gsub('%W',''):lower()
+    local needle = needle:gsub('[^%w%s]',''):lower()
     for i=1,string.len(needle) do
         A[i] = string.sub(needle, i, i)
     end
@@ -85,7 +88,10 @@ function fmatch(needle,haystack)
     local result
     local resultvalue = -1
     for _,v in ipairs(haystack) do
-        local vl = string.lower(v)
+        local vl = v:gsub('[^%w%s]',''):lower()
+        if vl == needle then
+            return v
+        end    
         local B = {}
         for j=1,string.len(vl) do
             B[j] = string.sub(vl, j, j)
@@ -97,23 +103,26 @@ function fmatch(needle,haystack)
                 L[i][j] = -1
             end
         end
- 
-        local m = LCS(A,1,#A,B,1,#B,L)
-        if m > resultvalue then
+
+        local m = -1
+        if vl:find(needle) then
+            m = #needle+1
+        else
+            m = LCS(A,1,#A,B,1,#B,L)
+        end
+        if m > resultvalue then 
             result = v
             resultvalue = m
         elseif m == resultvalue then
-            --print('  double match:',string.lower(result),vl)
             local d1 = LEV(needle,string.lower(result))
             local d2 = LEV(needle,vl)
-           
+            
             local med = d1
-            if d2 < d1 or (d2 == d1 and #vl < #result) then
+            if d2 == d1 and #vl < #result or d2 < d1 then
                 result = v
                 resultvalue = m
                 med = d2
-            end
-            --print('  picked:',result,'-dist:',med)
+            end     
         end
     end
     return result
