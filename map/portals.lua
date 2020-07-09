@@ -47,12 +47,12 @@ return T{
 
         local is_stock = p["Menu Parameters"]:unpack('i', 13)
         local captain = p["Menu Parameters"]:unpack('b4', 17) == 1
-        local unlock_bit_start = 33
+        local unlock_bit_start = 32
 
-        local portal_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + (6-destination.index))
+        local portal_unlocked = has_bit(p["Menu Parameters"], unlock_bit_start + destination.index)
         debug('portal unlocked: '..tostring(portal_unlocked))
 
-        if not settings.enable_locked_warps and not portal_unlocked then
+        if not portal_unlocked then
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
             packet["Option Index"] = 0
