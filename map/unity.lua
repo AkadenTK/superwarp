@@ -34,7 +34,7 @@ return { -- option: 1
 
         debug('unity warp is unlocked: '..tostring(destination_unlocked))
 
-        if not settings.enable_locked_warps and not destination_unlocked then
+        if not destination_unlocked then
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
             packet["Option Index"] = 0

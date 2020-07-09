@@ -25,7 +25,7 @@ return { -- option: 1
 
         debug('guide is unlocked: '..tostring(has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset)))
 
-        if not settings.enable_locked_warps and not has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset) then
+        if not has_bit(p["Menu Parameters"], unlock_bit_start + destination.offset) then
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
             packet["Option Index"] = 0

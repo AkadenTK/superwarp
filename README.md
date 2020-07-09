@@ -107,7 +107,7 @@ Further customization can be done with the Shortcuts section in the settings fil
 When handling the menu through the game's vanilla systems, warping between two homepoints or waypoints in the same zone sends a packet that moves your character without zoning out. Escha/Reis do this too. This is usually accompanied by a fade-to-black animation. When this occurs through Superwarp, no animations are played. It's faster, but it can look jarring. You can disable this behavior for some zones (Escha/Reis cannot be, because of the nature of the zone) with a setting: `<enable_same_zone_teleport>false</enable_same_zone_teleport>`. It is true by default. 
 
 ### Locked homepoints and waypoints
-Superwarp by default allows teleporting to homepoints that have yet to be reached. But in the event that the user wants to disable this feature for safety, edit the setting in the data/settings.xml file as such: `<enable_locked_warps>false</enable_locked_warps>`.
+Superwarp is no longer able to warp to locations you have not unlocked yet. Square has started checking serverside. 
 
 ### Multi-boxing features
 Every command can be sent to all characters by prepending the "all" keyword before the zone name and sub-zone destination or the sub-command. This will send the same command to all characters on the same machine and delay their responses to prevent Square-Enix's servers from rejecting duplicate packets.
@@ -160,3 +160,6 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 - **Resolved**: Somehow managing to unload superwarp during a warp/subcommand will now reset the state first (to prevent soft and client locks).
 - **Resolved**: Sub commands will now retry if the npc hasn't loaded yet or isn't near, like warp systems.
 - **Resolved**: Survival guides under thrifty transit now work with the menu id validation
+
+#### v0.96.3
+- **Resolved**: Removed option to warp to locations you have not unlocked yet as the July update broke this functionality for good. 

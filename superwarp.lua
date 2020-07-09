@@ -41,7 +41,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.96.2'
+_addon.version = '0.96.3'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -81,7 +81,6 @@ local defaults = {
     enable_same_zone_teleport = true,       -- enable teleporting between points in the same zone. This is the default behavior in-game. Turning it off will look different than teleporting manually.
     enable_fast_retry_on_interrupt = false, -- after an event skip event, attempt a fast-retry that doesn't wait for packets or delay.
     use_tabs_at_survival_guides = false,    -- use tabs instead of gil at survival guides.
-    enable_locked_warps = true,             -- enables warp destinations not unlocked yet. 
     stop_autorun_before_warp = true,        -- stop autorunning before using any warp system or subcommand
     command_before_warp = '',               -- inject this windower command before using any warp system or subcommand
     command_delay_on_arrival = 5,           -- delay before running command_on_arrival

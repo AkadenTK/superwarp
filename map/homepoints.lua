@@ -22,7 +22,7 @@ return { -- option: 2
 
         debug('homepoint is unlocked: '..tostring(has_bit(p["Menu Parameters"], unlock_bit_start + destination.index)))
 
-        if not settings.enable_locked_warps and not has_bit(p["Menu Parameters"], unlock_bit_start + destination.index) then
+        if not has_bit(p["Menu Parameters"], unlock_bit_start + destination.index) then
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
             packet["Option Index"] = 0
