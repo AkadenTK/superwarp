@@ -226,7 +226,7 @@ return T{ -- option: 1
         ['Hidhaegg'] = { index = 1601, z = "The Boyahda Tree", pops = "Map 1 : (D-6), Map 2 : (I-10), Map 3 : (F-6)", },
         ['Sovereign Behemoth'] = { index = 1569, z = "Behemoth's Dominion", pops = "(E-8), (G-8), (J-9)", },
         ['Tolba'] = { index = 1633, z = "Valley of Sorrows", pops = "(G-8), (F-9), (G-9)", },
-        ['Thu\'ban'] = { index = 1655, offset = 5, z = "Wajaom Woodlands", pops = "(K-9), (I-8), (I-9)", },
+        ['Thu\'ban'] = { index = 1665, offset = 5, z = "Wajaom Woodlands", pops = "(K-9), (I-8), (I-9)", },
         ['Sarama'] = { index = 1697, offset = 5, z = "Mount Zhayolm", pops = "(D-5), (C-6), (E-7)", },
         ['Shedu'] = { index = 1729, offset = 6, z = "Caedarva Mire", pops = "Map 4 : (H-7), (G-8), (I-7)", },
         ['Tumult Curator'] = { index = 1761, offset = 7, z = "Aydeewa Subterrane", pops = "Map 2 : (J-9), (K-7), (L-8)", },
