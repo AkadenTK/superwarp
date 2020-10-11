@@ -1,6 +1,7 @@
 return T{
     short_name = 'pwp',
     long_name = 'proto-waypoint',
+    npc_plural = 'proto-waypoints',
     npc_names = T{
         warp = T{'Proto-Waypoint'},
     },
@@ -13,6 +14,21 @@ return T{
             return "Incorrect menu detected! Menu ID: "..menu_id
         end
         return nil
+    end,
+    missing = function(warpdata, zone, p)
+        local missing = T{}
+        local unlock_bit_start = 0
+
+        for z, zd in pairs(warpdata) do
+            if not zd.shortcut then
+                if zd.offset then
+                    if not has_bit(p["Menu Parameters"], unlock_bit_start + zd.offset) then
+                        missing:append(z)
+                    end
+                end
+            end
+        end
+        return missing
     end,
     help_text = "[sw] pwp [warp/w] [all/a/@all] zone name -- warp to a designated geomagnetic fount. \"all\" sends ipc to all local clients.",
     build_warp_packets = function(current_activity, zone, p, settings)

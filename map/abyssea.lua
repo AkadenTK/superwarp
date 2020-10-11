@@ -5,6 +5,7 @@ local abyssea_zones = S{ 15, 45, 132, 215, 216, 217, 218, 253, 254}
 return T{
     short_name = 'ab',
     long_name = 'veridical conflux',
+    npc_plural = 'abyssean npcs',
     npc_names = T{
         warp = T{'Veridical Conflux', 'Ernst', 'Ivan', 'Willis', 'Horst', 'Kierron', 'Vincent'},
         enter = T{'Cavernous Maw'},
@@ -44,6 +45,33 @@ return T{
             return "Not in an Abyssea zone!"
         end
         return nil
+    end,
+    missing = function(warpdata, zone, p)
+        local missing = T{}
+        local unlock_bit_start = 128
+
+        local zd = nil
+        if zone == 15 then zd = warpdata[ 'Abyssea - Konschtat' ] end
+        if zone == 45 then zd = warpdata[ 'Abyssea - Tahrongi' ] end
+        if zone == 132 then zd = warpdata[ 'Abyssea - La Theine' ] end
+        if zone == 215 then zd = warpdata[ 'Abyssea - Attohwa' ] end
+        if zone == 216 then zd = warpdata[ 'Abyssea - Misareaux' ] end
+        if zone == 217 then zd = warpdata[ 'Abyssea - Vunkerl' ] end
+        if zone == 218 then zd = warpdata[ 'Abyssea - Altepa' ] end
+        if zone == 253 then zd = warpdata[ 'Abyssea - Uleguerand' ] end
+        if zone == 254 then zd = warpdata[ 'Abyssea - Grauberg' ] end
+        if zd == nil then
+            return nil, 'You cannot check missing destinations from here.'
+        end
+
+        for d, dd in pairs(zd) do
+            if not dd.shortcut and dd.offset then
+                if not has_bit(p["Menu Parameters"], unlock_bit_start + dd.offset) then
+                    missing:append(z..'-'..d)
+                end
+            end
+        end
+        return missing
     end,
     help_text = "[sw] ab [warp/w] [all/a/@all] conflux number -- warp to a designated conflux in your current abyssea zone.\n[sw] ab [all/a/@all] enter -- enter the abyssea zone corresponding to the entrance zone.\n[sw] ab [all/a/@all] exit -- exit the abyssea zone.",
     sub_zone_targets =  S{'00', '0', '1', '2', '3', '4', '5', '6', '7', '8', 'Cavernous Maw'},

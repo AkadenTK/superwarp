@@ -11,6 +11,29 @@ return T{ -- option: 2
         end
         return nil
     end,
+    missing = function(warpdata, zone, p)
+        local missing = T{}
+        local unlock_bit_start = 32
+
+        for z, zd in pairs(warpdata) do
+            if not zd.shortcut then
+                if not zd.index then
+                    for d, dd in pairs(zd) do
+                        if not dd.shortcut then
+                            if not has_bit(p["Menu Parameters"], unlock_bit_start + dd.index) then
+                                missing:append(z..'-'..d)
+                            end                            
+                        end
+                    end
+                else
+                    if not has_bit(p["Menu Parameters"], unlock_bit_start + zd.index) then
+                        missing:append(z)
+                    end
+                end
+            end
+        end
+        return missing
+    end,
     help_text = "[sw] hp [warp/w] [all/a/@all] zone name [homepoint_number] -- warp to a designated homepoint. \"all\" sends ipc to all local clients.\n[sw] hp [all/a/@all] set -- set the closest homepoint as your return homepoint",
     sub_zone_targets = S{'entrance', 'mog house', 'auction house', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
     build_warp_packets = function(current_activity, zone, p, settings)
@@ -386,7 +409,7 @@ return T{ -- option: 2
         ['Windurst Waters \[S\]'] = { index = 70, expac = 4, zone = 94, npc = 468},
         ['Upper Delkfutt\'s Tower'] = { index = 71, expac = 4, zone = 158, npc = 187},
         ['The Shrine of Ru\'Avitau'] = { index = 72, expac = 1, zone = 178, npc = 529},
-        ['Riverne - Site \#B01'] = { index = 73, expac = 2, zone = 29, npc = 250},
+        ['Riverne - Site #B01'] = { index = 73, expac = 2, zone = 29, npc = 250},
         ['Bhaflau Thickets'] = { index = 74, expac = 3, zone = 52, npc = 410},
         ['Caedarva Mire'] = { index = 75, expac = 3, zone = 79, npc = 551},
         ['Uleguerand Range'] = {

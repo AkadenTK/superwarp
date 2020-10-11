@@ -34,6 +34,25 @@ return T{
         end
         return nil
     end,
+    missing = function(warpdata, zone, p)
+        local missing = T{}
+        local unlock_bit_start = 32
+
+        if zone ~= 50 then
+            return nil, 'You cannot check missing destinations from here.'
+        end
+
+        for z, zd in pairs(warpdata) do
+            if not zd.shortcut then
+                if zd.index then
+                    if not has_bit(p["Menu Parameters"], unlock_bit_start + zd.index) then
+                        missing:append(z)
+                    end
+                end
+            end
+        end
+        return missing
+    end,
     help_text = "[sw] po [warp/w] [all/a/@all] staging point -- warp to a designated staging point.\n[sw] po [all/a/@all] return -- Return to Whitegate from the staging point.\n[sw] po [all/a/@all] assault -- Head to your current assault tag location.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.\n[sw] ew [all/a/@all] exit -- leave escha.",
     sub_zone_targets =  nil,
     auto_select_zone = function(zone)

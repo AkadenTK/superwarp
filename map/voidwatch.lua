@@ -3,7 +3,8 @@ local menu_ids = S{962, 1023, 264, 16, 316, 49, 627, 24, 7, 6, -- present
                    79, 657, 46, 25, 8, 15} -- shadowreign
 return T{ --  index: 1
     short_name = 'vw',
-    long_name = 'atmacite refiner',
+    long_name = 'voidwatch',
+    npc_plural = 'atmacite refiners',
     npc_names = T{
         warp = T{"Atmacite Refiner"},
     },
@@ -16,6 +17,21 @@ return T{ --  index: 1
             return "Cannot teleport from here."
         end
         return nil
+    end,
+    missing = function(warpdata, zone, p)
+        local missing = T{}
+        local unlock_bits = p["Menu Parameters"]:unpack('I', 21)
+
+        for z, zd in pairs(warpdata) do
+            if not zd.shortcut then
+                if zd.unlocked then
+                    if bit.band(unlock_bits, zd.unlocked) == 0 then
+                        missing:append(z)
+                    end
+                end
+            end
+        end
+        return missing
     end,
     help_text = "[sw] vw [warp/w] [all/a/@all] zone name -- warp to a designated voidwatch zone. \"all\" sends ipc to all local clients.",
     sub_zone_targets = S{},

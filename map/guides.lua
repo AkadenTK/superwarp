@@ -1,6 +1,7 @@
 return T{ -- option: 1
     short_name = 'sg',
     long_name = 'survival guide',
+    npc_plural = 'survival guides',
     npc_names = T{
         warp = T{'Survival Guide'},
     },
@@ -9,6 +10,21 @@ return T{ -- option: 1
             return "Incorrect menu detected! Menu ID: "..menu_id
         end
         return nil
+    end,
+    missing = function(warpdata, zone, p)
+        local missing = T{}
+        local unlock_bit_start = 12*8
+
+        for z, zd in pairs(warpdata) do
+            if not zd.shortcut then
+                if zd.offset then
+                    if not has_bit(p["Menu Parameters"], unlock_bit_start + zd.offset) then
+                        missing:append(z)
+                    end
+                end
+            end
+        end
+        return missing
     end,
     help_text = "[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.",
     sub_zone_targets = S{},

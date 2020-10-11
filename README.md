@@ -9,6 +9,7 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 | --- | --- |
 | //[sw] hp [warp] [all/party] zone_name [homepoint_number]  | Warp to a specified homepoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "entrance" (or simpler "e"), "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the homepoint_number is omitted, the first homepoint will be chosen (from the mapping). |
 | //[sw] hp [all/party] set  | Set the nearest homepoint as your home point. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+| //[sw] hp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
 
 
 #### Waypoint Commands
@@ -16,12 +17,15 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 | --- | --- |
 | //[sw] wp [warp] [all/party] zone_name [waypoint_number]  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "fs", "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the waypoint_number is omitted, the first waypoint will be chosen (from the mapping). |
 | //[sw] pwp [warp] [all/party] zone_name  | Warp to a specified proto-waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+| //[sw] wp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
+| //[sw] pwp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
 
 
 #### Survival Guide Commands
 | Command | Action |
 | --- | --- |
 | //[sw] sg [warp] [all/party] zone_name  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] sg [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
 
 
 #### Escha Commands
@@ -32,12 +36,14 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 | //[sw] ew [all/party] domain  | Aquires Elvorseal if it is available and your character does not already have it, then teleports to the area where the Domain Invasion dragon will apper.  |
 | //[sw] ew [all/party] domain return  | Returns the Elvorseal status effect if your character has it.  |
 | //[sw] ew [all/party] exit  | Leaves the Escha/Reis zones from the undulating confluenc or dimensional portal in within the zone. "sw" is optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] ew [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. Note: this can only be done inside a zone, and only for the zone you are currently in. |
 
 
 #### Unity Commands
 | Command | Action |
 | --- | --- |
 | //[sw] un [warp] [all/party] zone_name  | Warp to a specified zone or the correct zone for a specified Unity NM. If an NM is specified, Superwarp will display the coordinates for the spawn NPCs. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] un [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
 
 
 #### Abyssea Commands
@@ -46,6 +52,7 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 | //[sw] ab [warp] [all/party] zone_name_or_conflux  | Warp to a specified abyssea entry zone or conflux number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] ab [all/party] enter  | Enter the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] ab [all/party] exit  | Leave the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] ab [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. Note: this can only be done inside a zone, and only for the zone you are currently in. |
 
 #### Runic Portal Commands
 | Command | Action |
@@ -53,6 +60,7 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 | //[sw] po [warp] [all/party] staging_point  | Warp to a specified assault staging point. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] po [all/party] assault  | Be taken to your current assault mission staging point. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] po [all/party] return  | Leave the assault staging area and return to Whitegate. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] po [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
 
 #### Misc. Commands
 | Command | Action |
@@ -178,3 +186,6 @@ Thanks to Lili for researching a better fuzzy matching logic.
 - **Feature**: New option to send to just party members. Other key words that work: party, p, @party. Uses above order mode too.
 - **Improvement**: Separated sendall logic into a copyable library. Enjoy!
 - **Improvement**: Added fuzzy logic from Lili. Thanks!
+
+#### v0.97.1
+- **Feature**: Added command to detect destinations that have yet to be unlocked.

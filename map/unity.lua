@@ -1,6 +1,7 @@
 return T{ -- option: 1
     short_name = 'un',
-    long_name = 'unity npc',
+    long_name = 'unity',
+    npc_plural = 'unity npcs',
     npc_names = T{
         warp = T{"Igsli", "Urbiolaine", "Teldro-Kesdrodo", "Yonolala", "Nunaarl Bthtrogg"},
     },
@@ -13,6 +14,21 @@ return T{ -- option: 1
             return "Incorrect menu detected! Menu ID: "..menu_id
         end
         return nil
+    end,
+    missing = function(warpdata, zone, p)
+        local missing = T{}
+        local unlock_bit_start = (0x20 - 0x08) * 8
+
+        for z, zd in pairs(warpdata) do
+            if not zd.shortcut then
+                if zd.offset then
+                    if not has_bit(p["Menu Parameters"], unlock_bit_start + zd.offset) then
+                        missing:append(z)
+                    end
+                end
+            end
+        end
+        return missing
     end,
     help_text = "[sw] un [warp/w] [all/a/@all] zone name -- warp to a designated unity zone. \"all\" sends ipc to all local clients.",
     sub_zone_targets = S{},
