@@ -42,7 +42,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.97'
+_addon.version = '0.97.1'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -455,11 +455,11 @@ local function do_warp(map_name, zone, sub_zone)
 
         if not npc then
             if state.loop_count > 0 then
-                log('No ' .. map.long_name .. ' found! Retrying...')
+                log('No ' .. map.npc_plural .. ' found! Retrying...')
                 state.loop_count = state.loop_count - 1
                 do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
             else
-                log('No ' .. map.long_name .. ' found!')
+                log('No ' .. map.npc_plural .. ' found!')
             end
         elseif dist > 6^2 then
             if state.loop_count > 0 then
@@ -490,11 +490,11 @@ local function do_sub_cmd(map_name, sub_cmd, args)
 
     if not npc then
         if state.loop_count > 0 then
-        	log('No '..map.long_name..' found! Retrying...')
+        	log('No '..map.npc_plural..' found! Retrying...')
             state.loop_count = state.loop_count - 1
         	do_sub_cmd:schedule(settings.retry_delay, map_name, sub_cmd, args)
         else
-        	log('No '..map.long_name..' found!')
+        	log('No '..map.npc_plural..' found!')
         end
     elseif dist > 6^2 then
         if state.loop_count > 0 then
@@ -509,6 +509,36 @@ local function do_sub_cmd(map_name, sub_cmd, args)
         handle_before_warp()
         poke_npc(npc.id, npc.index)
     end
+end
+
+local function do_find_missing_destinations(map_name, args)
+    local map = maps[map_name]
+    local npc, dist = find_npc(map.npc_names.warp)
+
+    if not npc then
+        if state.loop_count > 0 then
+            log('No '..map.npc_plural..' found! Retrying...')
+            state.loop_count = state.loop_count - 1
+            do_find_missing_destinations:schedule(settings.retry_delay, map_name, args)
+        else
+            log('No '..map.npc_plural..' found!')
+        end
+    elseif dist > 6^2 then
+        if state.loop_count > 0 then
+            log(npc.name..' found, but too far! Retrying...')
+            state.loop_count = state.loop_count - 1
+            do_find_missing_destinations:schedule(settings.retry_delay, map_name, args)
+        else
+            log(npc.name..' found, but too far!')
+        end
+    elseif npc and npc.id and npc.index and dist <= 6^2 then
+        local max_results = 999999
+        if #args > 0 then
+            max_results = tonumber(args[1]) or 999999 
+        end
+        current_activity = {type=map_name, find_missing=true, missing_max=max_results, args=args, npc=npc}
+        poke_npc(npc.id, npc.index)
+    end    
 end
 
 local function handle_warp(warp, args, fast_retry, retries_remaining)
@@ -540,6 +570,16 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
 
         send_all(warp..' '..args:concat(' '), settings.send_all_delay, participants)
 
+        return
+    end
+    if args[1]:lower() == 'missing' then
+        args:remove(1)         
+        for key,map in pairs(maps) do
+            if map.short_name == warp then
+                do_find_missing_destinations(key, args)
+                return
+            end
+        end
         return
     end
 
@@ -784,6 +824,35 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             last_npc = p["NPC"]
             last_npc_index = p["NPC Index"]
             --debug("recorded reset params: "..last_menu.." "..last_npc)
+
+            if current_activity.find_missing then
+                debug("Finding missing destinations")
+                if map.missing then
+                    local missing, err = map.missing(map.warpdata, zone, p)
+                    if err then
+                        log("Error: "..err)
+                    elseif missing ~= nil then
+                        if #missing > 0 then
+                            log("You are missing these "..map.long_name.." destinations: ")
+                            for i=1, math.min(#missing, current_activity.missing_max) do
+                                log(missing[i] or 'nil')
+                            end
+                            if #missing > current_activity.missing_max then
+                                log("..and "..(#missing-current_activity.missing_max)..' more...')
+                            end
+                        else
+                            log("You are not missing any destinations.")
+                        end
+                    else
+                        log("An unknown error occurred when finding missing destinations.")                        
+                    end
+                end
+
+                -- reset
+                reset:schedule(0.1, true)
+
+                return true
+            end
 
             local validation_message = nil
             if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity) end

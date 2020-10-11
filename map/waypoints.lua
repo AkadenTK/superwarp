@@ -1,6 +1,7 @@
 return T{
     short_name = 'wp',
     long_name = 'waypoint',
+    npc_plural = 'waypoints',
     npc_names = T{
         warp = T{'Waypoint'},
     },
@@ -9,6 +10,35 @@ return T{
             return "Incorrect menu detected! Menu ID: "..menu_id
         end
         return nil
+    end,
+    missing = function(warpdata, zone, p)
+        local missing = T{}
+        local unlock_bit_start = 32
+
+        for z, zd in pairs(warpdata) do
+            if not zd.shortcut then
+                if not zd.index then
+                    -- has sub-destinations
+                    for d, dd in pairs(zd) do
+                        if not dd.shortcut then
+                            if dd.offset ~= nil and not has_bit(p["Menu Parameters"], unlock_bit_start + dd.offset) then
+                                missing:append(z..'-'..d)
+                            elseif dd.invoffset ~= nil and has_bit(p["Menu Parameters"], unlock_bit_start + dd.invoffset) then
+                                missing:append(z..'-'..d)
+                            end                            
+                        end
+                    end
+                else
+                    if zd.offset ~= nil and not has_bit(p["Menu Parameters"], unlock_bit_start + zd.offset) then
+
+                        missing:append(z)
+                    elseif zd.invoffset ~= nil and has_bit(p["Menu Parameters"], unlock_bit_start + zd.invoffset) then
+                        missing:append(z)
+                    end
+                end
+            end
+        end
+        return missing
     end,
     help_text = "[sw] wp [warp/w] [all/a/@all] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.",
     sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'couriers', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enigmatic device'},

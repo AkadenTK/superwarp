@@ -3,6 +3,7 @@ local escha_zones = S{288,289,291}
 return T{
     short_name = 'ew',
     long_name = 'eschan portal',
+    npc_plural = 'eschan npcs',
     npc_names = T{
         warp = T{'Eschan Portal', 'Ethereal Ingress'},
         enter = T{'Undulating Confluence', 'Dimensional Portal'},
@@ -42,6 +43,27 @@ return T{
             return 'Not in an eschan zone!'
         end
         return nil
+    end,
+    missing = function(warpdata, zone, p)
+        local missing = T{}
+        local unlock_bit_start = 32
+
+        local zd = nil
+        if zone == 288 then zd = warpdata['Escha Zi\'tah'] end
+        if zone == 289 then zd = warpdata['Escha Ru\'an'] end
+        if zone == 291 then zd = warpdata['Reisenjima'] end
+        if zd == nil then
+            return nil, 'You cannot check missing destinations from here.'
+        end
+
+        for d, dd in pairs(zd) do
+            if not dd.shortcut and dd.offset then
+                if not has_bit(p["Menu Parameters"], unlock_bit_start + dd.offset) then
+                    missing:append(z..'-'..d)
+                end
+            end
+        end
+        return missing
     end,
     help_text = "[sw] ew [warp/w] [all/a/@all] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.\n[sw] ew [all/a/@all] domain -- get Elvorseal if needed and warp to the domain invasion arena.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.\n[sw] ew [all/a/@all] exit -- leave escha.",
     sub_zone_targets =  S{'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15' },
