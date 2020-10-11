@@ -90,7 +90,7 @@ function fmatch(needle,haystack)
     for _,v in ipairs(haystack) do
         local vl = v:gsub('[^%w%s]',''):lower()
         if vl == needle then
-            return v
+            return v, 10000
         end    
         local B = {}
         for j=1,string.len(vl) do
@@ -125,5 +125,5 @@ function fmatch(needle,haystack)
             end     
         end
     end
-    return result
+    return result, resultvalue
 end

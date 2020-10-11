@@ -218,8 +218,9 @@ local function resolve_warp(map_name, zone, sub_zone)
         end
     end
 
-    local closest_zone_name = fmatch(zone, get_keys(maps[map_name].warpdata))
-    if closest_zone_name then
+    local closest_zone_name, closest_zone_value = fmatch(zone, get_keys(maps[map_name].warpdata))
+    if closest_zone_name and closest_zone_value >= 3 and closest_zone_value >= #zone then
+        debug('Search success. Term="'..zone..'", nearest match="'..(closest_zone_name or nil)..'", value='..(closest_zone_value or '-1'))
         local zone_map = maps[map_name].warpdata[closest_zone_name]
         if type(zone_map) == 'table' and not (zone_map.index or zone_map.shortcut) then
             if sub_zone ~= nil then
@@ -284,7 +285,8 @@ local function resolve_warp(map_name, zone, sub_zone)
             return zone_map, closest_zone_name    
         end
     else
-        log('Could not find zone: '..zone)
+        log('Search returned no matches: '..zone)
+        debug('Failed search. Term="'..zone..'", nearest match="'..(closest_zone_name or nil)..'", value='..(closest_zone_value or '-1'))
         return nil
     end
 end 
