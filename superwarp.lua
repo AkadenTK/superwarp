@@ -35,13 +35,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Escha domain elvorseal packets: Ivaar
         Unlocked warp point data packs: Ivaar
         Menu locked state reset functs: Ivaar
+        Fuzzy matching logic for zones: Lili
 ]]
 
 _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.96.3'
+_addon.version = '0.97'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -51,6 +52,9 @@ require('functions')
 packets = require('packets')
 require('coroutine')
 config = require('config')
+
+require('sendall')
+require('fuzzyfind')
 
 maps = require('map/maps')
 
@@ -87,6 +91,7 @@ local defaults = {
     command_on_arrival = '',                -- inject this windower command on arriving at the next location.
     target_npc = true,                      -- locally target the warp/subcommand npc.
     simulate_client_lock = false,           -- lock the local client during a warp/subcommand, simulating menu behavior.
+    send_all_order_mode = 'melast'          -- order modes: melast, mefirst, alphabetical
 }
 
 local settings = config.load(defaults)
@@ -143,21 +148,39 @@ function has_bit(data, x)
   return data:unpack('q', math.floor(x/8)+1, x%8+1)
 end
 
-local function get_delay()
-    -- gets the delay before executing the warp. Based on party list, sorted by name ascending.
-    local self = windower.ffxi.get_player().name
-    local members = {}
+local function get_keys(t)
+    local keys = T{}
+    for k, v in pairs(t) do
+        keys:append(k)
+    end
+    return keys
+end
+
+local function order_participants(participants)
+    local player = windower.ffxi.get_player().name
+    if settings.send_all_order_mode ~= 'alphabetical' then
+        participants:delete(player)
+    end
+    table.sort(participants)
+    if settings.send_all_order_mode == 'melast' then
+        participants:append(player)
+    elseif settings.send_all_order_mode == 'mefirst' then
+        participants = T{player}:extend(participants)
+    end
+    return participants
+end
+
+local function get_party_members(local_members)
+    local members = T{}
     for k, v in pairs(windower.ffxi.get_party()) do
         if type(v) == 'table' then
-            members[#members + 1] = v.name
+            if local_members:contains(v.name) then
+                members:append(v.name)
+            end
         end
     end
-    table.sort(members)
-    for k, v in pairs(members) do
-        if v == self then
-            return (k - 1) * settings.send_all_delay
-        end
-    end
+
+    return members
 end
 
 function wiggle_value(value, variation)
@@ -175,74 +198,36 @@ local function resolve_sub_zone_aliases(raw)
     return raw
 end
 
-function get_fuzzy_name(name)
-    return tostring(name):lower():gsub("%s", ""):gsub("%p", "")
-end
+local function resolve_shortcuts(t, selection)
+    if selection.shortcut == nil then return selection end
 
-function get_shortcut_match(map_name, needle)
-    if settings.shortcuts == nil or settings.shortcuts[map_name] == nil then
-        return nil
-    end
-    -- check custom shortcuts
-    local fuzzy_needle = get_fuzzy_name(needle)
-
-    local destination, score
-    for haystack, value in pairs(settings.shortcuts[map_name]) do
-        local fuzzy_haystack = get_fuzzy_name(haystack)
-        if fuzzy_needle:length() >= 3 and fuzzy_haystack == fuzzy_needle then
-            local cur_score = fuzzy_haystack:length() - fuzzy_needle:length()
-            if not destination or cur_score < score then
-                destination = value
-                score = cur_score
-            end
-        end
-    end
-    return destination
-end
-
-function get_closest_match(map, needle)
-    local fuzzy_needle = get_fuzzy_name(needle)
-
-    local key, score
-    for haystack, value in pairs(map) do
-        local fuzzy_haystack = get_fuzzy_name(haystack)
-        if (fuzzy_needle:length() >= 3 and fuzzy_haystack:contains(fuzzy_needle)) or fuzzy_haystack == fuzzy_needle then
-            local cur_score = fuzzy_haystack:length() - fuzzy_needle:length()
-            if not key or cur_score < score then
-                key = haystack
-                score = cur_score
-            end
-        end
-    end
-    return key
+    return resolve_shortcuts(t, t[selection.shortcut])
 end
 
 local function resolve_warp(map_name, zone, sub_zone)
-    local shortcut_result = get_shortcut_match(map_name, zone)
-    if shortcut_result ~= nil then
-        if shortcut_result.sub_zone ~= nil then
-            debug("found custom shortcut: "..zone.." -> "..shortcut_result.zone.." "..shortcut_result.sub_zone)
-            sub_zone = shortcut_result.sub_zone
-        else
-            debug("found custom shortcut: "..zone.." -> "..shortcut_result.zone)
+    if settings.shortcuts and settings.shortcuts[map_name] then
+        local shortcut_map = settings.shortcuts[map_name][zone]
+        if shortcut_map ~= nil then
+            if shortcut_map.sub_zone ~= nil then
+                debug("found custom shortcut: "..zone.." -> "..shortcut_map.zone.." "..shortcut_map.sub_zone)
+                sub_zone = shortcut_map.sub_zone
+            else
+                debug("found custom shortcut: "..zone.." -> "..shortcut_map.zone)
+            end
+            zone = shortcut_map.zone
         end
-        zone = shortcut_result.zone
     end
 
-    local closest_zone_name = get_closest_match(maps[map_name], zone)
-    if closest_zone_name then
-        local zone_map = maps[map_name][closest_zone_name]
+    local closest_zone_name, closest_zone_value = fmatch(zone, get_keys(maps[map_name].warpdata))
+    if closest_zone_name and closest_zone_value >= 3 and closest_zone_value >= #zone then
+        debug('Search success. Term="'..zone..'", nearest match="'..(closest_zone_name or nil)..'", value='..(closest_zone_value or '-1'))
+        local zone_map = maps[map_name].warpdata[closest_zone_name]
         if type(zone_map) == 'table' and not (zone_map.index or zone_map.shortcut) then
             if sub_zone ~= nil then
-                local closest_sub_zone_name = get_closest_match(zone_map, sub_zone)
+                local closest_sub_zone_name = fmatch(sub_zone, get_keys(zone_map))
                 local sub_zone_map = zone_map[closest_sub_zone_name]
                 if sub_zone_map then
-                    if sub_zone_map.shortcut then
-                        if zone_map[sub_zone_map.shortcut] and type(zone_map[sub_zone_map.shortcut]) == 'table' then
-                            debug('found shortcut: '..sub_zone_map.shortcut)
-                            sub_zone_map = zone_map[sub_zone_map.shortcut]
-                        end
-                    end
+                    sub_zone_map = resolve_shortcuts(zone_map, sub_zone_map)
                     if sub_zone_map.index then
                         debug('found warp index: '..closest_zone_name..'/'..closest_sub_zone_name..' ('..sub_zone_map.index..')')
                         return sub_zone_map, closest_zone_name..' - '..closest_sub_zone_name
@@ -256,22 +241,33 @@ local function resolve_warp(map_name, zone, sub_zone)
                 end
             else
                 if settings.favorites and settings.favorites[map_name] then
-                    for fz, fsz in pairs(settings.favorites[map_name]) do
-                        if get_fuzzy_name(fz) == get_fuzzy_name(closest_zone_name) then
-                            for sz, sub_zone_map in pairs(zone_map) do
-                                if sz == tostring(resolve_sub_zone_aliases(fsz)) then
-                                    if sub_zone_map.shortcut then
-                                        if zone_map[sub_zone_map.shortcut] and type(zone_map[sub_zone_map.shortcut]) == 'table' then
-                                            debug ('found shortcut: '..sub_zone_map.shortcut)
-                                            sub_zone_map = zone_map[sub_zone_map.shortcut]
-                                        end
-                                    end
-                                    debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using favorite ('..sz..')')
-                                    return sub_zone_map, closest_zone_name..' - '..sz.." (F)"
-                                end
-                            end
+                    local favorite_result = settings.favorites[map_name][get_fuzzy_name(closest_zone_name)]
+                    if favorite_result then
+                        local fr = tostring(resolve_sub_zone_aliases(favorite_result))
+                        local sub_zone_map = zone_map[fr]
+                        if sub_zone_map then
+                            sub_zone_map = resolve_shortcuts(zone_map, sub_zone_map)
+
+                            debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using favorite ('..fr..')')
+                            return sub_zone_map, closest_zone_name..' - '..fr.." (F)"
                         end
                     end
+                    --for fz, fsz in pairs(settings.favorites[map_name]) do
+                    --    if get_fuzzy_name(fz) == get_fuzzy_name(closest_zone_name) then
+                    --        for sz, sub_zone_map in pairs(zone_map) do
+                    --            if sz == tostring(resolve_sub_zone_aliases(fsz)) then
+                    --                if sub_zone_map.shortcut then
+                    --                    if zone_map[sub_zone_map.shortcut] and type(zone_map[sub_zone_map.shortcut]) == 'table' then
+                    --                        debug ('found shortcut: '..sub_zone_map.shortcut)
+                    --                        sub_zone_map = zone_map[sub_zone_map.shortcut]
+                    --                    end
+                    --                end
+                    --                debug('Found zone ('..closest_zone_name..'), but no sub-zone listed, using favorite ('..sz..')')
+                    --                return sub_zone_map, closest_zone_name..' - '..sz.." (F)"
+                    --            end
+                    --        end
+                    --    end
+                    --end
                 end
                 for sz, sub_zone_map in pairs(zone_map) do
                     if sub_zone_map.shortcut then
@@ -289,7 +285,8 @@ local function resolve_warp(map_name, zone, sub_zone)
             return zone_map, closest_zone_name    
         end
     else
-        log('Could not find zone: '..zone)
+        log('Search returned no matches: '..zone)
+        debug('Failed search. Term="'..zone..'", nearest match="'..(closest_zone_name or nil)..'", value='..(closest_zone_value or '-1'))
         return nil
     end
 end 
@@ -351,6 +348,10 @@ end
 local function distance_sqd(a, b)
     local dx, dy = b.x-a.x, b.y-a.y
     return dy*dy + dx*dx
+end
+
+function get_fuzzy_name(name)
+    return tostring(name):lower():gsub("%s", ""):gsub("%p", "")
 end
 
 local function find_npc(needles)
@@ -422,7 +423,7 @@ end
 local function handle_before_warp()
     if settings.stop_autorun_before_warp then
         debug('stopping autorun before warp')
-        windower.ffxi.follow() -- with no index, stops auto following.
+        --windower.ffxi.follow() -- with no index, stops auto following.
         windower.ffxi.run(false) -- stop autorun
     end
     if settings.command_before_warp and type(settings.command_before_warp) == 'string' and settings.command_before_warp ~= '' then
@@ -523,16 +524,22 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
     -- because I can't stop typing "hp warp X" because I've been trained. 
     if args[1]:lower() == 'warp' or args[1]:lower() == 'w' then args:remove(1) end
 
-    local all = args[1]:lower() == 'all' or args[1]:lower() == 'a' or args[1]:lower() == '@all'
-    if all then 
+    local all = S{'all','a','@all'}:contains(args[1]:lower())
+    local party = S{'party','p','@party'}:contains(args[1]:lower())
+    if all or party then 
         args:remove(1) 
 
-        debug('sending warp to all.')
-        windower.send_ipc_message(warp..' '..args:concat(' '))
+        local participants = nil
+        if all then
+            participants = get_participants()
+        elseif party then
+            participants = get_party_members(get_participants())
+        end
+        participants = order_participants(participants)
+        debug('sending warp to all: '..participants:concat(', '))
 
-        local delay = get_delay()
-        debug('delay: '..delay)
-        handle_warp:schedule(delay, warp, args)
+        send_all(warp..' '..args:concat(' '), settings.send_all_delay, participants)
+
         return
     end
 
@@ -595,7 +602,7 @@ windower.register_event('addon command', function(...)
     for i,v in pairs(args) do args[i]=windower.convert_auto_trans(args[i]) end
     local item = table.concat(args," "):lower()
 
-    if warp_list:contains(cmd) then
+    if warp_list:contains(cmd:lower()) then
         received_warp_command(cmd, args)
     elseif cmd == 'cancel' then
         reset()
@@ -634,19 +641,16 @@ windower.register_event('unhandled command', function(cmd, ...)
     end
 end)
 
--- handle ipc message
-windower.register_event('ipc message', function(msg) 
+function receive_send_all(msg)
     local args = msg:split(' ')
     local cmd = args[1]
     args:remove(1)
     if cmd == 'reset' then
         reset()
     elseif warp_list:contains(cmd) then
-        local delay = get_delay()
-        debug('received ipc: '..msg..'. executing in '..tostring(delay)..'s.')
-        received_warp_command:schedule(delay, cmd, args)
+        received_warp_command(cmd, args)
     end
-end)
+end
 
 local function perform_next_action()
     if current_activity and current_activity.running and current_activity.action_queue and current_activity.action_index > 0 then
@@ -767,13 +771,6 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             current_activity.caught_poke = true
             local zone = windower.ffxi.get_info()['zone']
             local map = maps[current_activity.type]
-            if map.validate_menu and not map.validate_menu(p["Menu ID"]) then
-                log("Incorrect menu detected. Canceling action.")
-                last_activity = current_activity
-                state.loop_count = 0
-                current_activity = nil
-                return false
-            end
 
             if current_activity.poked_npc_id ~= p["NPC"] or current_activity.poked_npc_index ~= p["NPC Index"] then
                 log("Incorrect npc detected. Canceling action.")
@@ -787,6 +784,17 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             last_npc = p["NPC"]
             last_npc_index = p["NPC Index"]
             --debug("recorded reset params: "..last_menu.." "..last_npc)
+
+            local validation_message = nil
+            if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity) end
+            if validation_message ~= nil then
+                log("WARNING: "..validation_message.." Canceling action.")
+                last_activity = current_activity
+                state.loop_count = 0
+                current_activity = nil
+                reset(true)
+                return true
+            end
 
             current_activity.action_queue = nil
             current_activity.action_index = 1

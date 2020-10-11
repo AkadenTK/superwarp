@@ -7,53 +7,59 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 #### Homepoint Commands
 | Command | Action |
 | --- | --- |
-| //[sw] hp [warp] [all] zone_name [homepoint_number]  | Warp to a specified homepoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "entrance" (or simpler "e"), "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the homepoint_number is omitted, the first homepoint will be chosen (from the mapping). |
-| //[sw] hp [all] set  | Set the nearest homepoint as your home point. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck). |
+| //[sw] hp [warp] [all/party] zone_name [homepoint_number]  | Warp to a specified homepoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "entrance" (or simpler "e"), "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the homepoint_number is omitted, the first homepoint will be chosen (from the mapping). |
+| //[sw] hp [all/party] set  | Set the nearest homepoint as your home point. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 
 
 #### Waypoint Commands
 | Command | Action |
 | --- | --- |
-| //[sw] wp [warp] [all] zone_name [waypoint_number]  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "fs", "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the waypoint_number is omitted, the first waypoint will be chosen (from the mapping). |
-| //[sw] pwp [warp] [all] zone_name  | Warp to a specified proto-waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck). |
+| //[sw] wp [warp] [all/party] zone_name [waypoint_number]  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "fs", "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the waypoint_number is omitted, the first waypoint will be chosen (from the mapping). |
+| //[sw] pwp [warp] [all/party] zone_name  | Warp to a specified proto-waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 
 
 #### Survival Guide Commands
 | Command | Action |
 | --- | --- |
-| //[sw] sg [warp] [all] zone_name  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
+| //[sw] sg [warp] [all/party] zone_name  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 
 
 #### Escha Commands
 | Command | Action |
 | --- | --- |
-| //[sw] ew [warp] [all] portal_number  | Warp to a specified portal in Escha/Reis zones. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
-| //[sw] ew [all] enter  | Enters the Escha/Reis zones from the NPC in Qufim/Misareaux/Crags. "sw" is optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
-| //[sw] ew [all] domain  | Aquires Elvorseal if it is available and your character does not already have it, then teleports to the area where the Domain Invasion dragon will apper.  |
-| //[sw] ew [all] domain return  | Returns the Elvorseal status effect if your character has it.  |
-| //[sw] ew [all] exit  | Leaves the Escha/Reis zones from the undulating confluenc or dimensional portal in within the zone. "sw" is optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
+| //[sw] ew [warp] [all/party] portal_number  | Warp to a specified portal in Escha/Reis zones. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] ew [all/party] enter  | Enters the Escha/Reis zones from the NPC in Qufim/Misareaux/Crags. "sw" is optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] ew [all/party] domain  | Aquires Elvorseal if it is available and your character does not already have it, then teleports to the area where the Domain Invasion dragon will apper.  |
+| //[sw] ew [all/party] domain return  | Returns the Elvorseal status effect if your character has it.  |
+| //[sw] ew [all/party] exit  | Leaves the Escha/Reis zones from the undulating confluenc or dimensional portal in within the zone. "sw" is optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 
 
 #### Unity Commands
 | Command | Action |
 | --- | --- |
-| //[sw] un [warp] [all] zone_name  | Warp to a specified zone or the correct zone for a specified Unity NM. If an NM is specified, Superwarp will display the coordinates for the spawn NPCs. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
+| //[sw] un [warp] [all/party] zone_name  | Warp to a specified zone or the correct zone for a specified Unity NM. If an NM is specified, Superwarp will display the coordinates for the spawn NPCs. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 
 
 #### Abyssea Commands
 | Command | Action |
 | --- | --- |
-| //[sw] ab [warp] [all] zone_name_or_conflux  | Warp to a specified abyssea entry zone or conflux number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
-| //[sw] ab [all] enter  | Enter the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
-| //[sw] ab [all] exit  | Leave the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" will send an ipc message to all local instances of Windower with a delay (otherwise it could get stuck).  |
+| //[sw] ab [warp] [all/party] zone_name_or_conflux  | Warp to a specified abyssea entry zone or conflux number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] ab [all/party] enter  | Enter the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] ab [all/party] exit  | Leave the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 
+#### Runic Portal Commands
+| Command | Action |
+| --- | --- |
+| //[sw] po [warp] [all/party] staging_point  | Warp to a specified assault staging point. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] po [all/party] assault  | Be taken to your current assault mission staging point. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] po [all/party] return  | Leave the assault staging area and return to Whitegate. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 
 #### Misc. Commands
 | Command | Action |
 | --- | --- |
 | //sw debug  | Toggles debug mode which displays debug messages in the log. If debug mode was off, will display the debug logs of the last warp command as well.   |
-| //sw cancel [all]  | Cancels the current in-progress warp.   |
-| //sw reset [all]  | Resets client menu lock. This should be exceedingly rare, but it's here in case it's needed.   |
+| //sw cancel [all/party]  | Cancels the current in-progress warp.   |
+| //sw reset [all/party]  | Resets client menu lock. This should be exceedingly rare, but it's here in case it's needed.   |
 
 ### Fuzzy Zone Names
 
@@ -110,7 +116,7 @@ When handling the menu through the game's vanilla systems, warping between two h
 Superwarp is no longer able to warp to locations you have not unlocked yet. Square has started checking serverside. 
 
 ### Multi-boxing features
-Every command can be sent to all characters by prepending the "all" keyword before the zone name and sub-zone destination or the sub-command. This will send the same command to all characters on the same machine and delay their responses to prevent Square-Enix's servers from rejecting duplicate packets.
+Every command can be sent to all characters by prepending the "all" or "party" keyword before the zone name and sub-zone destination or the sub-command. This will send the same command to all characters on the same machine or all characters on the same machine in the same party and delay their responses to prevent Square-Enix's servers from rejecting duplicate packets.
 
 The default behavior of Superwarp is to cancel the in-game follow and autorun during a warp/sub-command event. But to disable this (for some reason), there is an option in the settings.xml file.
 
@@ -122,6 +128,8 @@ Thanks to Ivaar and Thorny for their work on figuring out the waypoint currency 
 Thanks to Kenshi for helping collect data about same-zone warp coordinates accurately.
 
 Thanks to Ivaar for also helping with the elvorseal state and receive packets, data for unlocked homepoints, waypoints and survival guides, and for helping with the client menu-lock reset functions.
+
+Thanks to Lili for researching a better fuzzy matching logic.
 
 ### Updates
 #### v0.96
@@ -163,3 +171,10 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 
 #### v0.96.3
 - **Resolved**: Removed option to warp to locations you have not unlocked yet as the July update broke this functionality for good. 
+
+#### v0.97
+- **Feature**: Added runic portals ("po")
+- **Improvement**: New option to send to all characters in an order mode (me-first, me-last, or just alphabetical)
+- **Feature**: New option to send to just party members. Other key words that work: party, p, @party. Uses above order mode too.
+- **Improvement**: Separated sendall logic into a copyable library. Enjoy!
+- **Improvement**: Added fuzzy logic from Lili. Thanks!
