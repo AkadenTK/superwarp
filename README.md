@@ -189,3 +189,6 @@ Thanks to Lili for researching a better fuzzy matching logic.
 
 #### v0.97.1
 - **Feature**: Added command to detect destinations that have yet to be unlocked.
+
+#### v0.97.2
+- **Feature**: Added setting to direct log messages to console instead, or turn off entirely.

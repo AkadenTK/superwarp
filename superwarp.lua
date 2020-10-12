@@ -42,7 +42,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.97.1'
+_addon.version = '0.97.2'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -91,7 +91,8 @@ local defaults = {
     command_on_arrival = '',                -- inject this windower command on arriving at the next location.
     target_npc = true,                      -- locally target the warp/subcommand npc.
     simulate_client_lock = false,           -- lock the local client during a warp/subcommand, simulating menu behavior.
-    send_all_order_mode = 'melast'          -- order modes: melast, mefirst, alphabetical
+    send_all_order_mode = 'melast',         -- order modes: melast, mefirst, alphabetical
+    chat_log_use = 'log',                   -- log messages to 'log', 'console', or 'none'. If debug is on, it will always log to the chat log
 }
 
 local settings = config.load(defaults)
@@ -135,6 +136,14 @@ local state = {
     debug_stack = T{},
     client_lock = false,
 }
+
+function log(msg)
+    if settings.chat_log_use == 'log' or settings.debug then
+        windower.add_to_chat(207, 'superwarp: '..msg)
+    elseif settings.chat_log_use == 'console' then
+        print('superwarp: '..msg)
+    end
+end
 
 function debug(msg)
     if settings.debug then
