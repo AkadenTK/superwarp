@@ -1,6 +1,7 @@
 return T{
     short_name = 'po',
     long_name = 'runic portal',
+    npc_plural = 'runic portals',
     npc_names = T{
         warp = T{'Runic Portal'},
         ['return'] = T{'Runic Portal'},

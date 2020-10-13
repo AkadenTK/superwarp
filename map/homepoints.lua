@@ -1,6 +1,7 @@
 return T{ -- option: 2
     short_name = 'hp',
     long_name = 'homepoint',
+    npc_plural = 'homepoints',
     npc_names = T{
         warp = T{'Home Point'},
         set = T{'Home Point'},
