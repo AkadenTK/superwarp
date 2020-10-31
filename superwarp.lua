@@ -219,7 +219,7 @@ local function resolve_warp(map_name, zone, sub_zone)
         if shortcut_map ~= nil then
             if shortcut_map.sub_zone ~= nil then
                 debug("found custom shortcut: "..zone.." -> "..shortcut_map.zone.." "..shortcut_map.sub_zone)
-                sub_zone = shortcut_map.sub_zone
+                sub_zone = tostring(shortcut_map.sub_zone)
             else
                 debug("found custom shortcut: "..zone.." -> "..shortcut_map.zone)
             end
