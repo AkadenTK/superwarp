@@ -942,5 +942,7 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
 end)
 
 windower.register_event('unload', function()
-	reset(true)
+	if windower.ffxi.get_info().logged_in then
+		reset(true)
+	end
 end)
