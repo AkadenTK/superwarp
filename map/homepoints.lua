@@ -291,8 +291,8 @@ return T{ -- option: 2
             ['2'] = { index = 15,  expac = 0, zone = 236, npc = 73, x = 41.000003814697, z = 8.5, y = -238.00001525879, h = 127, unknown1 = 983043},
             ['3'] = { index = 101, expac = 0, zone = 236, npc = 74, x = -126.00000762939, z = -6.0000004768372, y = 11.000000953674, h = 95, unknown1 = 6619139},},
         ['Metalworks'] = {
-            ['1'] = { index = 16,  expac = 0, zone = 237, npc = 213, x = 45.000003814697, z = -14.000000953674, y = -18, h = 63, unknown1 = 1048579},
-            ['2'] = { index = 102, expac = 0, zone = 237, npc = 214, x = -77, z = 2, y = 3.0000002384186, h = 127, unknown1 = 6684675},},
+            ['1'] = { index = 16,  expac = 0, zone = 237, npc = 214, x = 45.000003814697, z = -14.000000953674, y = -18, h = 63, unknown1 = 1048579},
+            ['2'] = { index = 102, expac = 0, zone = 237, npc = 215, x = -77, z = 2, y = 3.0000002384186, h = 127, unknown1 = 6684675},},
         ['Windurst Waters'] = {
             ['Entrance'] = { shortcut = '1', },
             ['Mog House'] = { shortcut = '2', },
