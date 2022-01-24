@@ -42,7 +42,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.97.3'
+_addon.version = '0.97.5'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -942,5 +942,7 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
 end)
 
 windower.register_event('unload', function()
-	reset(true)
+	if windower.ffxi.get_info().logged_in then
+		reset(true)
+	end
 end)
