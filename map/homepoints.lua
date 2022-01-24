@@ -324,9 +324,9 @@ return T{ -- option: 2
         ['Ru\'Lude Gardens'] = {
             ['Mog House'] = { shortcut = '2', },
             ['Auction House'] = { shortcut = '3', },
-            ['1'] = { index = 29, expac = 0, zone = 243, npc = 256, x = -6.0000004768372, z = 3.0000002384186, y = -1, h = 191, unknown1 = 1900547},
-            ['2'] = { index = 30, expac = 0, zone = 243, npc = 257, x = 53.000003814697, z = 9, y = -56.000003814697, h = 63, unknown1 = 1966083},
-            ['3'] = { index = 31, expac = 0, zone = 243, npc = 258, x = -67, z = 6.0000004768372, y = -26.000001907349, h = 191, unknown1 = 2031619},},
+            ['1'] = { index = 29, expac = 0, zone = 243, npc = 301, x = -6.0000004768372, z = 3.0000002384186, y = -1, h = 191, unknown1 = 1900547},
+            ['2'] = { index = 30, expac = 0, zone = 243, npc = 302, x = 53.000003814697, z = 9, y = -56.000003814697, h = 63, unknown1 = 1966083},
+            ['3'] = { index = 31, expac = 0, zone = 243, npc = 303, x = -67, z = 6.0000004768372, y = -26.000001907349, h = 191, unknown1 = 2031619},},
         ['Upper Jeuno'] = {
             ['Entrance'] = { shortcut = '1', },
             ['Mog House'] = { shortcut = '2', },
