@@ -436,7 +436,7 @@ return T{ -- option: 2
         ['Xarcabard \[S\]'] = { index = 111, expac = 4, zone = 137, npc = 891},
         ['Leafallia'] = { index = 112, expac = 11, zone = 281, npc = 59},
         ['Castle Zvahl Keep \[S\]'] = { index = 113, expac = 4, zone = 155, npc = 707},
-        ['Qufim Island'] = { index = 114, expac = 0, zone = 126, npc = 515},
+        ['Qufim Island'] = { index = 114, expac = 0, zone = 126, npc = 521},
         ['Toraimarai Canal'] = { index = 115, expac = 0, zone = 169, npc = 416},
         ['Ra\'Kaznar Inner Court'] = { index = 116, expac = 11, zone = 276, npc = 550},
         ['Misareaux Coast'] = { index = 117, expac = 2, zone = 25, npc = 394},
