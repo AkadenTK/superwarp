@@ -42,7 +42,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.97.6'
+_addon.version = '0.97.8'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -52,6 +52,7 @@ require('functions')
 packets = require('packets')
 require('coroutine')
 config = require('config')
+resources = require('resources')
 
 require('sendall')
 require('fuzzyfind')
@@ -621,6 +622,9 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
                 end
                 local zone = windower.ffxi.get_info().zone
                 local zone_target = args:concat(' ')
+                if zone_target == '' then
+                    zone_target = resources.zones[zone].en
+                end
                 if map.auto_select_zone and map.auto_select_zone(zone) then
                     zone_target = map.auto_select_zone(zone)
                 end
