@@ -52,7 +52,7 @@ windower.register_event('ipc message', function(msg)
     local args = msg:split(' ')
     local cmd = args[1]
     args:remove(1)
-    local player = windower.ffxi.get_mob_by_target('me').name
+    local player = windower.ffxi.get_mob_by_target('me') and windower.ffxi.get_mob_by_target('me').name
 
     if cmd == 'marco' then
         windower.send_ipc_message('polo '..player)
