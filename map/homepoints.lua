@@ -434,7 +434,7 @@ return T{ -- option: 2
         ['The Boyahda Tree'] = { index = 92, expac = 1, zone = 153, npc = 511},
         ['Ifrit\'s Cauldron'] = { index = 95, expac = 1, zone = 205, npc = 379},
         ['Xarcabard \[S\]'] = { index = 111, expac = 4, zone = 137, npc = 891},
-        ['Leafallia'] = { index = 112, expac = 11, zone = 281, npc = 59},
+        ['Leafallia'] = { index = 112, expac = 11, zone = 281, npc = 66},
         ['Castle Zvahl Keep \[S\]'] = { index = 113, expac = 4, zone = 155, npc = 707},
         ['Qufim Island'] = { index = 114, expac = 0, zone = 126, npc = 521},
         ['Toraimarai Canal'] = { index = 115, expac = 0, zone = 169, npc = 416},
