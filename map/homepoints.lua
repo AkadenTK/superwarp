@@ -63,9 +63,37 @@ return T{ -- option: 2
             return actions
         end
 
-        debug('gil: '..gil)
+        -- Calculate cost of warps.
+        local cost = 1000
+        local nations = {[0]=S{230,231,232},[1]=S{234,235,236,237},[2]=S{238,239,240,241}}
+        local cities = S{26,48,50,53,70,71,80,87,94,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,252,256,257,280,281,284,251}
+        local gilreduced = function()            
+            for ki in T(windower.ffxi.get_key_items()):it() do
+                if ki == 2884 then
+                    return true
+                end            
+            end
+            return false
+        end
+        local warp_reduced = gilreduced()
+        local in_city = cities:contains(zone)
+        local dest_city = cities:contains(destination.zone)
 
-        if gil < 1000 then
+        -- Determine destination reductions.
+        if in_city and dest_city and nations[windower.ffxi.get_player().nation]:contains(destination.zone) then
+            cost = 0
+        elseif dest_city then
+            cost = 500
+        end
+
+        -- Do we have Rhapsody KI to reduce cost?
+        if warp_reduced then
+            cost = (cost - (cost * 0.8))
+        end
+        
+        debug(string.format("Gil: %d - Cost: %d", gil, cost))
+
+        if gil < cost then
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
             packet["Option Index"] = 0
