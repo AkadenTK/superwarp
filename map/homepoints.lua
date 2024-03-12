@@ -365,8 +365,8 @@ return T{ -- option: 2
         ['Eastern Adoulin'] = {
             ['Auction House'] = { shortcut = '2', },
             ['Mog House'] = { shortcut = '2', },
-            ['1'] = { index = 45,  expac = 11, zone = 257, npc = 87, x = -52.857002258301, z = -0.15000000596046, y = 58.877002716064, h = 223, unknown1 = 2949123},
-            ['2'] = { index = 110, expac = 11, zone = 257, npc = 88, x = -50.500003814697, z = -0.15000000596046, y = -95.500007629395, h = 95, unknown1 = 7208963},},
+            ['1'] = { index = 45,  expac = 11, zone = 257, npc = 88, x = -52.857002258301, z = -0.15000000596046, y = 58.877002716064, h = 223, unknown1 = 2949123},
+            ['2'] = { index = 110, expac = 11, zone = 257, npc = 89, x = -50.500003814697, z = -0.15000000596046, y = -95.500007629395, h = 95, unknown1 = 7208963},},
         ['Ceizak Battlegrounds'] = { index = 46, expac = 11, zone = 261, npc = 587},
         ['Foret de Hennetiel'] = { index = 47, expac = 11, zone = 262, npc = 611},
         ['Morimar Basalt Fields'] = { index = 48, expac = 11, zone = 265, npc = 838},
