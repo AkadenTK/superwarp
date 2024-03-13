@@ -370,7 +370,6 @@ local function find_npc(needles)
     local npc_key = nil
     for index, npc_data in pairs(needles) do
         local npc = windower.ffxi.get_mob_by_index(index)
-        print(index, npc and npc.distance)
         if npc and npc.valid_target and (not target_npc or npc.distance < distance) then
             target_npc = npc
             distance = npc.distance
@@ -464,7 +463,6 @@ local function do_warp(map_name, zone, sub_zone)
         local npc, dist, npc_key = find_npc(map.zone_npc_list('warp'))
         warp_settings.npc = npc.index
 
-        print('!', warp_settings.key, npc_key)
         if not npc then
             if state.loop_count > 0 then
                 log('No ' .. map.npc_plural .. ' found! Retrying...')
