@@ -1,12 +1,23 @@
+local npc_names = T{
+    warp = S{'Runic Portal'},
+    ['return'] = S{'Runic Portal'},
+    assault = S{'Runic Portal'},
+}
 return T{
     short_name = 'po',
     long_name = 'runic portal',
     npc_plural = 'runic portals',
-    npc_names = T{
-        warp = T{'Runic Portal'},
-        ['return'] = T{'Runic Portal'},
-        assault = T{'Runic Portal'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith-{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            return {name=name}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         if (current_activity.sub_cmd == nil or current_activity.sub_cmd == 'assault') and zone ~= 50 then
             return "Not in Whitegate!"

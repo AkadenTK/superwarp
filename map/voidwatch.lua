@@ -1,13 +1,24 @@
 local past_warp_zones = S{80,84,87,91,94,98}
 local menu_ids = S{962, 1023, 264, 16, 316, 49, 627, 24, 7, 6, -- present
                    79, 657, 46, 25, 8, 15} -- shadowreign
+local npc_names = T{
+    warp = S{"Atmacite Refiner"},
+}
 return T{ --  index: 1
     short_name = 'vw',
     long_name = 'voidwatch',
     npc_plural = 'atmacite refiners',
-    npc_names = T{
-        warp = T{"Atmacite Refiner"},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith-{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            return {name=name}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         local destination = current_activity.activity_settings
         if not menu_ids:contains(menu_id) then 

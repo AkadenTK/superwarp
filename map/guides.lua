@@ -1,10 +1,21 @@
+local npc_names = T{
+    warp = S{'Survival Guide'},
+}
 return T{ -- option: 1
     short_name = 'sg',
     long_name = 'survival guide',
     npc_plural = 'survival guides',
-    npc_names = T{
-        warp = T{'Survival Guide'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith-{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            return {name=name}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         if not(menu_id == 8500 or menu_id == 8501) then
             return "Incorrect menu detected! Menu ID: "..menu_id

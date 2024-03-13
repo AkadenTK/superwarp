@@ -1,3 +1,6 @@
+local npc_names = T{
+    warp = S{"Igsli", "Urbiolaine", "Teldro-Kesdrodo", "Yonolala", "Nunaarl Bthtrogg"},
+}
 return T{ -- option: 1
     short_name = 'un',
     long_name = 'unity',
@@ -5,6 +8,16 @@ return T{ -- option: 1
     npc_names = T{
         warp = T{"Igsli", "Urbiolaine", "Teldro-Kesdrodo", "Yonolala", "Nunaarl Bthtrogg"},
     },
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith-{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            return {name=name}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         if not(menu_id == 598 or -- Igsli
                menu_id == 3529 or -- Urbiolaine

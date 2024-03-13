@@ -1,15 +1,27 @@
 local entry_zones = S{126,25,102,108,117}
 local escha_zones = S{288,289,291}
+local npc_names = T{
+    warp = S{'Eschan Portal', 'Ethereal Ingress'},
+    enter = S{'Undulating Confluence', 'Dimensional Portal'},
+    domain = S{'Affi', 'Dremi', 'Shiftrix'},
+    exit= S{'Undulating Confluence', 'Dimensional Portal'},
+}
 return T{
     short_name = 'ew',
     long_name = 'eschan portal',
     npc_plural = 'eschan npcs',
-    npc_names = T{
-        warp = T{'Eschan Portal', 'Ethereal Ingress'},
-        enter = T{'Undulating Confluence', 'Dimensional Portal'},
-        domain = T{'Affi', 'Dremi', 'Shiftrix'},
-        exit= T{'Undulating Confluence', 'Dimensional Portal'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith-{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            local num = name:match('%d+$')
+            return {name=name, key=(num and tostring(num))}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         local destination = current_activity.activity_settings
         if not ( -- NPCs:
