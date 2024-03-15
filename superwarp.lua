@@ -42,7 +42,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.97.9'
+_addon.version = '0.98.0'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -373,7 +373,7 @@ local function find_npc(needles)
         if npc and npc.valid_target and (not target_npc or npc.distance < distance) then
             target_npc = npc
             distance = npc.distance
-            npc_key = npc.key
+            npc_key = npc_data.key
         end
     end
     return target_npc, distance, npc_key
@@ -461,7 +461,7 @@ local function do_warp(map_name, zone, sub_zone)
     local warp_settings, display_name = resolve_warp(map_name, zone, sub_zone)
     if warp_settings and warp_settings.index then
         local npc, dist, npc_key = find_npc(map.zone_npc_list('warp'))
-        warp_settings.npc = npc.index
+        warp_settings.npc = npc and npc.index or warp_settings.npc
 
         if not npc then
             if state.loop_count > 0 then

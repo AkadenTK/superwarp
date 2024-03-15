@@ -15,7 +15,7 @@ return T{
     zone_npc_list = function(type)
         local mlist = windower.ffxi.get_mob_list()
         mlist = table.filter(mlist, function(name)
-            return name ~= "" and npc_names[type]:any(string.startswith-{name})
+            return name ~= "" and npc_names[type]:any(string.startswith+{name})
         end)
         mlist = table.map(mlist, function(name)
             local num = name:match('%d+$')
