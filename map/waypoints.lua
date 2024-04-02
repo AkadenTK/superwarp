@@ -1,6 +1,7 @@
 npc_names = T{
     warp = S{'Waypoint'},
 }
+local adoulin = S(require('resources').zones:en(string.endswith-{' Adoulin'}):map(table.get-{'id'}))
 return T{
     short_name = 'wp',
     long_name = 'waypoint',
@@ -8,6 +9,7 @@ return T{
     npc_names = npc_names,
     zone_npc_list = function(type)
         local mlist = windower.ffxi.get_mob_list()
+        local zone = windower.ffxi.get_info().zone
         mlist = table.filter(mlist, function(name)
             return name ~= "" and npc_names[type]:any(string.startswith+{name})
         end)
@@ -25,10 +27,14 @@ return T{
                 return {name=name}
             end)
             for index, number in temp_list:it() do
-                if number == 1 then
-                    mlist[index].key = "Frontier Station"
+                if not adoulin:contains(zone) then
+                    if number == 1 then
+                        mlist[index].key = "Frontier Station"
+                    else
+                        mlist[index].key = tostring(number-1)
+                    end
                 else
-                    mlist[index].key = tostring(number-1)
+                    mlist[index].key = tostring(number)
                 end
             end
         end
