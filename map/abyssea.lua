@@ -2,15 +2,27 @@ local warp_zones = S{ 232, 236, 240, 246, 243, 242 } -- ports + ru'lude and heav
 local entry_zones = S{ 102, 108, 117, 118, 103, 104, 107, 106, 112 } 
 local teleport_npcs = S{ "Ernst", "Ivan", "Willis", "Horst", "Kierron", "Vincent"}
 local abyssea_zones = S{ 15, 45, 132, 215, 216, 217, 218, 253, 254}
+local npc_names = T{
+    warp = S{'Veridical Conflux', 'Ernst', 'Ivan', 'Willis', 'Horst', 'Kierron', 'Vincent'},
+    enter = S{'Cavernous Maw'},
+    exit = S{'Cavernous Maw'},
+}
 return T{
     short_name = 'ab',
     long_name = 'veridical conflux',
     npc_plural = 'abyssean npcs',
-    npc_names = T{
-        warp = T{'Veridical Conflux', 'Ernst', 'Ivan', 'Willis', 'Horst', 'Kierron', 'Vincent'},
-        enter = T{'Cavernous Maw'},
-        exit = T{'Cavernous Maw'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith+{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            local num = name:match('%d+$')
+            return {name=name, key=(num and tostring(num))}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
                 -- npc warps:
         if not (menu_id == 404 or --  Ernst

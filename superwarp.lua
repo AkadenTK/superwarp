@@ -42,7 +42,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.97.9'
+_addon.version = '0.98.0'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -367,17 +367,16 @@ end
 local function find_npc(needles)
     local target_npc = nil
     local distance = nil
-    local p = windower.ffxi.get_mob_by_target("me")
-    for i, v in pairs(windower.ffxi.get_mob_array()) do
-        local d = distance_sqd(windower.ffxi.get_mob_by_index(i), p)
-        for i, needle in ipairs(needles) do
-            if v.valid_target and (not target_npc or d < distance) and string.find(get_fuzzy_name(v.name), "^"..get_fuzzy_name(needle)) then
-                target_npc = v
-                distance = d
-            end
+    local npc_key = nil
+    for index, npc_data in pairs(needles) do
+        local npc = windower.ffxi.get_mob_by_index(index)
+        if npc and npc.valid_target and (not target_npc or npc.distance < distance) then
+            target_npc = npc
+            distance = npc.distance
+            npc_key = npc_data.key
         end
     end
-    return target_npc, distance
+    return target_npc, distance, npc_key
 end
 
 -- Thanks to Ivaar for these two:
@@ -461,7 +460,8 @@ local function do_warp(map_name, zone, sub_zone)
 
     local warp_settings, display_name = resolve_warp(map_name, zone, sub_zone)
     if warp_settings and warp_settings.index then
-        local npc, dist = find_npc(map.npc_names.warp)
+        local npc, dist, npc_key = find_npc(map.zone_npc_list('warp'))
+        warp_settings.npc = npc and npc.index or warp_settings.npc
 
         if not npc then
             if state.loop_count > 0 then
@@ -479,7 +479,7 @@ local function do_warp(map_name, zone, sub_zone)
             else
                 log(npc.name .. ' found, but too far!')
             end
-        elseif (warp_settings.npc == nil or warp_settings.npc == npc.index) and warp_settings.zone == windower.ffxi.get_info()['zone'] then
+        elseif (npc_key and warp_settings.key == npc_key) and warp_settings.zone == windower.ffxi.get_info()['zone'] then
             log("You are already at "..display_name.."! Teleport canceled.")
             state.loop_count = 0
         elseif npc.id and npc.index then
@@ -496,7 +496,7 @@ end
 local function do_sub_cmd(map_name, sub_cmd, args)
     local map = maps[map_name]
 
-    local npc, dist = find_npc(map.npc_names[sub_cmd])
+    local npc, dist = find_npc(map.zone_npc_list(sub_cmd))
 
     if not npc then
         if state.loop_count > 0 then
@@ -523,7 +523,7 @@ end
 
 local function do_find_missing_destinations(map_name, args)
     local map = maps[map_name]
-    local npc, dist = find_npc(map.npc_names.warp)
+    local npc, dist = find_npc(map.zone_npc_list('warp'))
 
     if not npc then
         if state.loop_count > 0 then

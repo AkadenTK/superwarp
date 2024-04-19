@@ -1,10 +1,45 @@
+npc_names = T{
+    warp = S{'Waypoint'},
+}
+local adoulin = S(require('resources').zones:en(string.endswith-{' Adoulin'}):map(table.get-{'id'}))
 return T{
     short_name = 'wp',
     long_name = 'waypoint',
     npc_plural = 'waypoints',
-    npc_names = T{
-        warp = T{'Waypoint'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        local zone = windower.ffxi.get_info().zone
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith+{name})
+        end)
+        if table.length(mlist) <= 1 then
+            mlist = table.map(mlist, function(name)
+                return {name=name}
+            end)
+        else
+            temp_list = L{}
+            for index, name in pairs(mlist) do
+                temp_list:append(index)
+            end
+            temp_list:sort()
+            mlist = table.map(mlist, function(name)
+                return {name=name}
+            end)
+            for index, number in temp_list:it() do
+                if not adoulin:contains(zone) then
+                    if number == 1 then
+                        mlist[index].key = "Frontier Station"
+                    else
+                        mlist[index].key = tostring(number-1)
+                    end
+                else
+                    mlist[index].key = tostring(number)
+                end
+            end
+        end
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         if not ((menu_id >= 5000 and menu_id <= 5008) or menu_id == 10121) then
             return "Incorrect menu detected! Menu ID: "..menu_id

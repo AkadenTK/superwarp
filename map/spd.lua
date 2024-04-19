@@ -1,12 +1,22 @@
 local entry_zones = S{ 29 } 
-
+local npc_names = T{
+    enter = S{'Spatial Displacement'},
+}
 return T{
     short_name = 'spd',
     long_name = 'spatial displacement',
     npc_plural = 'displacements',
-    npc_names = T{
-        enter = T{'Spatial Displacement'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith+{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            return {name=name}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         -- check menu id here.
 		if not (  menu_id == 33) then

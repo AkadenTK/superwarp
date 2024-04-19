@@ -1,11 +1,23 @@
+local npc_names = T{
+    warp = S{'Home Point'},
+    set = S{'Home Point'},
+}
 return T{ -- option: 2
     short_name = 'hp',
     long_name = 'homepoint',
     npc_plural = 'homepoints',
-    npc_names = T{
-        warp = T{'Home Point'},
-        set = T{'Home Point'},
-    },
+    npc_names = npc_names,
+    zone_npc_list = function(type)
+        local mlist = windower.ffxi.get_mob_list()
+        mlist = table.filter(mlist, function(name)
+            return name ~= "" and npc_names[type]:any(string.startswith+{name})
+        end)
+        mlist = table.map(mlist, function(name)
+            local num = name:match('%d+$')
+            return {name=name, key=(num and tostring(num))}
+        end)
+        return mlist
+    end,
     validate = function(menu_id, zone, current_activity)
         if not(menu_id >= 8700 and menu_id <= 8704) then
             return "Incorrect menu detected! Menu ID: "..menu_id
