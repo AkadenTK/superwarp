@@ -479,7 +479,7 @@ local function do_warp(map_name, zone, sub_zone)
             else
                 log(npc.name .. ' found, but too far!')
             end
-        elseif (npc_key and warp_settings.key == npc_key) and warp_settings.zone == windower.ffxi.get_info()['zone'] then
+        elseif npc_key and (warp_settings.key == npc_key or npc_key == '1' and not warp_settings.key and warp_settings.npc == npc.index) and warp_settings.zone == windower.ffxi.get_info()['zone'] then
             log("You are already at "..display_name.."! Teleport canceled.")
             state.loop_count = 0
         elseif npc.id and npc.index then
