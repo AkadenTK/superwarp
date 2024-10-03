@@ -156,49 +156,49 @@ return T{
 		local zone_info = windower.ffxi.get_info().zone
 		-- Extra set of these just to be absolutely certain; Revert back to single set if things are working correctly
 -----------------------------------------------------------------------------------------------------------------------------------------
-	if (menu_id >= 1010 and menu_id <= 1013) then
+  if (menu_id >= 1010 and menu_id <= 1013) then
     	if menu_id == 1010 and not has_temp_item(temp_item_ids.Sheet.A) then
             return 'You do not have the Ra\'Kaznar Sheet #A'
         end
-		if menu_id == 1011 and not has_temp_item(temp_item_ids.Sheet.B) then
+	if menu_id == 1011 and not has_temp_item(temp_item_ids.Sheet.B) then
             return 'You do not have the Ra\'Kaznar Sheet #B'
         end
-		if menu_id == 1012 and not has_temp_item(temp_item_ids.Sheet.C) then
+	if menu_id == 1012 and not has_temp_item(temp_item_ids.Sheet.C) then
             return 'You do not have the Ra\'Kaznar Sheet #C'
         end
-		if menu_id == 1013 and not has_temp_item(temp_item_ids.Sheet.D) then
+	if menu_id == 1013 and not has_temp_item(temp_item_ids.Sheet.D) then
             return 'You do not have the Ra\'Kaznar Sheet #D'
         end
 	
 							-- Gadgets --
-	elseif (menu_id >= 1005 and menu_id <= 1008) or (menu_id >= 1018 and menu_id <= 1021) then
-		if menu_id == 1005 and not has_temp_item(temp_item_ids.Shard.A) then
+  elseif (menu_id >= 1005 and menu_id <= 1008) or (menu_id >= 1018 and menu_id <= 1021) then
+	if menu_id == 1005 and not has_temp_item(temp_item_ids.Shard.A) then
             return 'You do not have the Ra\'Kaznar Shard #A'
         end
-		if menu_id == 1006 and not has_temp_item(temp_item_ids.Shard.B) then
+	if menu_id == 1006 and not has_temp_item(temp_item_ids.Shard.B) then
             return 'You do not have the Ra\'Kaznar Shard #B'
         end
-		if menu_id == 1007 and not has_temp_item(temp_item_ids.Shard.C) then
+	if menu_id == 1007 and not has_temp_item(temp_item_ids.Shard.C) then
             return 'You do not have the Ra\'Kaznar Shard #C'
         end
-		if menu_id == 1008 and not has_temp_item(temp_item_ids.Shard.D) then
+	if menu_id == 1008 and not has_temp_item(temp_item_ids.Shard.D) then
             return 'You do not have the Ra\'Kaznar Shard #D'
         end
-		if menu_id == 1018 and not has_temp_item(temp_item_ids.Shard.E) then
+	if menu_id == 1018 and not has_temp_item(temp_item_ids.Shard.E) then
             return 'You do not have the Ra\'Kaznar Shard #E'
         end
-		if menu_id == 1019 and not has_temp_item(temp_item_ids.Shard.F) then
+	if menu_id == 1019 and not has_temp_item(temp_item_ids.Shard.F) then
             return 'You do not have the Ra\'Kaznar Shard #F'
         end
-		if menu_id == 1020 and not has_temp_item(temp_item_ids.Shard.G) then
+	if menu_id == 1020 and not has_temp_item(temp_item_ids.Shard.G) then
             return 'You do not have the Ra\'Kaznar Shard #G'
         end
-		if menu_id == 1021 and not has_temp_item(temp_item_ids.Shard.H) then
+	if menu_id == 1021 and not has_temp_item(temp_item_ids.Shard.H) then
             return 'You do not have the Ra\'Kaznar Shard #H'
         end
 	
 	                          --Devices--
-	elseif (menu_id >= 1000 and menu_id <= 1004) then
+  elseif (menu_id >= 1000 and menu_id <= 1004) then
         if menu_id == 1000 and (not has_temp_item(temp_item_ids.Plate.A) and not has_temp_item(temp_item_ids.Plate.B) and not has_temp_item(temp_item_ids.Plate.C) and not has_temp_item(temp_item_ids.Plate.D)) then
             return 'You do not have any of the Ra\'Kaznar Plates'
         end
@@ -214,11 +214,11 @@ return T{
         if (menu_id >= 1000 and menu_id <= 1004) and destination.menu_id == 1004 and not has_temp_item(temp_item_ids.Plate.D) then
             return 'You do not have the Ra\'Kaznar Plate #D'
         end
-	end
+  end
 							--Fragments--
-		if menu_id == 1022 and (not has_temp_item(temp_item_ids.Fragment.A) or not has_temp_item(temp_item_ids.Fragment.B) or not has_temp_item(temp_item_ids.Fragment.C) or not has_temp_item(temp_item_ids.Fragment.D)) then
-		    return 'You do not have all 4 Ra\'Kaznar Fragments'
-		end
+	if menu_id == 1022 and (not has_temp_item(temp_item_ids.Fragment.A) or not has_temp_item(temp_item_ids.Fragment.B) or not has_temp_item(temp_item_ids.Fragment.C) or not has_temp_item(temp_item_ids.Fragment.D)) then
+	    return 'You do not have all 4 Ra\'Kaznar Fragments'
+	end
 		     --Destination setters
 --------------------------------------------------------------------------------------------------------------------------------------------
 			if menu_id == 1010 then
@@ -260,7 +260,7 @@ return T{
 				destination = gadget_f
 			elseif last_gadget_used == 1020 then
 			    destination = gadget_g
-	        elseif last_gadget_used == 1021 then    
+	       	        elseif last_gadget_used == 1021 then    
 				destination = gadget_h
 			end
 		elseif menu_id == 1009 and last_gadget_used == nil then
@@ -296,7 +296,7 @@ return T{
 ---------------------------------------------------------------------------------------------------------
 		if menu_id == 1009 and last_gadget_used == nil then
 
-			return 'Superwarp does not know where to send you since you did not have it loaded before entering boss chamber'
+		    return 'Superwarp does not know where to send you since you did not have it loaded before entering boss chamber'
 		end
 		-- extra layer of protection for stopping any cross-zone warp
 ---------------------------------------------------------------------------------------------------
@@ -311,49 +311,49 @@ return T{
 		----   KI CHECKS. DO NOT JACK AROUND WITH THIS! IT WONT WORK ANYWAY: CONFIRMED. CHEERS ----
 		
 						-- Bitzers --
-	if (menu_id >= 1010 and menu_id <= 1017) then 
-		if menu_id == 1010 and not has_temp_item(temp_item_ids.Sheet.A) then
+  if (menu_id >= 1010 and menu_id <= 1017) then 
+	if menu_id == 1010 and not has_temp_item(temp_item_ids.Sheet.A) then
             return 'You do not have the Ra\'Kaznar Sheet #A'
         end
-		if menu_id == 1011 and not has_temp_item(temp_item_ids.Sheet.B) then
+	if menu_id == 1011 and not has_temp_item(temp_item_ids.Sheet.B) then
             return 'You do not have the Ra\'Kaznar Sheet #B'
         end
-		if menu_id == 1012 and not has_temp_item(temp_item_ids.Sheet.C) then
+	if menu_id == 1012 and not has_temp_item(temp_item_ids.Sheet.C) then
             return 'You do not have the Ra\'Kaznar Sheet #C'
         end
-		if menu_id == 1013 and not has_temp_item(temp_item_ids.Sheet.D) then
+	if menu_id == 1013 and not has_temp_item(temp_item_ids.Sheet.D) then
             return 'You do not have the Ra\'Kaznar Sheet #D'
         end
 	
 							-- Gadgets --
-	elseif (menu_id >= 1005 and menu_id <= 1008) or (menu_id >= 1018 and menu_id <= 1021) then
-		if menu_id == 1005 and not has_temp_item(temp_item_ids.Shard.A) then
+  elseif (menu_id >= 1005 and menu_id <= 1008) or (menu_id >= 1018 and menu_id <= 1021) then
+	if menu_id == 1005 and not has_temp_item(temp_item_ids.Shard.A) then
             return 'You do not have the Ra\'Kaznar Shard #A'
         end
-		if menu_id == 1006 and not has_temp_item(temp_item_ids.Shard.B) then
+	if menu_id == 1006 and not has_temp_item(temp_item_ids.Shard.B) then
             return 'You do not have the Ra\'Kaznar Shard #B'
         end
-		if menu_id == 1007 and not has_temp_item(temp_item_ids.Shard.C) then
+	if menu_id == 1007 and not has_temp_item(temp_item_ids.Shard.C) then
             return 'You do not have the Ra\'Kaznar Shard #C'
         end
-		if menu_id == 1008 and not has_temp_item(temp_item_ids.Shard.D) then
+	if menu_id == 1008 and not has_temp_item(temp_item_ids.Shard.D) then
             return 'You do not have the Ra\'Kaznar Shard #D'
         end
-		if menu_id == 1018 and not has_temp_item(temp_item_ids.Shard.E) then
+	if menu_id == 1018 and not has_temp_item(temp_item_ids.Shard.E) then
             return 'You do not have the Ra\'Kaznar Shard #E'
         end
-		if menu_id == 1019 and not has_temp_item(temp_item_ids.Shard.F) then
+	if menu_id == 1019 and not has_temp_item(temp_item_ids.Shard.F) then
             return 'You do not have the Ra\'Kaznar Shard #F'
         end
-		if menu_id == 1020 and not has_temp_item(temp_item_ids.Shard.G) then
+	if menu_id == 1020 and not has_temp_item(temp_item_ids.Shard.G) then
             return 'You do not have the Ra\'Kaznar Shard #G'
         end
-		if menu_id == 1021 and not has_temp_item(temp_item_ids.Shard.H) then
+	if menu_id == 1021 and not has_temp_item(temp_item_ids.Shard.H) then
             return 'You do not have the Ra\'Kaznar Shard #H'
         end
 	
 	                          --Devices--
-	elseif (menu_id >= 1000 and menu_id <= 1004) then
+  elseif (menu_id >= 1000 and menu_id <= 1004) then
         if menu_id == 1000 and (not has_temp_item(temp_item_ids.Plate.A) and not has_temp_item(temp_item_ids.Plate.B) and not has_temp_item(temp_item_ids.Plate.C) and not has_temp_item(temp_item_ids.Plate.D)) then
             return 'You do not have any of the Ra\'Kaznar Plates'
         end
@@ -369,11 +369,11 @@ return T{
         if (menu_id >= 1000 and menu_id <= 1004) and destination.menu_id == 1004 and not has_temp_item(temp_item_ids.Plate.D) then
             return 'You do not have the Ra\'Kaznar Plate #D'
         end
-	end
+  end
 							--Fragments--
-		if menu_id == 1022 and (not has_temp_item(temp_item_ids.Fragment.A) or not has_temp_item(temp_item_ids.Fragment.B) or not has_temp_item(temp_item_ids.Fragment.C) or not has_temp_item(temp_item_ids.Fragment.D)) then
-		    return 'You do not have all 4 Ra\'Kaznar Fragments'
-		end
+	if menu_id == 1022 and (not has_temp_item(temp_item_ids.Fragment.A) or not has_temp_item(temp_item_ids.Fragment.B) or not has_temp_item(temp_item_ids.Fragment.C) or not has_temp_item(temp_item_ids.Fragment.D)) then
+	    return 'You do not have all 4 Ra\'Kaznar Fragments'
+	end
         return nil
     end,
     missing = function(warpdata, zone, p)
@@ -496,7 +496,7 @@ return T{
 				destination = bitzer_d
 			end
 			print("Destination Bitzer: "..destination.menu_id.." - "..find_bitzer_by_id)
-		end
+		 end
 			
 			-- Gadgets all warp to 'Gadget'
 			if (menu >= 1005 and menu <= 1008) or (menu >= 1018 and menu <= 1021) then
@@ -523,18 +523,18 @@ return T{
 				destination = gadget_f
 			elseif last_gadget_used == 1020 then
 			    destination = gadget_g
-	        elseif last_gadget_used == 1021 then    
+	                elseif last_gadget_used == 1021 then    
 				destination = gadget_h
 			end
 		elseif menu == 1009 and last_gadget_used == nil then
 			notice('Superwarp does not know where to send you since you did not have it loaded before entering boss chamber')
 			return 
 		end
-			  -- more anti-numbskull mechanisms.
-		    if menu == 1009 and destination.menu_id ~= last_gadget_used then  
+			    -- more anti-numbskull mechanisms.
+		        if menu == 1009 and destination.menu_id ~= last_gadget_used then  
 				notice('Cannot warp to that Gadget, you must return from whence you came; Use '..find_gadget_by_id)
-				return 
-			end
+			    return 
+		        end
 -----------------------------------------------------------------------------------
 
         -- update request
