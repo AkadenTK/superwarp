@@ -2,7 +2,7 @@ local entry_zones = S{126,25,102,108,117}
 local escha_zones = S{288,289,291}
 local npc_names = T{
     warp = S{'Eschan Portal', 'Ethereal Ingress'},
-    enter = S{'Undulating Confluence', 'Dimensional Portal','Ethereal Ingress'},
+    enter = S{'Undulating Confluence', 'Dimensional Portal'},
     domain = S{'Affi', 'Dremi', 'Shiftrix'},
     exit= S{'Undulating Confluence', 'Dimensional Portal'},
 }
@@ -45,12 +45,9 @@ return T{
             return "Not in correct zone!"
         end
 
-     --   if menu_id == 9100 then
-  --          return 'Not in an entry zone!'
-		--current_activity.sub_zone = '5'
-		--local destinations = current_activity.activity_settings
-		--return 
-     --   end
+        if current_activity.sub_cmd == 'enter' and not entry_zones:contains(zone) then
+            return 'Not in an entry zone!'
+        end
         if current_activity.sub_cmd == 'exit' and not escha_zones:contains(zone) then
             return 'Not in an eschan zone!'
         end
@@ -87,19 +84,13 @@ return T{
         if zone == 289 then return 'Escha Ru\'an' end
         if zone == 291 then return 'Reisenjima' end
     end,
-    auto_select_sub_zone = function(zone,sub_zone,menu_id)
- --       if menu_id == 9100 then return '5' end
---		print("Test Successful auto_sub_zone")
-    end,
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
         local packet = nil
         local menu = p["Menu ID"]
         local npc = current_activity.npc
         local destination = current_activity.activity_settings
-		for k, v in pairs (destination) do
-		print(k,v)
-		end
+
         local silt_stock = p["Menu Parameters"]:unpack('i', 21)
 
         debug('silt '..silt_stock)
@@ -194,95 +185,49 @@ return T{
         return actions
     end,
     sub_commands = {
-        enter = function(current_activity, zone, p, settings,warpdata)
-        local actions = T{}
-        local packet = nil
-        local menu = p["Menu ID"]
-        local npc = current_activity.npc
-        local destination = current_activity.activity_settings
-		
-		if npc.id ~= 17969980 and npc.id ~= 17969981 and npc.id ~= 17969982 then
-			return
-		end
-        -- update request
-        packet = packets.new('outgoing', 0x016)
-        packet["Target Index"] = windower.ffxi.get_player().index
-        actions:append(T{packet=packet, description='update request'})
+        enter = function(current_activity, zone, p, settings)
+            local actions = T{}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
 
-        -- request map
-        packet = packets.new('outgoing', 0x114)
-        actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='request map'})
+            local oi = 0
 
-        -- menu change
-        packet = packets.new('outgoing', 0x05B)
-        packet["Target"] = npc.id
-        packet["Target Index"] = npc.index
-        packet["Zone"] = zone
-        packet["Menu ID"] = menu
+            -- qufim or misareaux
+            if zone == 126 or zone == 25 then oi = 1 end
+            -- La theine, konschtat or tahrongi
+            if zone == 102 or zone == 108 or zone == 117 then oi = 2 end
 
-        packet["Option Index"] = 1
-	if npc.id == 17969980 then
-        packet["_unknown1"] = 23
-	elseif npc.id == 17969981 then 
-		packet["_unknown1"] = 24
-	elseif npc.id == 17969982 then 
-		packet["_unknown1"] = 27
-	end
-        packet["Automated Message"] = true
-        packet["_unknown2"] = 0
-        actions:append(T{packet=packet, delay=0.2, description='send options'})
--------------
+            
+            log("Entering Escha...")
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T{packet=packet, description='update request'})
 
---------------
-        -- request in-zone warp
-                -- 0x05C
-                packet = packets.new('outgoing', 0x05C)
-                packet["Target ID"] = npc.id
-                packet["Target Index"] = npc.index
-                packet["Zone"] = zone
-                packet["Menu ID"] = menu
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 0
+            packet["_unknown1"] = 0
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
 
-                if npc.id == 17969980 then -- 2 goes to 1
-                    packet["X"] = -495.44003295898
-                    packet["Z"] = -19
-                    packet["Y"] = -476.48001098633
-                    packet["_unknown1"] = 1507330
-                    packet["Rotation"] = 0
-                elseif npc.id == 17969981 then -- 3 goes to 2
-                    packet["X"] = -404.00003051758
-                    packet["Z"] = -55.000003814697
-                    packet["Y"] =  86.000007629395
-                    packet["_unknown1"] = 1572866
-                    packet["Rotation"] = 63
-                elseif npc.id == 17969982 then -- 4 goes to 5
-                    packet["X"] = 107.00000762939
-                    packet["Z"] = -75.400001525879
-                    packet["Y"] = 599
-                    packet["_unknown1"] = 1769474
-                    packet["Rotation"] = 63
-                end
-				actions:append(T{packet=packet, wait_packet=0x052, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='same-zone move request'})
---[[				
-            ['1'] = {  index = 23, zone = 291, npc = 826, offset = 23, x = -495.44003295898, z = -19, y = -476.48001098633, h = 0, unknown1 = 1507330},
-            ['2'] = {  index = 24, zone = 291, npc = 827, offset = 24, x = -404.00003051758, z = -55.000003814697, y = 86.000007629395, h = 63, unknown1 = 1572866},
-            ['3'] = {  index = 25, zone = 291, npc = 828, offset = 25, x = -530.40002441406, z = -50.000003814697, y = 399.75003051758, h = 95, unknown1 = 1638402},
-            ['4'] = {  index = 26, zone = 291, npc = 829, offset = 26, x = -554.40002441406, z = -48.750003814697, y = 602, h = 191, unknown1 = 1703938},
-            ['5'] = {  index = 27, zone = 291, npc = 830, offset = 27, x = 107.00000762939, z = -75.400001525879, y = 599, h = 63, unknown1 = 1769474},
-]]	
-        -- complete menu
-        packet = packets.new('outgoing', 0x05B)
-        packet["Target"] = npc.id
-        packet["Target Index"] = npc.index
-        packet["Zone"] = zone
-        packet["Menu ID"] = menu
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = oi
+            packet["_unknown1"] = 0
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=2, description='complete menu'})
 
-        packet["Option Index"] = 2
-        packet["_unknown1"] = 0
-        packet["Automated Message"] = false
-        packet["_unknown2"] = 0
-        actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=false, delay=1, description='complete menu'})
-           
-        return actions
+            return actions
         end,
         exit = function(current_activity, zone, p, settings)
             local actions = T{}
