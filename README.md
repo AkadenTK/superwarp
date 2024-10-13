@@ -68,6 +68,12 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 | //[sw] vw [warp] [all/party] zone_name  | Warp to a specified zone through the Voidwatcher NPC. Note that you cannot warp to the past from the present (or vice versa). "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] vw [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
 
+#### Sortie (New!)
+| Command | Action |
+| --- | --- |
+| //[sw] so [warp] [all/party] 1/2/3/4  | Warp to a specified device by number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] so [all/party] port [max]  | Warp via the nearby gadget to or from the boss room. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+
 #### Misc. Commands
 | Command | Action |
 | --- | --- |
@@ -145,6 +151,8 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 
 Thanks to Lili for researching a better fuzzy matching logic.
 
+Thanks to Staticvoid for researching and implementing the Sortie warp system.
+
 ### Updates
 #### v0.96
 - **Feature**: Homepoints now uses same-zone teleporting feature.
@@ -205,3 +213,9 @@ Thanks to Lili for researching a better fuzzy matching logic.
 ### v0.97.4
 - **Resolved**: Fixed issue warping with voidwatch
 - **Improvement**: Documented voidwatch commands (oops!)
+
+#### v0.98
+- **Resolved**: Several bug fixes.
+
+#### v0.99
+- **Feature**: Sortie warp system added.
