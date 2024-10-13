@@ -2,35 +2,33 @@ local entry_zones = S {267}
 local sortie_zones = S {275, 133, 189}
 last_gadget_used = nil
 local npc_names = T {
-    port = S {'Diaphanous Bitzer','Diaphanous Bitzer #A','Diaphanous Bitzer #B','Diaphanous Bitzer #C','Diaphanous Bitzer #D', 'Diaphanous Gadget', --Trying this first to see if this solves the re-entry conundrum 
-	'Diaphanous Gadget #A','Diaphanous Gadget #B','Diaphanous Gadget #C','Diaphanous Gadget #D','Diaphanous Gadget #E','Diaphanous Gadget #F','Diaphanous Gadget #G','Diaphanous Gadget #H'},
-    warp = S {'Diaphanous Device', 'Diaphanous Device #A', 'Diaphanous Device #B', 'Diaphanous Device #C', 'Diaphanous Device #D'},
-    exit = S {} -- I might end up using exit for gadget_ and bitzer e-h if I dont come up with another solution to the superwarp basement retry re-entry conundrum. Just wanted to keep it as clean and concise as possible
+    port = S {'Diaphanous Bitzer', 'Diaphanous Gadget'},
+    warp = S {'Diaphanous Device'},
+    exit = S {} 
 }
---///////////////////////////////////////////////////////////////////-destination names-/////////////////////////////////////////////////////////////////////////////////////////////////////////////-
-   local zone_info = windower.ffxi.get_info().zone
-   device_  = { menu_id = 1000, index = 817, zone = zone_info,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1}
-   device_a = { menu_id = 1001, index = 818, zone = zone_info,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1}
-   device_b = { menu_id = 1002, index = 819, zone = zone_info,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1}
-   device_c = { menu_id = 1003, index = 820, zone = zone_info,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1}
-   device_d = { menu_id = 1004, index = 821, zone = zone_info,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}
-   gadget_a = { menu_id = 1005, index = 822, zone = zone_info,npc = 21001014, offset = 1, x = -900.00006103516, y = 416.00003051758, z = -200.00001525879 , h = 63, unknown1 = 1, unknown2 = 1}
-   gadget_b = { menu_id = 1006, index = 823, zone = zone_info,npc = 21001015, offset = 2, x = -24.000001907349, y = 420.00003051758, z = -200.00001525879 , h = 127, unknown1 = 2, unknown2 = 1}
-   gadget_c = { menu_id = 1007, index = 824, zone = zone_info,npc = 21001016, offset = 3, x = -20, y = -456.00003051758, z = -200.00001525879 , h = 191, unknown1 = 3, unknown2 = 1}
-   gadget_d = { menu_id = 1008, index = 825, zone = zone_info,npc = 21001017, offset = 4, x = -896.00006103516, y = -460.00003051758, z = -200.00001525879 , h = 0, unknown1 = 4, unknown2 = 1}
-   gadget_  = { menu_id = 1009, index = 826, zone = zone_info,npc = 21001018, offset = 0, x = 624, y = -620, z = 100.00000762939 , h = 0, unknown1 = 1, unknown2 = 1}
-   gadget_e = { menu_id = 1018, index = 827, zone = zone_info,npc = 21001019, offset = 5, x = 280, y = 276, z = 70 , h = 63, unknown1 = 5, unknown2 = 1}
-   gadget_f = { menu_id = 1019, index = 828, zone = zone_info,npc = 21001020, offset = 6, x = 876.00006103516, y = 280, z = 70 , h = 127, unknown1 = 6, unknown2 = 1}
-   gadget_g = { menu_id = 1020, index = 829, zone = zone_info,npc = 21001021, offset = 7, x = 880.00006103516, y = -316, z = 70 , h = 191, unknown1 = 7, unknown2 = 1}
-   gadget_h = { menu_id = 1021, index = 830, zone = zone_info,npc = 21001022, offset = 8, x = 284, z = 70, y = -320.00,  h = 0, unknown1 = 8, unknown2 = 1}
-   bitzer_a = { menu_id = 1010, index = 833, zone = zone_info,npc = 21001025, offset = 1, x = -460.00003051758, z = -140, y = 35.5,  h = 191, unknown1 = 5, unknown2 = 1}
-   bitzer_b = { menu_id = 1011, index = 834, zone = zone_info,npc = 21001026, offset = 2, x = -404.50003051758, z = -140, y = -20,  h = 0, unknown1 = 6, unknown2 = 1}
-   bitzer_c = { menu_id = 1012, index = 835, zone = zone_info,npc = 21001027, offset = 3, x = -460.00003051758, y = -75.5, z = -140 , h = 63, unknown1 = 7, unknown2 = 1}
-   bitzer_d = { menu_id = 1013, index = 836, zone = zone_info,npc = 21001028, offset = 4, x = -515.5, z = -140, y = -20,  h = 127, unknown1 = 8, unknown2 = 1}
-   bitzer_e = { menu_id = 1014, index = 837, zone = zone_info,npc = 21001029, offset = 5, x = 580, y = 31.500001907349, z = 100.00000762939 , h = 191, unknown1 = 1, unknown2 = 1}
-   bitzer_f = { menu_id = 1015, index = 838, zone = zone_info,npc = 21001030, offset = 6, x = 631.5, z = 100.00000762939, y = -20,  h = 0, unknown1 = 2, unknown2 = 1}
-   bitzer_g = { menu_id = 1016, index = 839, zone = zone_info,npc = 21001031, offset = 7, x = 580, y = -71.5, z = 100.00000762939 , h = 63, unknown1 = 3, unknown2 = 1}
-   bitzer_h = { menu_id = 1017, index = 840, zone = zone_info,npc = 21001032, offset = 8, x = 528.5, z = 100.00000762939, y = -20,  h = 127, unknown1 = 4, unknown2 = 1}
+--///////////////////////////////////////////////////////////////////---Destinations---/////////////////////////////////////////////////////////////////////////////////////////////////////////////-
+   device_  = { menu_id = 1000, index = 817, zone = zone_tag,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1}
+   device_a = { menu_id = 1001, index = 818, zone = zone_tag,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1}
+   device_b = { menu_id = 1002, index = 819, zone = zone_tag,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1}
+   device_c = { menu_id = 1003, index = 820, zone = zone_tag,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1}
+   device_d = { menu_id = 1004, index = 821, zone = zone_tag,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}
+   gadget_a = { menu_id = 1005, index = 822, zone = zone_tag,npc = 21001014, offset = 1, x = -900.00006103516, y = 416.00003051758, z = -200.00001525879 , h = 63, unknown1 = 1, unknown2 = 1}
+   gadget_b = { menu_id = 1006, index = 823, zone = zone_tag,npc = 21001015, offset = 2, x = -24.000001907349, y = 420.00003051758, z = -200.00001525879 , h = 127, unknown1 = 2, unknown2 = 1}
+   gadget_c = { menu_id = 1007, index = 824, zone = zone_tag,npc = 21001016, offset = 3, x = -20, y = -456.00003051758, z = -200.00001525879 , h = 191, unknown1 = 3, unknown2 = 1}
+   gadget_d = { menu_id = 1008, index = 825, zone = zone_tag,npc = 21001017, offset = 4, x = -896.00006103516, y = -460.00003051758, z = -200.00001525879 , h = 0, unknown1 = 4, unknown2 = 1}
+   gadget_  = { menu_id = 1009, index = 826, zone = zone_tag,npc = 21001018, offset = 0, x = 624, y = -620, z = 100.00000762939 , h = 0, unknown1 = 1, unknown2 = 1}
+   gadget_e = { menu_id = 1018, index = 827, zone = zone_tag,npc = 21001019, offset = 5, x = 280, y = 276, z = 70 , h = 63, unknown1 = 5, unknown2 = 1}
+   gadget_f = { menu_id = 1019, index = 828, zone = zone_tag,npc = 21001020, offset = 6, x = 876.00006103516, y = 280, z = 70 , h = 127, unknown1 = 6, unknown2 = 1}
+   gadget_g = { menu_id = 1020, index = 829, zone = zone_tag,npc = 21001021, offset = 7, x = 880.00006103516, y = -316, z = 70 , h = 191, unknown1 = 7, unknown2 = 1}
+   gadget_h = { menu_id = 1021, index = 830, zone = zone_tag,npc = 21001022, offset = 8, x = 284, z = 70, y = -320.00,  h = 0, unknown1 = 8, unknown2 = 1}
+   bitzer_a = { menu_id = 1010, index = 833, zone = zone_tag,npc = 21001025, offset = 1, x = -460.00003051758, z = -140, y = 35.5,  h = 191, unknown1 = 5, unknown2 = 1}
+   bitzer_b = { menu_id = 1011, index = 834, zone = zone_tag,npc = 21001026, offset = 2, x = -404.50003051758, z = -140, y = -20,  h = 0, unknown1 = 6, unknown2 = 1}
+   bitzer_c = { menu_id = 1012, index = 835, zone = zone_tag,npc = 21001027, offset = 3, x = -460.00003051758, y = -75.5, z = -140 , h = 63, unknown1 = 7, unknown2 = 1}
+   bitzer_d = { menu_id = 1013, index = 836, zone = zone_tag,npc = 21001028, offset = 4, x = -515.5, z = -140, y = -20,  h = 127, unknown1 = 8, unknown2 = 1}
+   bitzer_e = { menu_id = 1014, index = 837, zone = zone_tag,npc = 21001029, offset = 5, x = 580, y = 31.500001907349, z = 100.00000762939 , h = 191, unknown1 = 1, unknown2 = 1}
+   bitzer_f = { menu_id = 1015, index = 838, zone = zone_tag,npc = 21001030, offset = 6, x = 631.5, z = 100.00000762939, y = -20,  h = 0, unknown1 = 2, unknown2 = 1}
+   bitzer_g = { menu_id = 1016, index = 839, zone = zone_tag,npc = 21001031, offset = 7, x = 580, y = -71.5, z = 100.00000762939 , h = 63, unknown1 = 3, unknown2 = 1}
+   bitzer_h = { menu_id = 1017, index = 840, zone = zone_tag,npc = 21001032, offset = 8, x = 528.5, z = 100.00000762939, y = -20,  h = 127, unknown1 = 4, unknown2 = 1}
 --////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-
 
 gadget_menu_identification = T {
@@ -132,7 +130,6 @@ local find_bitzer_by_id = function(id)
 end
 
 -- Gadget monitoring is for the case where a player could try to use the port command from a boss chamber with the improper value in last_gadget_used. 
---(There is only one, 10pts if you can figure out how this could happen.)
 -- This eliminates that remaining possibility of that ever happening and seeks to do so as cheap as possible. 
 
 local gadget_monitor = nil
@@ -149,12 +146,10 @@ local function register_gadget_monitor()
                     local menu_id = p['Menu ID']
                     if (menu_id >= 1005 and menu_id <= 1008) or (menu_id >= 1018 and menu_id <= 1021) then
                         last_gadget_used = menu_id
-                        --print("last_gadget_used has been updated to: "..last_gadget_used)
                     end
                 end
             end
         end)
-        --print("Gadget monitor registered.")
     end
 end
 
@@ -162,16 +157,15 @@ local function unregister_gadget_monitor()
     if gadget_monitor ~= nil then
         windower.unregister_event(gadget_monitor)
         gadget_monitor = nil
-        --print("Gadget monitor unregistered.")
     end
 end
 
 local function watch_zone_change(new_zone)
     if new_zone == 275 or new_zone == 133 or new_zone == 189 then
-		--print("Zone change detected, We're in Sortie now")
         register_gadget_monitor()
+		coroutine.sleep(3)
+		zone_tag = new_zone
     else
-		--print("Zone change detected, We're not in Sortie now")
         unregister_gadget_monitor()
     end
 end
@@ -183,6 +177,9 @@ end)
 windower.register_event('load', function()
     local zone_id = windower.ffxi.get_info().zone
     watch_zone_change(zone_id)
+	if zone_id == 275 or zone_id == 133 or zone_id == 189 then
+		zone_tag = zone_id
+	end
 end)
 
 return T {
@@ -209,8 +206,9 @@ return T {
         return mlist
     end,
     validate = function(menu_id, zone, current_activity)
-        local zone_info = windower.ffxi.get_info().zone
-		local destination = nil
+		
+		zone_tag = windower.ffxi.get_info().zone
+		    local destination = nil
 			if current_activity.sub_cmd == 'port' then
 				destination = nil
 			else
@@ -264,6 +262,7 @@ return T {
             return
                 'Superwarp does not know where to send you since you did not have it loaded before entering boss chamber'
         end
+		destination.zone = zone_tag
         -- more anti-numbskull mechanisms.
         if menu_id == 1009 and destination.menu_id ~= last_gadget_used then
             return 'Cannot warp to that Gadget, you must return from whence you came; Use ' .. find_gadget_by_id
@@ -282,8 +281,6 @@ return T {
         ---------------------------------------------------------------------------------------------------
         if ((menu_id >= 1005 and menu_id <= 1009) or (menu_id >= 1018 and menu_id <= 1021)) and
             not table_contains(gadget_menu_ids, destination.menu_id) then
-            --print(destination.menu_id)
-            --print(table_contains(gadget_menu_ids, destination.menu_id))
             return 'Cannot warp to devices or bitzers from here.'
         end
         -- prevent warping to gadgets or bitzers from devices
@@ -387,33 +384,6 @@ return T {
         end
         return nil
     end,
-    missing = function(warpdata, zone, p)
-        local missing = T {}
-        local unlock_bit_start = 32
-
-        local zd = nil
-        if zone == 275 then
-            zd = warpdata['Outer Ra\'Kaznar [U1]']
-        end
-        if zone == 133 then
-            zd = warpdata['Outer Ra\'Kaznar [U2]']
-        end
-        if zone == 189 then
-            zd = warpdata['Outer Ra\'Kaznar [U3]']
-        end
-        if zd == nil then
-            return nil, 'You cannot check missing destinations from here.'
-        end
-
-        for d, dd in pairs(zd) do
-            if not dd.shortcut and dd.offset then
-                if not has_bit(p["Menu Parameters"], unlock_bit_start + dd.offset) then
-                    missing:append(z .. '-' .. d)
-                end
-            end
-        end
-        return missing
-    end,
     help_text = "[sw] so [warp/w] [all/a/@all] 0-4 -- warp to a designated device in Sortie.(Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget.",
     sub_zone_targets = S {'0', '1', '2', '3', '4'}, -- We don't want to port to the wrong place due to a systemic anomaly inherent to the programming of superwarp's fuzzyfind system, using any names with letters confuses superwarp and it will try to send you to gadgets from devices or bitzers. 
     auto_select_zone = function(zone)
@@ -433,7 +403,6 @@ return T {
         local menu = p["Menu ID"]
         local npc = current_activity.npc
         local destination = current_activity.activity_settings
-
         -- update request
         packet = packets.new('outgoing', 0x016)
         packet["Target Index"] = windower.ffxi.get_player().index
@@ -457,7 +426,7 @@ return T {
         packet["Zone"] = zone
         packet["Menu ID"] = menu
 
-        packet["Option Index"] = 100 -- this first 5B always has an option index of 100
+        packet["Option Index"] = 100 
         packet["_unknown1"] = 0
         packet["Automated Message"] = true
         packet["_unknown2"] = 0
@@ -477,7 +446,7 @@ return T {
         packet["X"] = destination.x
         packet["Y"] = destination.y
         packet["Z"] = destination.z
-        packet["_unknown1"] = destination.unknown1 -- this byte and option index of the subsequent 5B tell the server that you legitimately warped and which npc you warped from.
+        packet["_unknown1"] = destination.unknown1 
         packet["Rotation"] = destination.h
         packet["_unknown2"] = destination.unknown2
         actions:append(T {
@@ -494,7 +463,7 @@ return T {
         packet["Zone"] = zone
         packet["Menu ID"] = menu
 
-        packet["Option Index"] = destination.unknown1 -- confirmed post-5C , 5B complete's option index same as destination uk1  -- This byte is key
+        packet["Option Index"] = destination.unknown1 
         packet["_unknown1"] = 0
         packet["Automated Message"] = false
         packet["_unknown2"] = 0
@@ -513,12 +482,9 @@ return T {
         port = function(current_activity, zone, p, settings, warpdata)
             local actions = T {}
             local packet = nil
-			local zone_info = windower.ffxi.get_info().zone
             local menu = p["Menu ID"]
             local npc = current_activity.npc
 			local destination = nil
-            --local destination = current_activity.activity_settings
-            
 
             if (menu >= 1000 and menu <= 1004) then
                 notice('Use sw so [0/A/B/C/D] for devices.')
@@ -542,14 +508,12 @@ return T {
                 elseif menu == 1017 then
                     destination = bitzer_d
                 end
-                --print("Destination Bitzer: " .. destination.menu_id .. " - " .. find_bitzer_by_id)
             end
 
             -- Gadgets all warp to 'Gadget'
             if (menu >= 1005 and menu <= 1008) or (menu >= 1018 and menu <= 1021) then
                 destination = gadget_
                 last_gadget_used = menu
-                --print("Last Gadget Used: " .. find_gadget_by_id)
             end
 
             -----------Gadget Handling (Ensures the player can only warp back from whence they came --------------------------
@@ -660,8 +624,8 @@ return T {
         end
     },
     warpdata = T{
-		            -- Had a lot of trouble out of the closest-match system with keys so I changed them all to arbitrary numbers. only the devices are needed anyway.
-			['Outer Ra\'Kaznar [U1]'] = T{  		
+					--The bitzer and gadget destinations are not handled this way.
+			['Outer Ra\'Kaznar [U1]'] = T{  
   --[[Device]]  ['0'] =   { menu_id = 1000, index = 817, zone = 275,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
   --[[Device A]]['1'] =   { menu_id = 1001, index = 818, zone = 275,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
   --[[Device B]]['2'] =   { menu_id = 1002, index = 819, zone = 275,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},

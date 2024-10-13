@@ -36,7 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Unlocked warp point data packs: Ivaar
         Menu locked state reset functs: Ivaar
         Fuzzy matching logic for zones: Lili
-        Sortie data collection & logic: Staticvoid 
         Sortie  support implementation: Staticvoid
 ]]
 
@@ -471,17 +470,18 @@ end
 local function do_warp(map_name, zone, sub_zone)
     local map = maps[map_name]
     local warp_settings, display_name = resolve_warp(map_name, zone, sub_zone)
+	local zone = windower.ffxi.get_info().zone
     if warp_settings and warp_settings.index then
         local npc, dist, npc_key = find_npc(map.zone_npc_list('warp'))
         warp_settings.npc = npc and npc.index or warp_settings.npc
 
         if not npc then
-            if state.loop_count > 0 then
+            if state.loop_count > 0 and (zone ~= 275 and zone ~= 133 and zone ~= 189) then
                 log('No ' .. map.npc_plural .. ' found! Retrying...')
                 state.loop_count = state.loop_count - 1
                 do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
             else
-                log('No ' .. map.npc_plural .. ' found!')
+                 log('No ' .. map.npc_plural .. ' found!')
             end
         elseif dist > 6^2 then
             if state.loop_count > 0 then
@@ -507,15 +507,15 @@ end
 
 local function do_sub_cmd(map_name, sub_cmd, args)
     local map = maps[map_name]
-
+    local zone = windower.ffxi.get_info().zone
     local npc, dist = find_npc(map.zone_npc_list(sub_cmd))
 
     if not npc then
-        if state.loop_count > 0 then
+        if state.loop_count > 0  and (zone ~= 275 and zone ~= 133 and zone ~= 189) then
         	log('No '..map.npc_plural..' found! Retrying...')
             state.loop_count = state.loop_count - 1
         	do_sub_cmd:schedule(settings.retry_delay, map_name, sub_cmd, args)
-        else
+		else 
         	log('No '..map.npc_plural..' found!')
         end
     elseif dist > 6^2 then
@@ -536,9 +536,9 @@ end
 local function do_find_missing_destinations(map_name, args)
     local map = maps[map_name]
     local npc, dist = find_npc(map.zone_npc_list('warp'))
-
+    local zone = windower.ffxi.get_info().zone
     if not npc then
-        if state.loop_count > 0 then
+        if state.loop_count > 0  and (zone ~= 275 and zone ~= 133 and zone ~= 189) then
             log('No '..map.npc_plural..' found! Retrying...')
             state.loop_count = state.loop_count - 1
             do_find_missing_destinations:schedule(settings.retry_delay, map_name, args)
@@ -798,6 +798,7 @@ end
 
 -- Handle menu interraction. 
 windower.register_event('incoming chunk',function(id,data,modified,injected,blocked)
+   local zone = windower.ffxi.get_info().zone
     if current_activity and current_activity.action_queue and current_activity.running then
         local current_action = current_activity.action_queue[current_activity.action_index]
         if current_action and current_action.wait_packet and current_action.wait_packet == id then
@@ -818,12 +819,16 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
         local message_type = data:unpack('b4', 5)
         if message_type == 2 then
             if state.loop_count > 0 then
-                if settings.enable_fast_retry_on_interrupt then
+                if settings.enable_fast_retry_on_interrupt and (zone ~= 275 and zone ~= 133 and zone ~= 189) then
                     log("Detected event-skip. Retrying (fast)...")
                     handle_warp:schedule(0.1, state.current_warp, state.current_args, true, state.loop_count - 1)
                 else
-                    log("Detected event-skip. Retrying...")
-                    handle_warp:schedule(0.1, state.current_warp, state.current_args, false, state.loop_count - 1)
+					if zone ~= 275 and zone ~= 133 and zone ~= 189 then
+                        log("Detected event-skip. Retrying...")
+                        handle_warp:schedule(0.1, state.current_warp, state.current_args, false, state.loop_count - 1)
+					else
+						log("Detected event-skip. You need to re-send command")
+					end
                 end
             end
         end
@@ -880,7 +885,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             end
 
             local validation_message = nil
-            if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity) end
+            if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity,p["NPC"]) end
             if validation_message ~= nil then
                 log("WARNING: "..validation_message.." Canceling action.")
                 last_activity = current_activity
