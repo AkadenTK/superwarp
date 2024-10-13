@@ -230,22 +230,11 @@ local function resolve_warp(map_name, zone, sub_zone)
     end
 
     local closest_zone_name, closest_zone_value = fmatch(zone, get_keys(maps[map_name].warpdata))
-    if closest_zone_name and closest_zone_value >= 4 and closest_zone_value >= #zone then
+    if closest_zone_name and closest_zone_value >= 3 and closest_zone_value >= #zone then
         debug('Search success. Term="'..zone..'", nearest match="'..(closest_zone_name or nil)..'", value='..(closest_zone_value or '-1'))
         local zone_map = maps[map_name].warpdata[closest_zone_name]
         if type(zone_map) == 'table' and not (zone_map.index or zone_map.shortcut) then
             if sub_zone ~= nil then
-				local exact_sub_zone_name = zone_map[sub_zone]
-				if exact_sub_zone_name then
-					-- Prioritize exact spelling. This might spare some unintended outcomes.
-					sub_zone_map = resolve_shortcuts(zone_map, exact_sub_zone_name)
-					debug('Exact match found for sub-zone: '..sub_zone)
-					return sub_zone_map, closest_zone_name..' - '..sub_zone
-				end
-				if not exact_sub_zone_name and not closest_sub_zone_name then
-				   log("Unable to find an exact match for sub-zone: "..sub_zone)
-				   -- Prompt user to confirm or provide further details?? Might be nice in some situations. -Staticvoid
-				end
                 local closest_sub_zone_name = fmatch(sub_zone, get_keys(zone_map))
                 local sub_zone_map = zone_map[closest_sub_zone_name]
                 if sub_zone_map then
@@ -481,7 +470,7 @@ local function do_warp(map_name, zone, sub_zone)
                 state.loop_count = state.loop_count - 1
                 do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
             else
-                 log('No ' .. map.npc_plural .. ' found!')
+                log('No ' .. map.npc_plural .. ' found!')
             end
         elseif dist > 6^2 then
             if state.loop_count > 0 then
@@ -491,7 +480,7 @@ local function do_warp(map_name, zone, sub_zone)
             else
                 log(npc.name .. ' found, but too far!')
             end
-        elseif (npc_key and warp_settings.key == npc_key) and warp_settings.zone == windower.ffxi.get_info()['zone'] then
+            elseif npc_key and (warp_settings.key == npc_key or npc_key == '1' and not warp_settings.key and warp_settings.npc == npc.index) and warp_settings.zone == windower.ffxi.get_info()['zone'] then
             log("You are already at "..display_name.."! Teleport canceled.")
             state.loop_count = 0
         elseif npc.id and npc.index then
