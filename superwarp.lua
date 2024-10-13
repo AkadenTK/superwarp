@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Unlocked warp point data packs: Ivaar
         Menu locked state reset functs: Ivaar
         Fuzzy matching logic for zones: Lili
+        Sortie  support implementation: Staticvoid
 ]]
 
 _addon.name = 'superwarp'
