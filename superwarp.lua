@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Menu locked state reset functs: Ivaar
         Fuzzy matching logic for zones: Lili
         Sortie  support implementation: Staticvoid
+        Odyssey support implementation: Staticvoid
 ]]
 
 _addon.name = 'superwarp'
@@ -869,7 +870,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             end
 
             local validation_message = nil
-            if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity) end
+            if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity,p) end
             if validation_message ~= nil then
                 log("WARNING: "..validation_message.." Canceling action.")
                 last_activity = current_activity
