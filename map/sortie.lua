@@ -510,11 +510,9 @@ return T {
             --------------------------------------------------------------------------------------
         if menu == 1022 and current_activity.sub_cmd == 'port' and bitcheckinator == 0 then
             destination = aminon_
-			print(bitcheckinator)
         end
         if menu == 1022 and current_activity.sub_cmd == 'port' and bitcheckinator == 2 then
             destination = aminon_h
-			print(bitcheckinator)
         end
 			--------------------------------------------------------------------------------------
             -- update request
