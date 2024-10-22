@@ -44,7 +44,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '0.99.0'
+_addon.version = '1.0.0'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -870,7 +870,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             end
 
             local validation_message = nil
-            if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity,p) end
+            if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity, p) end
             if validation_message ~= nil then
                 log("WARNING: "..validation_message.." Canceling action.")
                 last_activity = current_activity
