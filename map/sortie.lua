@@ -1,6 +1,5 @@
 local entry_zones = S {267}
 local sortie_zones = S {275, 133, 189}
-last_gadget_used = nil
 local npc_names = T {
     port = S {'Diaphanous Bitzer', 'Diaphanous Gadget'},
     warp = S {'Diaphanous Device'},
@@ -21,6 +20,9 @@ local npc_names = T {
    gadget_f = { menu_id = 1019, index = 828, zone = zone_tag,npc = 21001020, offset = 6, x = 876.00006103516, y = 280, z = 70 , h = 127, unknown1 = 6, unknown2 = 1}
    gadget_g = { menu_id = 1020, index = 829, zone = zone_tag,npc = 21001021, offset = 7, x = 880.00006103516, y = -316, z = 70 , h = 191, unknown1 = 7, unknown2 = 1}
    gadget_h = { menu_id = 1021, index = 830, zone = zone_tag,npc = 21001022, offset = 8, x = 284, z = 70, y = -320.00,  h = 0, unknown1 = 8, unknown2 = 1}
+   gadget_q = { menu_id = 1022, index = 831, zone = zone_tag,npc = 21001023, offset = 9, x = 186.50001525879, z = 60.000003814697, y = -20,  h = 255, unknown1 = 1, unknown2 = 1}
+   aminon_  = { menu_id = 1023, index = 832, zone = zone_tag,npc = 21001024, offset = 10,x = 184.00001525879, z = 100.00000762939, y = -660.00006103516,  h = 0, unknown1 = 1, unknown2 = 1}
+   aminon_h = { menu_id = 1023, index = 832, zone = zone_tag,npc = 21001024, offset = 10,x = 184.00001525879, z = 100.00000762939, y = -660.00006103516,  h = 0, unknown1 = 2, unknown2 = 1}
    bitzer_a = { menu_id = 1010, index = 833, zone = zone_tag,npc = 21001025, offset = 1, x = -460.00003051758, z = -140, y = 35.5,  h = 191, unknown1 = 5, unknown2 = 1}
    bitzer_b = { menu_id = 1011, index = 834, zone = zone_tag,npc = 21001026, offset = 2, x = -404.50003051758, z = -140, y = -20,  h = 0, unknown1 = 6, unknown2 = 1}
    bitzer_c = { menu_id = 1012, index = 835, zone = zone_tag,npc = 21001027, offset = 3, x = -460.00003051758, y = -75.5, z = -140 , h = 63, unknown1 = 7, unknown2 = 1}
@@ -92,6 +94,8 @@ local temp_item_ids = {
     }
 }
 
+local last_port_time = 0
+
 local function table_contains(t, value)
     for _, v in pairs(t) do
         if v == value then
@@ -129,59 +133,6 @@ local find_bitzer_by_id = function(id)
     return nil
 end
 
--- Gadget monitoring is for the case where a player could try to use the port command from a boss chamber with the improper value in last_gadget_used. 
--- This eliminates that remaining possibility of that ever happening and seeks to do so as cheap as possible. 
-
-local gadget_monitor = nil
-
-local function register_gadget_monitor()
-    if gadget_monitor == nil then
-        gadget_monitor = windower.register_event('incoming chunk', function(id, data)
-            local zone_id = windower.ffxi.get_info().zone
-            if zone_id == 275 or zone_id == 133 or zone_id == 189 then
-                if id ~= 0x34 and id ~= 0x032 then
-                    return
-                else
-                    local p = packets.parse('incoming', data)
-                    local menu_id = p['Menu ID']
-                    if (menu_id >= 1005 and menu_id <= 1008) or (menu_id >= 1018 and menu_id <= 1021) then
-                        last_gadget_used = menu_id
-                    end
-                end
-            end
-        end)
-    end
-end
-
-local function unregister_gadget_monitor()
-    if gadget_monitor ~= nil then
-        windower.unregister_event(gadget_monitor)
-        gadget_monitor = nil
-    end
-end
-
-local function watch_zone_change(new_zone)
-    if new_zone == 275 or new_zone == 133 or new_zone == 189 then
-        register_gadget_monitor()
-		coroutine.sleep(3)
-		zone_tag = new_zone
-    else
-        unregister_gadget_monitor()
-    end
-end
-
-windower.register_event('zone change', function(new_zone_id)
-    watch_zone_change(new_zone_id)
-end)
-
-windower.register_event('load', function()
-    local zone_id = windower.ffxi.get_info().zone
-    watch_zone_change(zone_id)
-	if zone_id == 275 or zone_id == 133 or zone_id == 189 then
-		zone_tag = zone_id
-	end
-end)
-
 return T {
     short_name = 'so',
     long_name = 'sortie',
@@ -205,15 +156,20 @@ return T {
         end)
         return mlist
     end,
-    validate = function(menu_id, zone, current_activity)
-		
+    validate = function(menu_id, zone, current_activity,p)
+		local origination = p["Menu Parameters"]:unpack('b8', 1)
+        local bitcheckinator = p["Menu Parameters"]:unpack('b8', 5)
 		zone_tag = windower.ffxi.get_info().zone
-		    local destination = nil
-			if current_activity.sub_cmd == 'port' then
-				destination = nil
-			else
-				destination = current_activity.activity_settings
-			end
+		local destination = nil
+        if current_activity.sub_cmd == 'port' then
+            destination = nil
+        else
+            destination = current_activity.activity_settings
+        end
+		if origination == nil or bitcheckinator == nil then
+			return 'Please update your superwarp.lua file to the latest version for Sortie support'
+		end
+		-------------------------------------------------------------------------------------------------------------------------------------------
        -- Destination setters
         --------------------------------------------------------------------------------------------------------------------------------------------
         if menu_id == 1010 then
@@ -235,41 +191,46 @@ return T {
             -- Gadgets all warp to 'Gadget'
         elseif (menu_id >= 1005 and menu_id <= 1008) or (menu_id >= 1018 and menu_id <= 1021) then
             destination = gadget_
-            last_gadget_used = menu_id
+        elseif menu_id == 1022 and current_activity.sub_cmd == 'port' and bitcheckinator == 0 then
+            destination = aminon_
+        elseif menu_id == 1022 and current_activity.sub_cmd == 'port' and bitcheckinator == 2 then
+            destination = aminon_h
         end
-
+		if menu_id == 1022 and bitcheckinator == 1 then
+		    return 'You need to set the Aminon difficulty before warping via this device.'
+		end
         -----------Gadget Handling (Ensures the player can only warp back from whence they came --------------------------
-        if menu_id == 1009 and last_gadget_used ~= nil then
+        if menu_id == 1009 and origination ~= nil then
             -- Warp the player back to the gadget they came from
-            if last_gadget_used == 1005 then
+            if origination == 1 then
                 destination = gadget_a
-            elseif last_gadget_used == 1006 then
+            elseif origination == 2 then
                 destination = gadget_b
-            elseif last_gadget_used == 1007 then
+            elseif origination == 3 then
                 destination = gadget_c
-            elseif last_gadget_used == 1008 then
+            elseif origination == 4 then
                 destination = gadget_d
-            elseif last_gadget_used == 1018 then
+            elseif origination == 10 then
                 destination = gadget_e
-            elseif last_gadget_used == 1019 then
+            elseif origination == 11 then
                 destination = gadget_f
-            elseif last_gadget_used == 1020 then
+            elseif origination == 12 then
                 destination = gadget_g
-            elseif last_gadget_used == 1021 then
+            elseif origination == 13 then
                 destination = gadget_h
-            end
-        elseif menu_id == 1009 and last_gadget_used == nil then
-            return
-                'Superwarp does not know where to send you since you did not have it loaded before entering boss chamber'
+			end
+        elseif menu_id == 1009 and origination == nil then
+            return 'Superwarp does not know where to send you, debacle averted; Warp out manually.'  -- I can't imagine a scenario where this could occur but handled it anyway.
         end
+        if menu_id == 1023 and origination ~= nil then
+            if origination == 14 then
+                destination = gadget_q
+		    end
+		end
 		destination.zone = zone_tag
-        -- more anti-numbskull mechanisms.
-        if menu_id == 1009 and destination.menu_id ~= last_gadget_used then
-            return 'Cannot warp to that Gadget, you must return from whence you came; Use ' .. find_gadget_by_id
-        end
         -------------------------------------------------------------------
-        if not ( -- NPCs:
-        (menu_id >= 1000 and menu_id <= 1023)) then
+        if not  -- NPCs:
+        (menu_id >= 1000 and menu_id <= 1023) then
             return "Incorrect menu detected! Menu ID: " .. menu_id
         end
         -- prevent warping to gadgets or devices from bitzers
@@ -287,13 +248,6 @@ return T {
         ---------------------------------------------------------------------------------------------------
         if (menu_id >= 1000 and menu_id <= 1004) and not table_contains(device_menu_ids, destination.menu_id) then
             return 'Cannot warp to gadgets or bitzers from here.'
-        end
-        -- Prevent using Gadget if origin Gadget is not known 
-        ---------------------------------------------------------------------------------------------------------
-        if menu_id == 1009 and last_gadget_used == nil then
-
-            return
-                'Superwarp does not know where to send you since you did not have it loaded before entering boss chamber'
         end
         -- extra layer of protection for stopping any cross-zone warp
         ---------------------------------------------------------------------------------------------------
@@ -325,7 +279,7 @@ return T {
                 return 'You do not have the Ra\'Kaznar Sheet #D'
             end
 
-            -- Gadgets --
+        -- Gadgets --
         elseif (menu_id >= 1005 and menu_id <= 1008) or (menu_id >= 1018 and menu_id <= 1021) then
             if menu_id == 1005 and not has_temp_item(temp_item_ids.Shard.A) then
                 return 'You do not have the Ra\'Kaznar Shard #A'
@@ -352,7 +306,7 @@ return T {
                 return 'You do not have the Ra\'Kaznar Shard #H'
             end
 
-            -- Devices--
+        -- Devices--
         elseif (menu_id >= 1000 and menu_id <= 1004) then
             if menu_id == 1000 and
                 (not has_temp_item(temp_item_ids.Plate.A) and not has_temp_item(temp_item_ids.Plate.B) and
@@ -384,8 +338,8 @@ return T {
         end
         return nil
     end,
-    help_text = "[sw] so [warp/w] [all/a/@all] 0-4 -- warp to a designated device in Sortie.(Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget.",
-    sub_zone_targets = S {'0', '1', '2', '3', '4'}, -- We don't want to port to the wrong place due to a systemic anomaly inherent to the programming of superwarp's fuzzyfind system, using any names with letters confuses superwarp and it will try to send you to gadgets from devices or bitzers. 
+    help_text = "[sw] so [warp/w] [all/a/@all] 0-4  OR  s,#a,#b,#c,#d -- warp to a designated Device in Sortie.(Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget. With the Aminon gadget, set difficulty before using the port command.",
+    sub_zone_targets = S {'0', '1', '2', '3', '4', 's', '#a', '#b', '#c', '#d'}, -- Because 'a' is short for 'all' superwarp will try to interpret this as all and will always give a long pause before attempting to warp all characters to a, the best workaround is using # before a and then for balance we'll just go ahead and put it before b, c and d. we'll leave s (start) alone because s is just s; The device doesn't have a # in its name. 
     auto_select_zone = function(zone)
         if zone == 275 then
             return 'Outer Ra\'Kaznar [U1]'
@@ -402,7 +356,7 @@ return T {
         local packet = nil
         local menu = p["Menu ID"]
         local npc = current_activity.npc
-        local destination = current_activity.activity_settings
+        local destination = current_activity.activity_settings		
         -- update request
         packet = packets.new('outgoing', 0x016)
         packet["Target Index"] = windower.ffxi.get_player().index
@@ -477,17 +431,19 @@ return T {
 
         return actions
     end,
-
     sub_commands = {
         port = function(current_activity, zone, p, settings, warpdata)
             local actions = T {}
             local packet = nil
             local menu = p["Menu ID"]
             local npc = current_activity.npc
+			local origination = nil
 			local destination = nil
-
+			local current_time = os.clock()
+            origination = p["Menu Parameters"]:unpack('b8', 1)
+			local bitcheckinator = p["Menu Parameters"]:unpack('b8', 5)
             if (menu >= 1000 and menu <= 1004) then
-                notice('Use sw so [0/A/B/C/D] for devices.')
+                notice('Use sw so [s/#a/#b/#c/#d] for devices.')
                 return
             end
             if (menu >= 1010 and menu <= 1017) then
@@ -513,41 +469,54 @@ return T {
             -- Gadgets all warp to 'Gadget'
             if (menu >= 1005 and menu <= 1008) or (menu >= 1018 and menu <= 1021) then
                 destination = gadget_
-                last_gadget_used = menu
             end
-
-            -----------Gadget Handling (Ensures the player can only warp back from whence they came --------------------------
-            if menu == 1009 and last_gadget_used ~= nil then
+			
+			 if menu == 1009 and origination then
                 -- Warp the player back to the specific gadget they came from
-                if last_gadget_used == 1005 then
-                    destination = gadget_a
-                elseif last_gadget_used == 1006 then
-                    destination = gadget_b
-                elseif last_gadget_used == 1007 then
-                    destination = gadget_c
-                elseif last_gadget_used == 1008 then
-                    destination = gadget_d
-                elseif last_gadget_used == 1018 then
-                    destination = gadget_e
-                elseif last_gadget_used == 1019 then
-                    destination = gadget_f
-                elseif last_gadget_used == 1020 then
-                    destination = gadget_g
-                elseif last_gadget_used == 1021 then
-                    destination = gadget_h
-                end
-            elseif menu == 1009 and last_gadget_used == nil then
-                notice(
-                    'Superwarp does not know where to send you since you did not have it loaded before entering boss chamber')
-                return
-            end
-            -- more anti-numbskull mechanisms.
-            if menu == 1009 and destination.menu_id ~= last_gadget_used then
-                notice('Cannot warp to that Gadget, you must return from whence you came; Use ' .. find_gadget_by_id)
-                return
-            end
+                 if origination == 1 then
+                     destination = gadget_a
+                 elseif origination == 2 then
+                     destination = gadget_b
+                 elseif origination == 3 then
+                     destination = gadget_c
+                 elseif origination == 4 then
+                     destination = gadget_d
+                 elseif origination == 10 then
+                     destination = gadget_e
+                 elseif origination == 11 then
+                     destination = gadget_f
+                 elseif origination == 12 then
+                     destination = gadget_g
+                 elseif origination == 13 then
+                     destination = gadget_h
+                 end
+			elseif menu == 1009 and origination == nil then
+				log('Not sure where to send you, something went wrong.')
+				return
+			end
+            if menu == 1023 and origination ~= nil then
+                if origination == 14 then
+                    destination = gadget_q
+		        end
+		    end
+			-----------------------------------------------------------------------------------
             -----------------------------------------------------------------------------------
-
+            if destination == bitzer_a or destination == bitzer_b or destination == bitzer_c or destination == bitzer_d then
+		        if current_time - last_port_time < 3 then
+		             notice('You must wait before using port again; preventing inadvertent basement re-entry...')
+                     return
+                end
+			end
+            --------------------------------------------------------------------------------------
+        if menu == 1022 and current_activity.sub_cmd == 'port' and bitcheckinator == 0 then
+            destination = aminon_
+			print(bitcheckinator)
+        end
+        if menu == 1022 and current_activity.sub_cmd == 'port' and bitcheckinator == 2 then
+            destination = aminon_h
+			print(bitcheckinator)
+        end
+			--------------------------------------------------------------------------------------
             -- update request
             packet = packets.new('outgoing', 0x016)
             packet["Target Index"] = windower.ffxi.get_player().index
@@ -619,13 +588,18 @@ return T {
                 delay = 1,
                 description = 'complete menu'
             })
-
+			last_port_time = os.clock()
             return actions
         end
     },
     warpdata = T{
 					--The bitzer and gadget destinations are not handled this way.
-			['Outer Ra\'Kaznar [U1]'] = T{  
+        ['Outer Ra\'Kaznar [U1]'] = T{  
+                ['s']  = { shortcut = '0' },
+                ['#a'] = { shortcut = '1' },
+                ['#b'] = { shortcut = '2' },
+                ['#c'] = { shortcut = '3' },
+                ['#d'] = { shortcut = '4' },
   --[[Device]]  ['0'] =   { menu_id = 1000, index = 817, zone = 275,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
   --[[Device A]]['1'] =   { menu_id = 1001, index = 818, zone = 275,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
   --[[Device B]]['2'] =   { menu_id = 1002, index = 819, zone = 275,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
@@ -633,6 +607,11 @@ return T {
   --[[Device D]]['4'] =   { menu_id = 1004, index = 821, zone = 275,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
 		},
 		['Outer Ra\'Kaznar [U2]'] = T{
+                 ['s']  = { shortcut = '0' },
+                 ['#a'] = { shortcut = '1' },
+                 ['#b'] = { shortcut = '2' },
+                 ['#c'] = { shortcut = '3' },
+                 ['#d'] = { shortcut = '4' },
    --[[Device]]  ['0'] =   { menu_id = 1000, index = 817, zone = 133,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
    --[[Device A]]['1'] =   { menu_id = 1001, index = 818, zone = 133,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
    --[[Device B]]['2'] =   { menu_id = 1002, index = 819, zone = 133,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
@@ -640,6 +619,11 @@ return T {
    --[[Device D]]['4'] =   { menu_id = 1004, index = 821, zone = 133,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
 		},
 		['Outer Ra\'Kaznar [U3]'] = T{
+                 ['s']  = { shortcut = '0' },
+                 ['#a'] = { shortcut = '1' },
+                 ['#b'] = { shortcut = '2' },
+                 ['#c'] = { shortcut = '3' },
+                 ['#d'] = { shortcut = '4' },
    --[[Device]]  ['0']  =  { menu_id = 1000, index = 817, zone = 189,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
    --[[Device A]]['1']  =  { menu_id = 1001, index = 818, zone = 189,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
    --[[Device B]]['2']  =  { menu_id = 1002, index = 819, zone = 189,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
