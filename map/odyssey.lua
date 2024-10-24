@@ -3,51 +3,51 @@ local odyssey_zones = S {298,279}
 local npc_names = T {
     port = S {'Veridical Conflux'},
     warp = S {'Translocator'},
-    exit = S {} 
+    exit = S {'Otherworldly Vortex'} 
 }
 --88888888888888888888888888888888888888888888888888888888888888888888888888888-----destinations-----888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888-
 	zone_tag = windower.ffxi.get_info().zone
 Sheol_A = {
-   ['translocator_1'] = { menu_id = 1020, index = 562, zone = zone_tag,npc = 20951602, npc2 = 20955698, offset = 0, x = 160, y = 156, z = 59.500003814697 , h = 63, unknown1 = 1  , unknown2 = 1}, 
-   ['translocator_2'] = { menu_id = 1021, index = 563, zone = zone_tag,npc = 20951603, npc2 = 20955699, offset = 1, x = 332.00003051758, y = -600, z = -0.5 , h = 127, unknown1 = 2 , unknown2 = 1}, 
-   ['translocator_3'] = { menu_id = 1022, index = 564, zone = zone_tag,npc = 20951604, npc2 = 20955700, offset = 2, x = -420.00003051758, y = -218.00001525879, z = 19.5 , h = 191, unknown1 = 3 , unknown2 = 1},
-   ['conflux_1']      = { menu_id = 1000, index = 565, zone = zone_tag,npc = 20951605, npc2 = 20955701, offset = 1, x = 166.00001525879, z = 30.000001907349, y = 220.00001525879,  h = 0, unknown1 = 2, unknown2 = 1},
-   ['conflux_2']      = { menu_id = 1001, index = 566, zone = zone_tag,npc = 20951606, npc2 = 20955702, offset = 2, x = -86.000007629395, z = 0, y = -660.00006103516,  h = 127, unknown1 = 1, unknown2 = 1},
-   ['conflux_3']      = { menu_id = 1002, index = 567, zone = zone_tag,npc = 20951607, npc2 = 20955703, offset = 3, x = -220.00001525879, y = -446.00003051758, z = 0, h = 63, unknown1 = 4, unknown2 = 1},
-   ['conflux_4']      = { menu_id = 1003, index = 568, zone = zone_tag,npc = 20951608, npc2 = 20955704, offset = 4, x = 260, z = 0, y = -674.00006103516,  h = 191, unknown1 = 3, unknown2 = 1},
-   ['conflux_5']      = { menu_id = 1004, index = 569, zone = zone_tag,npc = 20951609, npc2 = 20955705, offset = 5, x = 380.00003051758, y = -606, z = 18 , h = 63, unknown1 = 6, unknown2 = 1},
-   ['conflux_6']      = { menu_id = 1005, index = 570, zone = zone_tag,npc = 20951610, npc2 = 20955706, offset = 6, x = -140, z = 6.0000004768372, y = -274,  h = 191, unknown1 = 5, unknown2 = 1},
-   ['conflux_7']      = { menu_id = 1006, index = 571, zone = zone_tag,npc = 20951611, npc2 = 20955707, offset = 7, x = -46.000003814697, y = -300, z = 24.000001907349, h = 127, unknown1 = 8, unknown2 = 1},
-   ['conflux_8']      = { menu_id = 1007, index = 572, zone = zone_tag,npc = 20951612, npc2 = 20955708, offset = 8, x = -474.00003051758, z = 14.000000953674, y = -20,  h = 0, unknown1 = 7, unknown2 = 1},
-   ['conflux_9']      = { menu_id = 1008, index = 573, zone = zone_tag,npc = 20951613, npc2 = 20955709, offset = 9, x = -366.00003051758, y = -20, z = 14.000000953674, h = 127, unknown1 = 10, unknown2 = 1},
-   ['conflux_10']     = { menu_id = 1009, index = 574, zone = zone_tag,npc = 20951614, npc2 = 20955710, offset = 10, x = -634, z = 0, y = 620,  h = 0, unknown1 = 9, unknown2 = 1},
-   ['conflux_11']     = { menu_id = 1010, index = 575, zone = zone_tag,npc = 20951615, npc2 = 20955711, offset = 11, x = -526, y = 700.00006103516, z = 18 , h = 127, unknown1 = 12, unknown2 = 1},
-   ['conflux_12']     = { menu_id = 1011, index = 576, zone = zone_tag,npc = 20951616, npc2 = 20955712, offset = 12, x = -314, z = 0, y = 580,  h = 0, unknown1 = 11, unknown2 = 1},
+   ['translocator_1'] = { display_name = 'Translocator #1', menu_id = 1020, index = 562, zone = zone_tag,npc = 20951602, npc2 = 20955698, offset = 0, x = 160, y = 156, z = 59.500003814697 , h = 63, unknown1 = 1  , unknown2 = 1}, 
+   ['translocator_2'] = { display_name = 'Translocator #2', menu_id = 1021, index = 563, zone = zone_tag,npc = 20951603, npc2 = 20955699, offset = 1, x = 332.00003051758, y = -600, z = -0.5 , h = 127, unknown1 = 2 , unknown2 = 1}, 
+   ['translocator_3'] = { display_name = 'Translocator #3', menu_id = 1022, index = 564, zone = zone_tag,npc = 20951604, npc2 = 20955700, offset = 2, x = -420.00003051758, y = -218.00001525879, z = 19.5 , h = 191, unknown1 = 3 , unknown2 = 1},
+   ['conflux_1']      = { display_name = 'Conflux #1', menu_id = 1000, index = 565, zone = zone_tag,npc = 20951605, npc2 = 20955701, offset = 1, x = 166.00001525879, z = 30.000001907349, y = 220.00001525879,  h = 0, unknown1 = 2, unknown2 = 1},
+   ['conflux_2']      = { display_name = 'Conflux #2', menu_id = 1001, index = 566, zone = zone_tag,npc = 20951606, npc2 = 20955702, offset = 2, x = -86.000007629395, z = 0, y = -660.00006103516,  h = 127, unknown1 = 1, unknown2 = 1},
+   ['conflux_3']      = { display_name = 'Conflux #3', menu_id = 1002, index = 567, zone = zone_tag,npc = 20951607, npc2 = 20955703, offset = 3, x = -220.00001525879, y = -446.00003051758, z = 0, h = 63, unknown1 = 4, unknown2 = 1},
+   ['conflux_4']      = { display_name = 'Conflux #4', menu_id = 1003, index = 568, zone = zone_tag,npc = 20951608, npc2 = 20955704, offset = 4, x = 260, z = 0, y = -674.00006103516,  h = 191, unknown1 = 3, unknown2 = 1},
+   ['conflux_5']      = { display_name = 'Conflux #5', menu_id = 1004, index = 569, zone = zone_tag,npc = 20951609, npc2 = 20955705, offset = 5, x = 380.00003051758, y = -606, z = 18 , h = 63, unknown1 = 6, unknown2 = 1},
+   ['conflux_6']      = { display_name = 'Conflux #6', menu_id = 1005, index = 570, zone = zone_tag,npc = 20951610, npc2 = 20955706, offset = 6, x = -140, z = 6.0000004768372, y = -274,  h = 191, unknown1 = 5, unknown2 = 1},
+   ['conflux_7']      = { display_name = 'Conflux #7', menu_id = 1006, index = 571, zone = zone_tag,npc = 20951611, npc2 = 20955707, offset = 7, x = -46.000003814697, y = -300, z = 24.000001907349, h = 127, unknown1 = 8, unknown2 = 1},
+   ['conflux_8']      = { display_name = 'Conflux #8', menu_id = 1007, index = 572, zone = zone_tag,npc = 20951612, npc2 = 20955708, offset = 8, x = -474.00003051758, z = 14.000000953674, y = -20,  h = 0, unknown1 = 7, unknown2 = 1},
+   ['conflux_9']      = { display_name = 'Conflux #9', menu_id = 1008, index = 573, zone = zone_tag,npc = 20951613, npc2 = 20955709, offset = 9, x = -366.00003051758, y = -20, z = 14.000000953674, h = 127, unknown1 = 10, unknown2 = 1},
+   ['conflux_10']     = { display_name = 'Conflux #10', menu_id = 1009, index = 574, zone = zone_tag,npc = 20951614, npc2 = 20955710, offset = 10, x = -634, z = 0, y = 620,  h = 0, unknown1 = 9, unknown2 = 1},
+   ['conflux_11']     = { display_name = 'Conflux #11', menu_id = 1010, index = 575, zone = zone_tag,npc = 20951615, npc2 = 20955711, offset = 11, x = -526, y = 700.00006103516, z = 18 , h = 127, unknown1 = 12, unknown2 = 1},
+   ['conflux_12']     = { display_name = 'Conflux #12', menu_id = 1011, index = 576, zone = zone_tag,npc = 20951616, npc2 = 20955712, offset = 12, x = -314, z = 0, y = 580,  h = 0, unknown1 = 11, unknown2 = 1},
 }
 Sheol_B = {                                                        -- [P1] and [P2] , annoyingly, have different target ids  
-   ['translocator_1'] = { menu_id = 1020, index = 665, zone = zone_tag,npc = 20959897, npc2 = 20963993, offset = 0, x = 680.00006103516, y = -788.00006103516, z = 36 , h = 191, unknown1 = 1  , unknown2 = 1},
-   ['translocator_2'] = { menu_id = 1021, index = 666, zone = zone_tag,npc = 20959898, npc2 = 20963994, offset = 1, x = 212.00001525879, y = 560, z = 17.5 , h = 0, unknown1 = 2 , unknown2 = 1},
-   ['translocator_3'] = { menu_id = 1022, index = 667, zone = zone_tag,npc = 20959899, npc2 = 20963995, offset = 2, x = -552, y = 320, z = -0.5 , h = 127, unknown1 = 3 , unknown2 = 1},
-   ['conflux_1']      = { menu_id = 1000, index = 668, zone = zone_tag,npc = 20959900, npc2 = 20963996, offset = 1, x = 700.00006103516, z = 54.000003814697, y = -644.00006103516,  h = 63, unknown1 = 2, unknown2 = 1},
-   ['conflux_2']      = { menu_id = 1001, index = 669, zone = zone_tag,npc = 20959901, npc2 = 20963997, offset = 2, x = -700.00006103516, z = 12.000000953674, y = -756.00006103516,  h = 191, unknown1 = 1, unknown2 = 1},
-   ['conflux_3']      = { menu_id = 1002, index = 670, zone = zone_tag,npc = 20959902, npc2 = 20963998, offset = 3, x = -620, y = -644.00006103516, z = 6.0000004768372 , h = 63, unknown1 = 4, unknown2 = 1},
-   ['conflux_4']      = { menu_id = 1003, index = 671, zone = zone_tag,npc = 20959903, npc2 = 20963999, offset = 4, x = 180.0000152879, z = 54.000003814697, y = 644.00006103516,  h = 191, unknown1 = 3, unknown2 = 1},
-   ['conflux_5']      = { menu_id = 1004, index = 672, zone = zone_tag,npc = 20959904, npc2 = 20964000, offset = 5, x = 396.00003051758, y = 740.00006103516, z = 72 , h = 127, unknown1 = 6, unknown2 = 1},
-   ['conflux_6']      = { menu_id = 1005, index = 673, zone = zone_tag,npc = 20959905, npc2 = 20964001, offset = 6, x = 524, z = 17.5, y = 700.00006103516,  h = 0, unknown1 = 5, unknown2 = 1},
-   ['conflux_7']      = { menu_id = 1006, index = 674, zone = zone_tag,npc = 20959906, npc2 = 20964002, offset = 7, x = 756.00006103516, y = 540, z = 17.5 , h = 127, unknown1 = 8, unknown2 = 1},
-   ['conflux_8']      = { menu_id = 1007, index = 675, zone = zone_tag,npc = 20959907, npc2 = 20964003, offset = 8, x = 284, z = 107.50000762939, y = -100.00000762939,  h = 0, unknown1 = 7, unknown2 = 1},
-   ['conflux_9']      = { menu_id = 1008, index = 676, zone = zone_tag,npc = 20959908, npc2 = 20964004, offset = 9, x = 140, y = -284, z = 17.5 , h = 63, unknown1 = 10, unknown2 = 1},
-   ['conflux_10']     = { menu_id = 1009, index = 677, zone = zone_tag,npc = 20959909, npc2 = 20964005, offset = 10, x = -500.00003051758, z = 35.5, y = 204.00001525879,  h = 191, unknown1 = 9, unknown2 = 1},
+   ['translocator_1'] = {display_name = 'Translocator #1', menu_id = 1020, index = 665, zone = zone_tag,npc = 20959897, npc2 = 20963993, offset = 0, x = 680.00006103516, y = -788.00006103516, z = 36 , h = 191, unknown1 = 1  , unknown2 = 1},
+   ['translocator_2'] = {display_name = 'Translocator #2', menu_id = 1021, index = 666, zone = zone_tag,npc = 20959898, npc2 = 20963994, offset = 1, x = 212.00001525879, y = 560, z = 17.5 , h = 0, unknown1 = 2 , unknown2 = 1},
+   ['translocator_3'] = {display_name = 'Translocator #3', menu_id = 1022, index = 667, zone = zone_tag,npc = 20959899, npc2 = 20963995, offset = 2, x = -552, y = 320, z = -0.5 , h = 127, unknown1 = 3 , unknown2 = 1},
+   ['conflux_1']      = {display_name = 'Conflux #1', menu_id = 1000, index = 668, zone = zone_tag,npc = 20959900, npc2 = 20963996, offset = 1, x = 700.00006103516, z = 54.000003814697, y = -644.00006103516,  h = 63, unknown1 = 2, unknown2 = 1},
+   ['conflux_2']      = {display_name = 'Conflux #2', menu_id = 1001, index = 669, zone = zone_tag,npc = 20959901, npc2 = 20963997, offset = 2, x = -700.00006103516, z = 12.000000953674, y = -756.00006103516,  h = 191, unknown1 = 1, unknown2 = 1},
+   ['conflux_3']      = {display_name = 'Conflux #3', menu_id = 1002, index = 670, zone = zone_tag,npc = 20959902, npc2 = 20963998, offset = 3, x = -620, y = -644.00006103516, z = 6.0000004768372 , h = 63, unknown1 = 4, unknown2 = 1},
+   ['conflux_4']      = {display_name = 'Conflux #4', menu_id = 1003, index = 671, zone = zone_tag,npc = 20959903, npc2 = 20963999, offset = 4, x = 180.0000152879, z = 54.000003814697, y = 644.00006103516,  h = 191, unknown1 = 3, unknown2 = 1},
+   ['conflux_5']      = {display_name = 'Conflux #5', menu_id = 1004, index = 672, zone = zone_tag,npc = 20959904, npc2 = 20964000, offset = 5, x = 396.00003051758, y = 740.00006103516, z = 72 , h = 127, unknown1 = 6, unknown2 = 1},
+   ['conflux_6']      = {display_name = 'Conflux #6', menu_id = 1005, index = 673, zone = zone_tag,npc = 20959905, npc2 = 20964001, offset = 6, x = 524, z = 17.5, y = 700.00006103516,  h = 0, unknown1 = 5, unknown2 = 1},
+   ['conflux_7']      = {display_name = 'Conflux #7', menu_id = 1006, index = 674, zone = zone_tag,npc = 20959906, npc2 = 20964002, offset = 7, x = 756.00006103516, y = 540, z = 17.5 , h = 127, unknown1 = 8, unknown2 = 1},
+   ['conflux_8']      = {display_name = 'Conflux #8', menu_id = 1007, index = 675, zone = zone_tag,npc = 20959907, npc2 = 20964003, offset = 8, x = 284, z = 107.50000762939, y = -100.00000762939,  h = 0, unknown1 = 7, unknown2 = 1},
+   ['conflux_9']      = {display_name = 'Conflux #9', menu_id = 1008, index = 676, zone = zone_tag,npc = 20959908, npc2 = 20964004, offset = 9, x = 140, y = -284, z = 17.5 , h = 63, unknown1 = 10, unknown2 = 1},
+   ['conflux_10']     = {display_name = 'Conflux #10', menu_id = 1009, index = 677, zone = zone_tag,npc = 20959909, npc2 = 20964005, offset = 10, x = -500.00003051758, z = 35.5, y = 204.00001525879,  h = 191, unknown1 = 9, unknown2 = 1},
 }
 Sheol_C = {
-   ['translocator_1'] = { menu_id = 1020, index = 564, zone = zone_tag,npc = 20967988, npc2 = 20972084, offset = 0, x = 526, y = 234.00001525879, z = 59.500003814697 , h = 31, unknown1 = 1  , unknown2 = 1},
-   ['translocator_2'] = { menu_id = 1021, index = 565, zone = zone_tag,npc = 20967989, npc2 = 20972085, offset = 1, x = -700.00006103516, y = -338.00003051758, z = -18.10000038147 , h = 63, unknown1 = 2 , unknown2 = 1},
-   ['conflux_1']      = { menu_id = 1000, index = 566, zone = zone_tag,npc = 20967990, npc2 = 20972086, offset = 1, x = 630, z = -0.5, y = 340.00003051758,  h = 127, unknown1 = 2, unknown2 = 1},
-   ['conflux_2']      = { menu_id = 1001, index = 567, zone = zone_tag,npc = 20967991, npc2 = 20972087, offset = 2, x = -750.00006103516, z = 0.5, y = -420.00003051758,  h = 0, unknown1 = 1, unknown2 = 1},
-   ['conflux_3']      = { menu_id = 1002, index = 568, zone = zone_tag,npc = 20967992, npc2 = 20972088, offset = 3, x = -650.00006103516, y = -420.00003051758, z = -0.10000000149012 , h = 127, unknown1 = 4, unknown2 = 1},
-   ['conflux_4']      = { menu_id = 1003, index = 569, zone = zone_tag,npc = 20967993, npc2 = 20972089, offset = 4, x = 650, z = 35.5, y = -140,  h = 0, unknown1 = 3, unknown2 = 1},
-   ['conflux_5']      = { menu_id = 1004, index = 570, zone = zone_tag,npc = 20967994, npc2 = 20972090, offset = 5, x = 670.00006103516, y = -260, z = 35.5 , h = 127, unknown1 = 6, unknown2 = 1},
-   ['conflux_6']      = { menu_id = 1005, index = 571, zone = zone_tag,npc = 20967995, npc2 = 20972091, offset = 6, x = -350.00003051758, z = 23.500001907349, y = 180.00001525879,  h = 0, unknown1 = 5, unknown2 = 1}
+   ['translocator_1'] = {display_name = 'Translocator #1', menu_id = 1020, index = 564, zone = zone_tag,npc = 20967988, npc2 = 20972084, offset = 0, x = 526, y = 234.00001525879, z = 59.500003814697 , h = 31, unknown1 = 1  , unknown2 = 1},
+   ['translocator_2'] = {display_name = 'Translocator #2', menu_id = 1021, index = 565, zone = zone_tag,npc = 20967989, npc2 = 20972085, offset = 1, x = -700.00006103516, y = -338.00003051758, z = -18.10000038147 , h = 63, unknown1 = 2 , unknown2 = 1},
+   ['conflux_1']      = {display_name = 'Conflux #1',      menu_id = 1000, index = 566, zone = zone_tag,npc = 20967990, npc2 = 20972086, offset = 1, x = 630, z = -0.5, y = 340.00003051758,  h = 127, unknown1 = 2, unknown2 = 1},
+   ['conflux_2']      = {display_name = 'Conflux #2',      menu_id = 1001, index = 567, zone = zone_tag,npc = 20967991, npc2 = 20972087, offset = 2, x = -750.00006103516, z = 0.5, y = -420.00003051758,  h = 0, unknown1 = 1, unknown2 = 1},
+   ['conflux_3']      = {display_name = 'Conflux #3',      menu_id = 1002, index = 568, zone = zone_tag,npc = 20967992, npc2 = 20972088, offset = 3, x = -650.00006103516, y = -420.00003051758, z = -0.10000000149012 , h = 127, unknown1 = 4, unknown2 = 1},
+   ['conflux_4']      = {display_name = 'Conflux #4',      menu_id = 1003, index = 569, zone = zone_tag,npc = 20967993, npc2 = 20972089, offset = 4, x = 650, z = 35.5, y = -140,  h = 0, unknown1 = 3, unknown2 = 1},
+   ['conflux_5']      = {display_name = 'Conflux #5',      menu_id = 1004, index = 570, zone = zone_tag,npc = 20967994, npc2 = 20972090, offset = 5, x = 670.00006103516, y = -260, z = 35.5 , h = 127, unknown1 = 6, unknown2 = 1},
+   ['conflux_6']      = {display_name = 'Conflux #6',      menu_id = 1005, index = 571, zone = zone_tag,npc = 20967995, npc2 = 20972091, offset = 6, x = -350.00003051758, z = 23.500001907349, y = 180.00001525879,  h = 0, unknown1 = 5, unknown2 = 1}
 }
 --88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888-
 
@@ -100,7 +100,7 @@ return T {
         -- Destination setters
         --------------------------------------------------------------------------------------------------------------------------------------------
 		       --(Sheol C Confluxes)
-	if ((npc >= 20967990 and npc <= 20967995) or (npc >= 20972086 and npc <= 20972091)) then
+    if ((npc >= 20967990 and npc <= 20967995) or (npc >= 20972086 and npc <= 20972091)) then
         if menu_id == 1000 then
             destination = Sheol_C['conflux_2']
         elseif menu_id == 1001 then
@@ -114,7 +114,7 @@ return T {
         elseif menu_id == 1005 then
             destination = Sheol_C['conflux_5']
         end      --(Sheol B Confluxes)
-	elseif ((npc >= 20959900 and npc <= 20959909) or (npc >= 20963996 and npc <= 20964005)) then
+    elseif ((npc >= 20959900 and npc <= 20959909) or (npc >= 20963996 and npc <= 20964005)) then
         if menu_id == 1000 then
             destination = Sheol_B['conflux_2']
         elseif menu_id == 1001 then
@@ -136,7 +136,7 @@ return T {
         elseif menu_id == 1009 then
             destination = Sheol_B['conflux_9']
         end       --(Sheol A Confluxes)
-	elseif ((npc >= 20951605 and npc <= 20951616) or (npc >= 20955701 and npc <= 20955712)) then
+    elseif ((npc >= 20951605 and npc <= 20951616) or (npc >= 20955701 and npc <= 20955712)) then
         if menu_id == 1000 then
             destination = Sheol_A['conflux_2']
         elseif menu_id == 1001 then
@@ -162,7 +162,7 @@ return T {
         elseif menu_id == 1011 then
             destination = Sheol_A['conflux_11']
         end
-	end            --Translocators
+    end            --Translocators
 ----------------------------------------------------------------------------
 	               --(Sheol_C)
 ----------------------------------------------------------------------------
@@ -175,7 +175,7 @@ return T {
             return 'There is no Translocator 3 in Sheol C...'         -- stymie attempts to warp to a non-existent C #3
         end        --(Sheol_B)
 ----------------------------------------------------------------------------
-	elseif ((npc >= 20959897 and npc <= 20959899) or (npc >= 20963993 and npc <= 20963995)) then
+    elseif ((npc >= 20959897 and npc <= 20959899) or (npc >= 20963993 and npc <= 20963995)) then
         if menu_id == 1020 then
 		    if destination.menu_id == 1021 then
                 destination = Sheol_B['translocator_2']
@@ -197,7 +197,7 @@ return T {
 		end
 		          --(Sheol_A)
 ----------------------------------------------------------------------------
-	elseif ((npc >= 20951602 and npc <= 20951604) or (npc >= 20955698 and npc <= 20955700)) then
+    elseif ((npc >= 20951602 and npc <= 20951604) or (npc >= 20955698 and npc <= 20955700)) then
         if menu_id == 1020 then
 		    if destination.menu_id == 1021 then
                 destination = Sheol_A['translocator_2']
@@ -217,7 +217,7 @@ return T {
 			    destination = Sheol_A['translocator_2']
 			end
 		end
-	end  
+    end  
 			destination.zone = zone_tag
         -------------------------------------------------------------------
         if not  -- NPCs:
@@ -278,7 +278,7 @@ return T {
             destination = Sheol_C['translocator_1']
         end        --(Sheol_B)
 ----------------------------------------------------------------------------
-	elseif ((npc.id >= 20959897 and npc.id <= 20959899) or (npc.id >= 20963993 and npc.id <= 20963995)) then
+    elseif ((npc.id >= 20959897 and npc.id <= 20959899) or (npc.id >= 20963993 and npc.id <= 20963995)) then
         if menu == 1020 then
 		    if current_activity.activity_settings.menu_id == 1021 then
                 destination = Sheol_B['translocator_2']
@@ -300,7 +300,7 @@ return T {
 		end
 		          --(Sheol_A)
 ----------------------------------------------------------------------------
-	elseif ((npc.id >= 20951602 and npc.id <= 20951604) or (npc.id >= 20955698 and npc.id <= 20955700)) then
+    elseif ((npc.id >= 20951602 and npc.id <= 20951604) or (npc.id >= 20955698 and npc.id <= 20955700)) then
         if menu == 1020 then
 		    if current_activity.activity_settings.menu_id == 1021 then
                 destination = Sheol_A['translocator_2']
@@ -320,7 +320,7 @@ return T {
 			    destination = Sheol_A['translocator_2']
 			end
 		end
-	end  
+    end  
 	destination.zone = zone_tag
 ------------------------------------------------------------------------------------------
 	            -- Unlock checker
@@ -418,7 +418,7 @@ return T {
             end
 			    -- Destination setters
         --------------------------------------------------------------------------------------------------------------------------------------------
-	if ((npc.id >= 20967990 and npc.id <= 20967995) or (npc.id >= 20972086 and npc.id <= 20972091)) then
+    if ((npc.id >= 20967990 and npc.id <= 20967995) or (npc.id >= 20972086 and npc.id <= 20972091)) then
         if menu == 1000 then
             destination = Sheol_C['conflux_2']
         elseif menu == 1001 then
@@ -432,7 +432,7 @@ return T {
         elseif menu == 1005 then
             destination = Sheol_C['conflux_5']
         end
-	elseif ((npc.id >= 20959900 and npc.id <= 20959909) or (npc.id >= 20963996 and npc.id <= 20964005)) then
+    elseif ((npc.id >= 20959900 and npc.id <= 20959909) or (npc.id >= 20963996 and npc.id <= 20964005)) then
         if menu == 1000 then
             destination = Sheol_B['conflux_2']
         elseif menu == 1001 then
@@ -454,7 +454,7 @@ return T {
         elseif menu == 1009 then
             destination = Sheol_B['conflux_9']
         end
-	elseif ((npc.id >= 20951605 and npc.id <= 20951616) or (npc.id >= 20955701 and npc.id <= 20955712)) then
+    elseif ((npc.id >= 20951605 and npc.id <= 20951616) or (npc.id >= 20955701 and npc.id <= 20955712)) then
         if menu == 1000 then
             destination = Sheol_A['conflux_2']
         elseif menu == 1001 then
@@ -480,10 +480,11 @@ return T {
         elseif menu == 1011 then
             destination = Sheol_A['conflux_11']
         end
-	end
+    end
 	destination.zone = zone_tag
             -----------------------------------------------------------------------------------
-	
+	        log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+	        -----------------------------------------------------------------------------------
 		    packet = packets.new('outgoing', 0x016)
             packet["Target Index"] = windower.ffxi.get_player().index
             actions:append(T {
@@ -537,6 +538,42 @@ return T {
             return actions
         end
     },
+        exit = function(current_activity, zone, p, settings)
+            local actions = T{}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
+
+            log("Leaving Odyssey...")
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T{packet=packet, description='update request'})
+
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 0
+            packet["_unknown1"] = 0
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
+
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 1
+            packet["_unknown1"] = 0
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=2, description='complete menu'})
+
+            return actions
+        end,
     warpdata = T{
 		           
 			['Walk of Echoes [P1]'] = T{  
