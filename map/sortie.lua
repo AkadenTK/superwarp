@@ -1,8 +1,9 @@
-local entry_zones = S {267}
-local sortie_zones = S {275, 133, 189}
-local npc_names = T {
-    port = S {'Diaphanous Bitzer', 'Diaphanous Gadget'},
-    warp = S {'Diaphanous Device'}
+local entry_zones = S{267}
+local sortie_zones = S{275, 133, 189}
+local npc_names = T{
+    port = S{'Diaphanous Bitzer', 'Diaphanous Gadget'},
+    warp = S{'Diaphanous Device'},
+    repop = S{'Diaphanous Device','Diaphanous Bitzer'},
 }
 --///////////////////////////////////////////////////////////////////---Destinations---/////////////////////////////////////////////////////////////////////////////////////////////////////////////-
    device_  = {display_name = 'Device' ,    menu_id = 1000, index = 817, zone = zone_tag,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1}
@@ -168,6 +169,7 @@ return T {
 		-------------------------------------------------------------------------------------------------------------------------------------------
        -- Destination setters
         --------------------------------------------------------------------------------------------------------------------------------------------
+    if current_activity.sub_cmd ~= 'repop' then
         if menu_id == 1010 then
             destination = bitzer_e
         elseif menu_id == 1011 then
@@ -223,7 +225,9 @@ return T {
                 destination = gadget_q
 		    end
 		end
-		destination.zone = zone_tag
+		if current_activity.sub_cmd ~= 'repop' then
+		    destination.zone = zone_tag
+		end
         -------------------------------------------------------------------
         if not  -- NPCs:
         (menu_id >= 1000 and menu_id <= 1023) then
@@ -254,7 +258,7 @@ return T {
             return "You're already at that location"
         end
         ------------------------------------------------------------------------------------------------------------------
-        if current_activity.sub_cmd == 'port' and not sortie_zones:contains(zone) then
+        if not sortie_zones:contains(zone) then
             return 'Not in a Sortie zone!'
         end
         --------------------------------------------------------------------------------------------------------------------
@@ -332,6 +336,7 @@ return T {
                 not has_temp_item(temp_item_ids.Fragment.C) or not has_temp_item(temp_item_ids.Fragment.D)) then
             return 'You do not have all 4 Ra\'Kaznar Fragments'
         end
+    end
         return nil
     end,
     help_text = "[sw] so [warp/w] [all/a/@all] 0-4  OR  s,#a,#b,#c,#d -- warp to a designated Device in Sortie.(Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget. With the Aminon gadget, set difficulty before using the port command.",
@@ -500,7 +505,7 @@ return T {
             -----------------------------------------------------------------------------------
             if destination == bitzer_a or destination == bitzer_b or destination == bitzer_c or destination == bitzer_d then
 		        if current_time - last_port_time < 3 then
-		             notice('You must wait before using port again; preventing inadvertent basement re-entry...')
+		             notice('You must wait before using port again; preventing inadvertent basement re-entry...') 
                      return
                 end
 			end
@@ -563,7 +568,7 @@ return T {
             actions:append(T {
                 packet = packet,
                 wait_packet = 0x052,
-                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation) ,
                 description = 'same-zone move request'
             })
 
@@ -582,12 +587,82 @@ return T {
                 packet = packet,
                 wait_packet = 0x052,
                 expecting_zone = false,
-                delay = 1,
+                delay = 1.6,
                 description = 'complete menu'
             })
 			last_port_time = os.clock()
             return actions
-        end
+        end,
+-----------------------------------------------------------------------------------------------------------
+        repop = function(current_activity, zone, p, settings, warpdata)
+            local actions = T {}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
+            local rematerialization_checker = 36
+            local rematerialization_avail = true
+			
+			if (menu >= 1001 and menu <= 1004)  then
+                rematerialization_avail = not has_bit(p["Menu Parameters"],rematerialization_checker + 1) 
+			elseif (menu >= 1014 and menu <= 1017)  then
+			    rematerialization_avail = not has_bit(p["Menu Parameters"],rematerialization_checker) 
+            end
+			
+            if not (menu >= 1001 and menu <= 1004) and not (menu >= 1014 and menu <= 1017) then
+                notice('You can only rematerialize monsters from devices and basement bitzers.')
+                return
+			end
+
+			
+            if (menu >= 1001 and menu <= 1004) or (menu >= 1014 and menu <= 1017) then
+            debug('rematerialization is possible: '..tostring(rematerialization_avail))
+                if not rematerialization_avail then
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 0
+                    packet["_unknown1"] = 16384
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = false
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, description='cancel menu', message='Rematerialization is not possible yet!'})
+                    return actions
+                end
+				    log('Proceeding with the rematerialization...')
+            end
+----------------------------------------------------------------------------------
+
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+        if (menu >= 1001 and menu <= 1004)  then
+            packet["Option Index"] = 6
+        elseif (menu >= 1014 and menu <= 1017)  then
+            packet["Option Index"] = 9
+		end
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            actions:append(T {
+                packet = packet,
+                --wait_packet = 0x052,
+                expecting_zone = false,
+                delay = 1,
+                description = 'complete menu'
+            })
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T {
+                packet = packet,
+                description = 'update request'
+            })
+            return actions
+        end,
+----------------------------------------------------------
     },
     warpdata = T{
 					--The bitzer and gadget destinations are not handled this way.

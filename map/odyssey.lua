@@ -1,9 +1,9 @@
 local entry_zones = S {247}
 local odyssey_zones = S {298,279}
-local npc_names = T {
-    port = S {'Veridical Conflux'},
-    warp = S {'Translocator'},
-    exit = S {'Otherworldly Vortex'} 
+local npc_names = T{
+    exit = S{'Otherworldly Vortex'},
+    port = S{'Veridical Conflux'},
+    warp = S{'Translocator'},
 }
 --88888888888888888888888888888888888888888888888888888888888888888888888888888-----destinations-----888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888-
 	zone_tag = windower.ffxi.get_info().zone
@@ -67,7 +67,7 @@ end
 return T {
     short_name = 'od',
     long_name = 'odyssey',
-    move_in_zone = true,
+    --move_in_zone = true,
     npc_plural = 'Odyssey NPCs',
     npc_names = npc_names,
     ----------------------------------------------------------------------------------------------
@@ -97,6 +97,7 @@ return T {
 		if npc == 20975716 or npc == 20979812 then
 			return 'You cannot use superwarp in Gaol!'
 		end
+if current_activity.sub_cmd ~= 'exit' then
         -- Destination setters
         --------------------------------------------------------------------------------------------------------------------------------------------
 		       --(Sheol C Confluxes)
@@ -246,6 +247,7 @@ return T {
         if menu_id == destination.menu_id then      -- Don't mess around and find out.
             return "You're already at that location"
         end
+end
         return nil
     end,
     help_text = "[sw] od [warp/w] [all/a/@all] (1-3) -- warp between translocators in odyssey.\n[sw] od [all/a/@all] port -- warp to the other side of Veridical Confluxes.",
@@ -536,8 +538,7 @@ return T {
                 description = 'update request'
             })
             return actions
-        end
-    },
+        end,
         exit = function(current_activity, zone, p, settings)
             local actions = T{}
             local packet = nil
@@ -574,6 +575,7 @@ return T {
 
             return actions
         end,
+    },
     warpdata = T{
 		           
 			['Walk of Echoes [P1]'] = T{  
