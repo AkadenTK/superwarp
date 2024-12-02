@@ -65,7 +65,7 @@ return T{
         end
         return missing
     end,
-    help_text = "[sw] po [warp/w] [all/a/@all] staging point -- warp to a designated staging point.\n[sw] po [all/a/@all] return -- Return to Whitegate from the staging point.\n[sw] po [all/a/@all] assault -- Head to your current assault tag location.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.\n[sw] ew [all/a/@all] exit -- leave escha.",
+    help_text = "|Portals| - [sw] po [warp/w] [all/a/@all] staging point -- warp to a designated staging point.\n[sw] po [all/a/@all] return -- Return to Whitegate from the staging point.\n[sw] po [all/a/@all] assault -- Head to your current assault tag location.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.\n[sw] ew [all/a/@all] exit -- leave escha.",
     sub_zone_targets =  nil,
     auto_select_zone = function(zone)
     end,
