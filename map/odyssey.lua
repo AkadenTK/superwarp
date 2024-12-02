@@ -250,7 +250,7 @@ if current_activity.sub_cmd ~= 'exit' then
 end
         return nil
     end,
-    help_text = "|Odyssey| - [sw] od [warp/w] [all/a/@all] (1-3) -- warp between translocators in odyssey.\n[sw] od [all/a/@all] port -- warp to the other side of Veridical Confluxes.\n[sw] od [all/a/@all] exit -- Exits Odyssey (This does give the 25% touch bonus 100% of the time.)",
+    help_text = "|Odyssey| - [sw] od [warp/w] [all/a/@all] (1-3) -- warp between translocators in odyssey.\n[sw] od [all/a/@all] port -- warp to the other side of Veridical Confluxes.\n[sw] od [all/a/@all] exit -- Exits Odyssey (This does give the 25% touch bonus 100% of the time.)\n-----------------------------",
     sub_zone_targets = S {'1','2','3'},
     auto_select_zone = function(zone)
         if zone == 298 then
