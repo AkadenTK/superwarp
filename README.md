@@ -71,6 +71,18 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 #### Sortie (New!)
 | Command | Action |
 | --- | --- |
+
+| //[sw] so [warp] [all/party] 0/1/2/3/4  OR  s/#a/#b/#c/#d | Warp to a specified device. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] so [all/party] port | Warp via the nearby gadget or bitzer. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+| //[sw] so [all/party] normal | Set Aminon difficulty to normal and enter his chamber. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+| //[sw] so [all/party] hard | Set Aminon difficulty to hard (deepest dark) and enter his chamber. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+
+#### Odyssey (New!)
+| Command | Action |
+|//[sw] od [warp] [all/party] 1/2/3 | Warp to a specified translocator by number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] od [all/party] port | Warp to the other side of the Veridical Conflux "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] od [all/party] exit | Exit the Odyssey zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+=======
 | //[sw] so [warp] [all/party] 0/1/2/3/4/s/#a/#b/#c/#d  | Warp to a specified device by number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] so [all/party] port  | Warp via the nearby gadget to or from the boss room. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 
@@ -79,6 +91,7 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 | --- | --- |
 | //[sw] od [warp] [all/party] 1/2/3  | Warp to a specified translocator by number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] od [all/party] port  | Warp via the nearby Verdical Conflux to the next or previous floor. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+
 
 #### Misc. Commands
 | Command | Action |

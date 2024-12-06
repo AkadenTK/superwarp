@@ -1,36 +1,38 @@
-local entry_zones = S {267}
-local sortie_zones = S {275, 133, 189}
-local npc_names = T {
-    port = S {'Diaphanous Bitzer', 'Diaphanous Gadget'},
-    warp = S {'Diaphanous Device'},
-    exit = S {} 
+local entry_zones = S{267}
+local sortie_zones = S{275, 133, 189}
+local npc_names = T{
+    port = S{'Diaphanous Bitzer', 'Diaphanous Gadget'},
+    warp = S{'Diaphanous Device'},
+    normal = S{'Diaphanous Gadget #?'},
+    hard = S{'Diaphanous Gadget #?'},
+    repop = S{'Diaphanous Device','Diaphanous Bitzer'},
 }
 --///////////////////////////////////////////////////////////////////---Destinations---/////////////////////////////////////////////////////////////////////////////////////////////////////////////-
-   device_  = { menu_id = 1000, index = 817, zone = zone_tag,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1}
-   device_a = { menu_id = 1001, index = 818, zone = zone_tag,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1}
-   device_b = { menu_id = 1002, index = 819, zone = zone_tag,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1}
-   device_c = { menu_id = 1003, index = 820, zone = zone_tag,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1}
-   device_d = { menu_id = 1004, index = 821, zone = zone_tag,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}
-   gadget_a = { menu_id = 1005, index = 822, zone = zone_tag,npc = 21001014, offset = 1, x = -900.00006103516, y = 416.00003051758, z = -200.00001525879 , h = 63, unknown1 = 1, unknown2 = 1}
-   gadget_b = { menu_id = 1006, index = 823, zone = zone_tag,npc = 21001015, offset = 2, x = -24.000001907349, y = 420.00003051758, z = -200.00001525879 , h = 127, unknown1 = 2, unknown2 = 1}
-   gadget_c = { menu_id = 1007, index = 824, zone = zone_tag,npc = 21001016, offset = 3, x = -20, y = -456.00003051758, z = -200.00001525879 , h = 191, unknown1 = 3, unknown2 = 1}
-   gadget_d = { menu_id = 1008, index = 825, zone = zone_tag,npc = 21001017, offset = 4, x = -896.00006103516, y = -460.00003051758, z = -200.00001525879 , h = 0, unknown1 = 4, unknown2 = 1}
-   gadget_  = { menu_id = 1009, index = 826, zone = zone_tag,npc = 21001018, offset = 0, x = 624, y = -620, z = 100.00000762939 , h = 0, unknown1 = 1, unknown2 = 1}
-   gadget_e = { menu_id = 1018, index = 827, zone = zone_tag,npc = 21001019, offset = 5, x = 280, y = 276, z = 70 , h = 63, unknown1 = 5, unknown2 = 1}
-   gadget_f = { menu_id = 1019, index = 828, zone = zone_tag,npc = 21001020, offset = 6, x = 876.00006103516, y = 280, z = 70 , h = 127, unknown1 = 6, unknown2 = 1}
-   gadget_g = { menu_id = 1020, index = 829, zone = zone_tag,npc = 21001021, offset = 7, x = 880.00006103516, y = -316, z = 70 , h = 191, unknown1 = 7, unknown2 = 1}
-   gadget_h = { menu_id = 1021, index = 830, zone = zone_tag,npc = 21001022, offset = 8, x = 284, z = 70, y = -320.00,  h = 0, unknown1 = 8, unknown2 = 1}
-   gadget_q = { menu_id = 1022, index = 831, zone = zone_tag,npc = 21001023, offset = 9, x = 186.50001525879, z = 60.000003814697, y = -20,  h = 255, unknown1 = 1, unknown2 = 1}
-   aminon_  = { menu_id = 1023, index = 832, zone = zone_tag,npc = 21001024, offset = 10,x = 184.00001525879, z = 100.00000762939, y = -660.00006103516,  h = 0, unknown1 = 1, unknown2 = 1}
-   aminon_h = { menu_id = 1023, index = 832, zone = zone_tag,npc = 21001024, offset = 10,x = 184.00001525879, z = 100.00000762939, y = -660.00006103516,  h = 0, unknown1 = 2, unknown2 = 1}
-   bitzer_a = { menu_id = 1010, index = 833, zone = zone_tag,npc = 21001025, offset = 1, x = -460.00003051758, z = -140, y = 35.5,  h = 191, unknown1 = 5, unknown2 = 1}
-   bitzer_b = { menu_id = 1011, index = 834, zone = zone_tag,npc = 21001026, offset = 2, x = -404.50003051758, z = -140, y = -20,  h = 0, unknown1 = 6, unknown2 = 1}
-   bitzer_c = { menu_id = 1012, index = 835, zone = zone_tag,npc = 21001027, offset = 3, x = -460.00003051758, y = -75.5, z = -140 , h = 63, unknown1 = 7, unknown2 = 1}
-   bitzer_d = { menu_id = 1013, index = 836, zone = zone_tag,npc = 21001028, offset = 4, x = -515.5, z = -140, y = -20,  h = 127, unknown1 = 8, unknown2 = 1}
-   bitzer_e = { menu_id = 1014, index = 837, zone = zone_tag,npc = 21001029, offset = 5, x = 580, y = 31.500001907349, z = 100.00000762939 , h = 191, unknown1 = 1, unknown2 = 1}
-   bitzer_f = { menu_id = 1015, index = 838, zone = zone_tag,npc = 21001030, offset = 6, x = 631.5, z = 100.00000762939, y = -20,  h = 0, unknown1 = 2, unknown2 = 1}
-   bitzer_g = { menu_id = 1016, index = 839, zone = zone_tag,npc = 21001031, offset = 7, x = 580, y = -71.5, z = 100.00000762939 , h = 63, unknown1 = 3, unknown2 = 1}
-   bitzer_h = { menu_id = 1017, index = 840, zone = zone_tag,npc = 21001032, offset = 8, x = 528.5, z = 100.00000762939, y = -20,  h = 127, unknown1 = 4, unknown2 = 1}
+   device_  = {display_name = 'Device' ,         menu_id = 1000, index = 817, zone = zone_tag,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1}
+   device_a = {display_name = 'Device #A',       menu_id = 1001, index = 818, zone = zone_tag,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1}
+   device_b = {display_name = 'Device #B',       menu_id = 1002, index = 819, zone = zone_tag,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1}
+   device_c = {display_name = 'Device #C',       menu_id = 1003, index = 820, zone = zone_tag,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1}
+   device_d = {display_name = 'Device #D',       menu_id = 1004, index = 821, zone = zone_tag,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}
+   gadget_a = {display_name = 'Gadget #A',       menu_id = 1005, index = 822, zone = zone_tag,npc = 21001014, offset = 1, x = -900.00006103516, y = 416.00003051758, z = -200.00001525879 , h = 63, unknown1 = 1, unknown2 = 1}
+   gadget_b = {display_name = 'Gadget #B',       menu_id = 1006, index = 823, zone = zone_tag,npc = 21001015, offset = 2, x = -24.000001907349, y = 420.00003051758, z = -200.00001525879 , h = 127, unknown1 = 2, unknown2 = 1}
+   gadget_c = {display_name = 'Gadget #C',       menu_id = 1007, index = 824, zone = zone_tag,npc = 21001016, offset = 3, x = -20, y = -456.00003051758, z = -200.00001525879 , h = 191, unknown1 = 3, unknown2 = 1}
+   gadget_d = {display_name = 'Gadget #D',       menu_id = 1008, index = 825, zone = zone_tag,npc = 21001017, offset = 4, x = -896.00006103516, y = -460.00003051758, z = -200.00001525879 , h = 0, unknown1 = 4, unknown2 = 1}
+   gadget_  = {display_name = 'Gadget',          menu_id = 1009, index = 826, zone = zone_tag,npc = 21001018, offset = 0, x = 624, y = -620, z = 100.00000762939 , h = 0, unknown1 = 1, unknown2 = 1}
+   gadget_e = {display_name = 'Gadget #E',       menu_id = 1018, index = 827, zone = zone_tag,npc = 21001019, offset = 5, x = 280, y = 276, z = 70 , h = 63, unknown1 = 5, unknown2 = 1}
+   gadget_f = {display_name = 'Gadget #F',       menu_id = 1019, index = 828, zone = zone_tag,npc = 21001020, offset = 6, x = 876.00006103516, y = 280, z = 70 , h = 127, unknown1 = 6, unknown2 = 1}
+   gadget_g = {display_name = 'Gadget #G',       menu_id = 1020, index = 829, zone = zone_tag,npc = 21001021, offset = 7, x = 880.00006103516, y = -316, z = 70 , h = 191, unknown1 = 7, unknown2 = 1}
+   gadget_h = {display_name = 'Gadget #H',       menu_id = 1021, index = 830, zone = zone_tag,npc = 21001022, offset = 8, x = 284, z = 70, y = -320.00,  h = 0, unknown1 = 8, unknown2 = 1}
+   gadget_q = {display_name = 'Gadget #?',       menu_id = 1022, index = 831, zone = zone_tag,npc = 21001023, offset = 9, x = 186.50001525879, z = 60.000003814697, y = -20,  h = 255, unknown1 = 1, unknown2 = 1}
+   aminon_  = {display_name = 'Aminon (Normal)', menu_id = 1023, index = 832, zone = zone_tag,npc = 21001024, offset = 10,x = 184.00001525879, z = 100.00000762939, y = -660.00006103516,  h = 0, unknown1 = 1, unknown2 = 1}
+   aminon_h = {display_name = 'Aminon (Hard)',   menu_id = 1023, index = 832, zone = zone_tag,npc = 21001024, offset = 10,x = 184.00001525879, z = 100.00000762939, y = -660.00006103516,  h = 0, unknown1 = 2, unknown2 = 1}
+   bitzer_a = {display_name = 'Bitzer #A',       menu_id = 1010, index = 833, zone = zone_tag,npc = 21001025, offset = 1, x = -460.00003051758, z = -140, y = 35.5,  h = 191, unknown1 = 5, unknown2 = 1}
+   bitzer_b = {display_name = 'Bitzer #B',       menu_id = 1011, index = 834, zone = zone_tag,npc = 21001026, offset = 2, x = -404.50003051758, z = -140, y = -20,  h = 0, unknown1 = 6, unknown2 = 1}
+   bitzer_c = {display_name = 'Bitzer #C',       menu_id = 1012, index = 835, zone = zone_tag,npc = 21001027, offset = 3, x = -460.00003051758, y = -75.5, z = -140 , h = 63, unknown1 = 7, unknown2 = 1}
+   bitzer_d = {display_name = 'Bitzer #D',       menu_id = 1013, index = 836, zone = zone_tag,npc = 21001028, offset = 4, x = -515.5, z = -140, y = -20,  h = 127, unknown1 = 8, unknown2 = 1}
+   bitzer_e = {display_name = 'Bitzer #E',       menu_id = 1014, index = 837, zone = zone_tag,npc = 21001029, offset = 5, x = 580, y = 31.500001907349, z = 100.00000762939 , h = 191, unknown1 = 1, unknown2 = 1}
+   bitzer_f = {display_name = 'Bitzer #F',       menu_id = 1015, index = 838, zone = zone_tag,npc = 21001030, offset = 6, x = 631.5, z = 100.00000762939, y = -20,  h = 0, unknown1 = 2, unknown2 = 1}
+   bitzer_g = {display_name = 'Bitzer #G',       menu_id = 1016, index = 839, zone = zone_tag,npc = 21001031, offset = 7, x = 580, y = -71.5, z = 100.00000762939 , h = 63, unknown1 = 3, unknown2 = 1}
+   bitzer_h = {display_name = 'Bitzer #H',       menu_id = 1017, index = 840, zone = zone_tag,npc = 21001032, offset = 8, x = 528.5, z = 100.00000762939, y = -20,  h = 127, unknown1 = 4, unknown2 = 1}
 --////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-
 
 gadget_menu_identification = T {
@@ -139,9 +141,6 @@ return T {
     move_in_zone = true,
     npc_plural = 'Diaphanous Objects',
     npc_names = npc_names,
-    ----------------------------------------------------------------------------------------------
-
-    ------------------------------------------------------------------------------------
     zone_npc_list = function(type)
         local mlist = windower.ffxi.get_mob_list()
         mlist = table.filter(mlist, function(name)
@@ -161,7 +160,7 @@ return T {
         local bitcheckinator = p["Menu Parameters"]:unpack('b8', 5)
 		zone_tag = windower.ffxi.get_info().zone
 		local destination = nil
-        if current_activity.sub_cmd == 'port' then
+        if current_activity.sub_cmd == 'port' or current_activity.sub_cmd == 'normal' or current_activity.sub_cmd == 'hard' or current_activity.sub_cmd == 'repop' then
             destination = nil
         else
             destination = current_activity.activity_settings
@@ -172,6 +171,7 @@ return T {
 		-------------------------------------------------------------------------------------------------------------------------------------------
        -- Destination setters
         --------------------------------------------------------------------------------------------------------------------------------------------
+    if current_activity.sub_cmd ~= 'repop' then
         if menu_id == 1010 then
             destination = bitzer_e
         elseif menu_id == 1011 then
@@ -191,13 +191,16 @@ return T {
             -- Gadgets all warp to 'Gadget'
         elseif (menu_id >= 1005 and menu_id <= 1008) or (menu_id >= 1018 and menu_id <= 1021) then
             destination = gadget_
-        elseif menu_id == 1022 and current_activity.sub_cmd == 'port' and bitcheckinator == 0 then
+        elseif menu_id == 1022 and (current_activity.sub_cmd == 'port' and bitcheckinator == 0) or (current_activity.sub_cmd == 'normal' and (bitcheckinator == 1 or bitcheckinator == 0)) or (current_activity.sub_cmd == 'hard' and bitcheckinator == 0) then
             destination = aminon_
-        elseif menu_id == 1022 and current_activity.sub_cmd == 'port' and bitcheckinator == 2 then
+        elseif menu_id == 1022 and (current_activity.sub_cmd == 'port' and bitcheckinator == 2) or (current_activity.sub_cmd == 'hard' and (bitcheckinator == 1 or bitcheckinator == 2)) or (current_activity.sub_cmd == 'normal' and bitcheckinator == 2) then
             destination = aminon_h
         end
-		if menu_id == 1022 and bitcheckinator == 1 then
-		    return 'You need to set the Aminon difficulty before warping via this device.'
+		if menu_id == 1022 and bitcheckinator == 1 and (current_activity.sub_cmd ~= 'normal' and current_activity.sub_cmd ~= 'hard') then
+		    return 'Difficulty not set - Use //so normal or //so hard ; alternatively, set the Aminon difficulty before using //so port.'
+		end
+        if (current_activity.sub_cmd == 'normal' or current_activity.sub_cmd == 'hard') and menu_id ~= 1022 then	    
+		    return 'Only use the normal or hard command on Aminon\'s gadget.'
 		end
         -----------Gadget Handling (Ensures the player can only warp back from whence they came --------------------------
         if menu_id == 1009 and origination ~= nil then
@@ -227,7 +230,9 @@ return T {
                 destination = gadget_q
 		    end
 		end
-		destination.zone = zone_tag
+		if current_activity.sub_cmd ~= 'repop' then
+		    destination.zone = zone_tag
+		end
         -------------------------------------------------------------------
         if not  -- NPCs:
         (menu_id >= 1000 and menu_id <= 1023) then
@@ -258,7 +263,7 @@ return T {
             return "You're already at that location"
         end
         ------------------------------------------------------------------------------------------------------------------
-        if current_activity.sub_cmd == 'port' and not sortie_zones:contains(zone) then
+        if not sortie_zones:contains(zone) then
             return 'Not in a Sortie zone!'
         end
         --------------------------------------------------------------------------------------------------------------------
@@ -336,9 +341,10 @@ return T {
                 not has_temp_item(temp_item_ids.Fragment.C) or not has_temp_item(temp_item_ids.Fragment.D)) then
             return 'You do not have all 4 Ra\'Kaznar Fragments'
         end
+    end
         return nil
     end,
-    help_text = "[sw] so [warp/w] [all/a/@all] 0-4  OR  s,#a,#b,#c,#d -- warp to a designated Device in Sortie.(Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget. With the Aminon gadget, set difficulty before using the port command.",
+    help_text = "|Sortie| - [sw] so [warp/w] [all/a/@all] 0/1/2/3/4  OR  s/#a/#b/#c/#d -- warp to a designated Device in Sortie. (Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget. \n[sw] so [all/a/@all] normal -- set Aminon difficulty to normal and warp into his chamber. \n[sw] so [all/a/@all] hard -- set Aminon difficulty to hard and warp into his chamber. \n[sw] so repop -- Rematerialize monsters at a device or downstairs bitzer. \n-----------------------------",
     sub_zone_targets = S {'0', '1', '2', '3', '4', 's', '#a', '#b', '#c', '#d'}, -- Because 'a' is short for 'all' superwarp will try to interpret this as all and will always give a long pause before attempting to warp all characters to a, the best workaround is using # before a and then for balance we'll just go ahead and put it before b, c and d. we'll leave s (start) alone because s is just s; The device doesn't have a # in its name. 
     auto_select_zone = function(zone)
         if zone == 275 then
@@ -500,20 +506,23 @@ return T {
 		        end
 		    end
 			-----------------------------------------------------------------------------------
+			--Handle queue of interrupt retries potentially firing on downstairs bitzer then upstairs bitzer and causing re-entry.
             -----------------------------------------------------------------------------------
             if destination == bitzer_a or destination == bitzer_b or destination == bitzer_c or destination == bitzer_d then
 		        if current_time - last_port_time < 3 then
-		             notice('You must wait before using port again; preventing inadvertent basement re-entry...')
+		             notice('You must wait before using port again; preventing inadvertent basement re-entry...') 
                      return
                 end
 			end
             --------------------------------------------------------------------------------------
-        if menu == 1022 and current_activity.sub_cmd == 'port' and bitcheckinator == 0 then
+        if menu == 1022 and bitcheckinator == 0 then
             destination = aminon_
         end
-        if menu == 1022 and current_activity.sub_cmd == 'port' and bitcheckinator == 2 then
+        if menu == 1022 and bitcheckinator == 2 then
             destination = aminon_h
         end
+		    --------------------------------------------------------------------------------------
+		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
 			--------------------------------------------------------------------------------------
             -- update request
             packet = packets.new('outgoing', 0x016)
@@ -564,7 +573,114 @@ return T {
             actions:append(T {
                 packet = packet,
                 wait_packet = 0x052,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation) ,
+                description = 'same-zone move request'
+            })
+
+            -- complete menu
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = destination.unknown1
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            local menu_B_delay = 1
+            if menu == 1013 then
+               menu_B_delay = 2  -- Extra delay for sector H to prevent casket#H1 from spawning pre-maturely
+            end
+            actions:append(T {
+            packet = packet,
+            wait_packet = 0x052,
+            expecting_zone = false,
+            delay = menu_B_delay,
+            description = 'complete menu'
+            })
+            last_port_time = os.clock()
+            return actions
+        end,
+-----------------------------------------------------------------------------------------------------------
+        normal = function(current_activity, zone, p, settings, warpdata)
+            local actions = T {}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
+			local destination = nil
+			local bitcheckinator = p["Menu Parameters"]:unpack('b8', 5)
+
+        if menu ~= 1022 then
+            notice('Only use the \'normal\' command on Aminon\'s gadget.')
+            return
+        end
+            --------------------------------------------------------------------------------------
+        if menu == 1022 then
+            if bitcheckinator == 0 then
+                destination = aminon_
+                log('Normal mode has already been set; You can use the port command for the duration of this instance.')
+            elseif bitcheckinator == 2 then
+                log('Hardmode has already been set; you cannot enter normalmode for the duration of this instance and can use the port command.')
+                destination = aminon_h
+            elseif bitcheckinator == 1 then
+                log('Setting difficulty to normal...')
+                destination = aminon_
+            end
+        end
+		    --------------------------------------------------------------------------------------
+		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+			--------------------------------------------------------------------------------------
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T {
+                packet = packet,
+                description = 'update request'
+            })
+
+            -- request map
+            packet = packets.new('outgoing', 0x114)
+            actions:append(T {
+                packet = packet,
                 delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
+                description = 'request map'
+            })
+
+            -- menu change
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = 100
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            actions:append(T {
+                packet = packet,
+                delay = 0.2,
+                description = 'send options'
+            })
+
+            -- request in-zone warp
+            packet = packets.new('outgoing', 0x05C)
+            packet["Target ID"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["X"] = destination.x
+            packet["Y"] = destination.y
+            packet["Z"] = destination.z
+            packet["_unknown1"] = destination.unknown1
+            packet["Rotation"] = destination.h
+            packet["_unknown2"] = destination.unknown2
+            actions:append(T {
+                packet = packet,
+                wait_packet = 0x052,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation) ,
                 description = 'same-zone move request'
             })
 
@@ -586,9 +702,180 @@ return T {
                 delay = 1,
                 description = 'complete menu'
             })
-			last_port_time = os.clock()
             return actions
+        end,
+-----------------------------------------------------------------------------------------------------------
+        hard = function(current_activity, zone, p, settings, warpdata)
+            local actions = T {}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
+			local destination = nil
+			local bitcheckinator = p["Menu Parameters"]:unpack('b8', 5)
+
+        if menu ~= 1022 then
+			notice('Only use the hard command on Aminon\'s gadget.')
+			return
+		end
+            --------------------------------------------------------------------------------------
+        if menu == 1022 then
+		    if bitcheckinator == 0 then
+                destination = aminon_
+			    log('Normalmode has already been set; You cannot enter hardmode for the duration of this instance and can use the port command.')
+            elseif bitcheckinator == 2 then
+		        log('Hardmode has already been set; You can use the port command for the duration of this instance..')
+                destination = aminon_h
+            elseif bitcheckinator == 1 then
+		        log('Setting difficulty to hard...')
+                destination = aminon_h
+			end
         end
+		    --------------------------------------------------------------------------------------
+		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+			--------------------------------------------------------------------------------------
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T {
+                packet = packet,
+                description = 'update request'
+            })
+
+            -- request map
+            packet = packets.new('outgoing', 0x114)
+            actions:append(T {
+                packet = packet,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
+                description = 'request map'
+            })
+
+            -- menu change
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = 100
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            actions:append(T {
+                packet = packet,
+                delay = 0.2,
+                description = 'send options'
+            })
+
+            -- request in-zone warp
+            packet = packets.new('outgoing', 0x05C)
+            packet["Target ID"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["X"] = destination.x
+            packet["Y"] = destination.y
+            packet["Z"] = destination.z
+            packet["_unknown1"] = destination.unknown1
+            packet["Rotation"] = destination.h
+            packet["_unknown2"] = destination.unknown2
+            actions:append(T {
+                packet = packet,
+                wait_packet = 0x052,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation) ,
+                description = 'same-zone move request'
+            })
+
+            -- complete menu
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = destination.unknown1
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            actions:append(T {
+                packet = packet,
+                wait_packet = 0x052,
+                expecting_zone = false,
+                delay = 1,
+                description = 'complete menu'
+            })
+            return actions
+        end,
+-----------------------------------------------------------------------------------------------------------
+        repop = function(current_activity, zone, p, settings, warpdata)
+            local actions = T {}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
+            local rematerialization_checker = 36
+            local rematerialization_avail = true
+			
+			if (menu >= 1001 and menu <= 1004)  then
+                rematerialization_avail = not has_bit(p["Menu Parameters"],rematerialization_checker + 1) 
+			elseif (menu >= 1014 and menu <= 1017)  then
+			    rematerialization_avail = not has_bit(p["Menu Parameters"],rematerialization_checker) 
+            end
+			
+            if not (menu >= 1001 and menu <= 1004) and not (menu >= 1014 and menu <= 1017) then
+                notice('You can only rematerialize monsters from devices and basement bitzers.')
+                return
+			end
+
+			
+            if (menu >= 1001 and menu <= 1004) or (menu >= 1014 and menu <= 1017) then
+            debug('rematerialization is possible: '..tostring(rematerialization_avail))
+                if not rematerialization_avail then
+                    packet = packets.new('outgoing', 0x05B)
+                    packet["Target"] = npc.id
+                    packet["Option Index"] = 0
+                    packet["_unknown1"] = 16384
+                    packet["Target Index"] = npc.index
+                    packet["Automated Message"] = false
+                    packet["_unknown2"] = 0
+                    packet["Zone"] = zone
+                    packet["Menu ID"] = menu
+                    actions:append(T{packet=packet, description='cancel menu', message='Rematerialization is not possible yet!'})
+                    return actions
+                end
+				    log('Proceeding with the rematerialization...')
+            end
+----------------------------------------------------------------------------------
+
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+        if (menu >= 1001 and menu <= 1004)  then
+            packet["Option Index"] = 6
+        elseif (menu >= 1014 and menu <= 1017)  then
+            packet["Option Index"] = 9
+		end
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            actions:append(T {
+                packet = packet,
+                --wait_packet = 0x052,
+                expecting_zone = false,
+                delay = 1,
+                description = 'complete menu'
+            })
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T {
+                packet = packet,
+                description = 'update request'
+            })
+            return actions
+        end,
+----------------------------------------------------------
     },
     warpdata = T{
 					--The bitzer and gadget destinations are not handled this way.

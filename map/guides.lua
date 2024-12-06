@@ -37,7 +37,7 @@ return T{ -- option: 1
         end
         return missing
     end,
-    help_text = "[sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.",
+    help_text = "|Survival Guides| - [sw] sg [warp/w] [all/a/@all] zone name -- warp to a designated survival guide. \"all\" sends ipc to all local clients.\n-----------------------------",
     sub_zone_targets = S{},
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}

@@ -41,7 +41,7 @@ return T{
         end
         return missing
     end,
-    help_text = "[sw] pwp [warp/w] [all/a/@all] zone name -- warp to a designated geomagnetic fount. \"all\" sends ipc to all local clients.",
+    help_text = "|Proto-Waypoints| - [sw] pwp [warp/w] [all/a/@all] zone name -- warp to a designated geomagnetic fount. \"all\" sends ipc to all local clients.\n-----------------------------",
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
         local packet = nil
