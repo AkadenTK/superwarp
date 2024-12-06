@@ -244,3 +244,12 @@ Thanks to Staticvoid for researching and implementing the Sortie and Odyssey war
 - **Resolved**: Sortie: Resolved lock-up when warping to or from Aminon. Be sure to set your destination before warping to Aminon. Superwarp will cancel the warp and warn the user if it is not set.
 - **Resolved**: Sortie: Fix for sometimes being immediately warped out from a boss room.
 - **Improvement**: Sortie: More consistent handling of origination gadget.
+
+#### v1.0.1
+- **Feature**: Sortie: Added repop, Aminon normal, Aminon hard commands.
+- **Resolved**: Sortie: Fixed a bug that could cause the casket to spawn next to Bitzer #D instead of entrance of sector H.
+- **Improvement**: Sortie: Added chatlog display for warps done with the port, normal and hard commands.
+- **Improvement**: Sortie: Updated Help text.
+- **Feature**: Odyssey: Added exit command.
+- **Improvement**: Odyssey: Added chatlog display for warps done with the port command.
+- **Improvement**: Added map labels to increase readability when using the //sw help command in-game.
