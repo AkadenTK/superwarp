@@ -44,7 +44,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '1.0.0'
+_addon.version = '1.0.1'
 
 _addon.commands = {'sw','superwarp'}
 
