@@ -344,7 +344,7 @@ return T {
     end
         return nil
     end,
-    help_text = "|Sortie| - [sw] so [warp/w] [all/a/@all] 0/1/2/3/4  OR  s/#a/#b/#c/#d -- warp to a designated Device in Sortie. (Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget. \n[sw] so [all/a/@all] normal -- set Aminon difficulty to normal and warp into his chamber. \n[sw] so [all/a/@all] hard -- set Aminon difficulty to hard and warp into his chamber. \n[sw] so repop -- Rematerialize monsters at a device or downstairs bitzer. \n-----------------------------",
+    help_text = "|Sortie| - [sw] so [warp/w] [all/a/@all/party/p] 0/1/2/3/4  OR  s/#a/#b/#c/#d -- warp to a designated Device in Sortie. (Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget. \n[sw] so [all/a/@all] normal -- set Aminon difficulty to normal and warp into his chamber. \n[sw] so [all/a/@all] hard -- set Aminon difficulty to hard and warp into his chamber. \n[sw] so repop -- Rematerialize monsters at a device or downstairs bitzer. \n-----------------------------",
     sub_zone_targets = S {'0', '1', '2', '3', '4', 's', '#a', '#b', '#c', '#d'}, -- Because 'a' is short for 'all' superwarp will try to interpret this as all and will always give a long pause before attempting to warp all characters to a, the best workaround is using # before a and then for balance we'll just go ahead and put it before b, c and d. we'll leave s (start) alone because s is just s; The device doesn't have a # in its name. 
     auto_select_zone = function(zone)
         if zone == 275 then
@@ -500,7 +500,7 @@ return T {
 				log('Not sure where to send you, something went wrong.')
 				return
 			end
-            if menu == 1023 and origination ~= nil then
+            if menu == 1023 and origination then
                 if origination == 14 then
                     destination = gadget_q
 		        end
@@ -611,22 +611,22 @@ return T {
 			local destination = nil
 			local bitcheckinator = p["Menu Parameters"]:unpack('b8', 5)
 
-        if menu ~= 1022 then
-            notice('Only use the \'normal\' command on Aminon\'s gadget.')
-            return
-        end
+            if menu ~= 1022 then
+			    notice('Only use the \'normal\' command on Aminon\'s gadget.')
+			    return
+		    end
             --------------------------------------------------------------------------------------
         if menu == 1022 then
-            if bitcheckinator == 0 then
+		    if bitcheckinator == 0 then
                 destination = aminon_
-                log('Normal mode has already been set; You can use the port command for the duration of this instance.')
+			    log('Normal mode has already been set, you can use the port command for the duration of this instance.')
             elseif bitcheckinator == 2 then
-                log('Hardmode has already been set; you cannot enter normalmode for the duration of this instance and can use the port command.')
+		        log('Hardmode has already been set; you cannot enter normalmode for the duration of this instance and can use the port command.')
                 destination = aminon_h
             elseif bitcheckinator == 1 then
-                log('Setting difficulty to normal...')
+		        log('Setting difficulty to normal...')
                 destination = aminon_
-            end
+			end
         end
 		    --------------------------------------------------------------------------------------
 		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
@@ -721,9 +721,9 @@ return T {
         if menu == 1022 then
 		    if bitcheckinator == 0 then
                 destination = aminon_
-			    log('Normalmode has already been set; You cannot enter hardmode for the duration of this instance and can use the port command.')
+			    log('Normalmode has already been set; you cannot enter hardmode for the duration of this instance and can use the port command.')
             elseif bitcheckinator == 2 then
-		        log('Hardmode has already been set; You can use the port command for the duration of this instance..')
+		        log('Hardmode has already been set, you can use the port command for the duration of this instance..')
                 destination = aminon_h
             elseif bitcheckinator == 1 then
 		        log('Setting difficulty to hard...')
