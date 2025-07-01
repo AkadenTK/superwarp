@@ -1,6 +1,6 @@
 # superwarp
 
-This is an addon for Windower4 for FFXI. It allows text commands to teleport using Homepoints, Waypoints, Proto-Waypoints, Survival Guides, Escha Portals and Reisenjima Ingresses, Voidwatch and Unity NPCs, Abyssea Confluxes, Runic Portals, Odyssey Confluxes and Translocators, and Sortie Gadgets, Bitzers, and Devices.
+This is an addon for Windower4 for FFXI. It allows text commands to teleport using Homepoints, Waypoints, Survival Guides, Escha/Reis portals, and Unity NPC warps. There may be more coming. 
 
 ### Commands:
 | The //sw command prefix is only needed if the user is running another addon that is using the command prefix for the warp system you are operating. i.e. //te  for temenos. In that case the user would need to use //sw te or /console sw te in a macro instead of just //te until the other addon is unloaded.
@@ -87,6 +87,14 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 |//[sw] te [warp] [all/party] n1/w2/e3 | Warp to any specified tower/floor by letter&number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] te [all/party] port | Warp to the next floor or if on last floor will warp the user to the entrance, from the entrance specify a letter&number to start a new tower or use the next command. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] te [all/party] next | Warps you to the lowest floor you have not completed. Sophisticated decision making. Enjoy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+
+#### Apollyon (New!)
+| Command | Action |
+|//[sw] ap [warp] [all/party] nw1/sw2/ne3/se4 | Warp to any specified tower/floor by letters&number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] ap [all/party] port | Warp to the next floor or if on last floor will warp the user to the entrance, from the entrance specify a letter&number to start a new tower or use the next command. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] ap [all/party] next | Warps you to the lowest floor you have not collected data for. Sophisticated decision making. Enjoy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] ap [all/party] enter| Enter the Apollyon zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] ap [all/party] exit | Exit the Apollyon zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 
 #### Apollyon (New!)
 | Command | Action |

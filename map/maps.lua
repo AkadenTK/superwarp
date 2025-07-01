@@ -13,6 +13,8 @@ local maps =  {
 	['odyssey'] = require('map/odyssey'),
 	['temenos'] = require('map/temenos'),
 	['apollyon'] = require('map/apollyon')
+    ['temenos'] = require('map/temenos'),
+    ['apollyon'] = require('map/apollyon')
 	['temenos'] = require('map/temenos'),
 	['apollyon'] = require('map/apollyon')
 
