@@ -31,7 +31,7 @@ return T{
         local missing = T{}
         return missing
     end,
-    help_text = "|Spacial Displacements| - [sw] spd [all/a/@all] enter -- Enter Monarch Linn from #B01. \"all\" sends ipc to all local clients.\n-----------------------------",
+    help_text = "|Spacial Displacements| - [sw] spd [all/a/@all/party/p] enter -- Enter Monarch Linn from #B01. \"all\" sends ipc to all local clients.\n-----------------------------",
     sub_zone_targets =  S{},
     auto_select_zone = function(zone)
     end,
