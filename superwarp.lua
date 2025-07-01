@@ -38,13 +38,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Fuzzy matching logic for zones: Lili
         Sortie  support implementation: Staticvoid
         Odyssey support implementation: Staticvoid
+        Apollyon  and  Temenos support: Staticvoid
 ]]
 
 _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '1.0.0'
+_addon.version = '1.0.1'
 
 _addon.commands = {'sw','superwarp'}
 
