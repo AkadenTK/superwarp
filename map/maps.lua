@@ -10,7 +10,9 @@ local maps =  {
     ['voidwatch'] = require('map/voidwatch'),
     ['spd'] = require('map/spd'),
     ['sortie'] = require('map/sortie'),
-    ['odyssey'] = require('map/odyssey')
+    ['odyssey'] = require('map/odyssey'),
+    ['temenos'] = require('map/temenos'),
+    ['apollyon'] = require('map/apollyon')
 }
 
 for _, map in pairs(maps) do

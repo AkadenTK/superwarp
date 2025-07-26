@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Fuzzy matching logic for zones: Lili
         Sortie  support implementation: Staticvoid
         Odyssey support implementation: Staticvoid
+        Apollyon  and  Temenos support: Staticvoid
 ]]
 
 _addon.name = 'superwarp'
