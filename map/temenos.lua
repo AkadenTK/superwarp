@@ -264,7 +264,7 @@ return T {
         return nil
     end,
     help_text = "|Temenos|\n[sw] te [warp/w] [all/a/@all/party/p] e/n1/w2/e5/c3 etc. -- warp to a designated floor in Temenos. \n[sw] te [all/a/@all] port -- warp to the next floor of any tower, if on last floor will warp to the entrance, if at entrance will warp to n1. \n[sw] te [all/a/@all] next -- warp to the first uncompleted floor in sequence, if this is in another tower, will warp to the entrance. \n-----------------------------",
-    sub_zone_targets = S {'e', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'w1', 'w2','w3', 'w4', 'w5', 'w6', 'w7', 'e1', 'e2', 'e3', 'e4', 'e5','e6','e7','c1','c2','c3','c4'}, 
+    sub_zone_targets = S {'entrance', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'w1', 'w2','w3', 'w4', 'w5', 'w6', 'w7', 'e1', 'e2', 'e3', 'e4', 'e5','e6','e7','c1','c2','c3','c4'}, 
     auto_select_zone = function(zone)
         if zone == 37 then
             return 'Temenos'
@@ -608,7 +608,7 @@ return T {
     },
     warpdata = T{
         ['Temenos'] = T{  
-			   ['E']  = {display_name = 'Entrance' ,         menu_id = 1000, index = 783, npc = 16929551, offset = 1, x = 580, z = 0 ,y = 86.000007629395,h = 63,unknown1 = 1 , unknown2 = 1},
+			   ['Entrance']  = {display_name = 'Entrance' ,         menu_id = 1000, index = 783, npc = 16929551, offset = 1, x = 580, z = 0 ,y = 86.000007629395,h = 63,unknown1 = 1 , unknown2 = 1},
 			   ['N1'] = {display_name = 'Northern Tower 1',  menu_id = 1001, index = 841, npc = 16929609, offset = 1, x = 380.00003051758,z = 71.620002746582 ,y = 376.00003051758,h = 191,unknown1 = 11,unknown2 = 1},
 			   ['N2'] = {display_name = 'Northern Tower 2',  menu_id = 1002, index = 842, npc = 16929610, offset = 2, x = 180.00001525879,z = -82.380004882812,y = 376.00003051758,h = 191,unknown1 = 12,unknown2 = 1},
 			   ['N3'] = {display_name = 'Northern Tower 3',  menu_id = 1003, index = 843, npc = 16929611, offset = 3, x = 60.000003814697,z = 71.620002746582 ,y = 376.00003051758,h = 191,unknown1 = 13,unknown2 = 1},
