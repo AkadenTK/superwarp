@@ -8,14 +8,11 @@ local maps =  {
     ['protowaypoints'] = require('map/protowaypoints'),
     ['portals'] = require('map/portals'),
     ['voidwatch'] = require('map/voidwatch'),
-	['spd'] = require('map/spd'),
-	['sortie'] = require('map/sortie'),
-	['odyssey'] = require('map/odyssey'),
+    ['spd'] = require('map/spd'),
+    ['sortie'] = require('map/sortie'),
+    ['odyssey'] = require('map/odyssey'),
     ['temenos'] = require('map/temenos'),
     ['apollyon'] = require('map/apollyon')
-	['temenos'] = require('map/temenos'),
-	['apollyon'] = require('map/apollyon')
-
 }
 
 for _, map in pairs(maps) do

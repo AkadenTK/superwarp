@@ -606,9 +606,9 @@ return T {
         if menu == 1022 then
 		    if bitcheckinator == 0 then
                 destination = aminon_
-			    log('Normal mode has already been set, you can use the port command for the duration of this instance.')
+			    log('Normal mode has already been set; You can use the port command for the duration of this instance.')
             elseif bitcheckinator == 2 then
-		        log('Hardmode has already been set; you cannot enter normalmode for the duration of this instance and can use the port command.')
+		        log('Hardmode has already been set; You cannot enter normalmode for the duration of this instance and can use the port command.')
                 destination = aminon_h
             elseif bitcheckinator == 1 then
 		        log('Setting difficulty to normal...')
@@ -708,7 +708,7 @@ return T {
         if menu == 1022 then
 		    if bitcheckinator == 0 then
                 destination = aminon_
-			    log('Normalmode has already been set; you cannot enter hardmode for the duration of this instance and can use the port command.')
+			    log('Normalmode has already been set; You cannot enter hardmode for the duration of this instance and can use the port command.')
             elseif bitcheckinator == 2 then
 		        log('Hardmode has already been set, you can use the port command for the duration of this instance..')
                 destination = aminon_h
