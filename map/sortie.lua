@@ -1,7 +1,7 @@
 local entry_zones = S{267}
 local sortie_zones = S{275, 133, 189}
 local npc_names = T{
-    port = S{'Diaphanous Bitzer', 'Diaphanous Gadget'},
+    port = S{'Diaphanous Bitzer','Diaphanous Bitzer #A','Diaphanous Bitzer #B','Diaphanous Bitzer #C','Diaphanous Bitzer #D','Diaphanous Gadget'},
     warp = S{'Diaphanous Device'},
     normal = S{'Diaphanous Gadget #?'},
     hard = S{'Diaphanous Gadget #?'},
@@ -95,8 +95,6 @@ local temp_item_ids = {
         D = 9917
     }
 }
-
-local last_port_time = 0
 
 local function table_contains(t, value)
     for _, v in pairs(t) do
@@ -445,7 +443,6 @@ return T {
             local npc = current_activity.npc
 			local origination = nil
 			local destination = nil
-			local current_time = os.clock()
             origination = p["Menu Parameters"]:unpack('b8', 1)
 			local bitcheckinator = p["Menu Parameters"]:unpack('b8', 5)
             if (menu >= 1000 and menu <= 1004) then
@@ -505,15 +502,6 @@ return T {
                     destination = gadget_q
 		        end
 		    end
-			-----------------------------------------------------------------------------------
-			--Handle queue of interrupt retries potentially firing on downstairs bitzer then upstairs bitzer and causing re-entry.
-            -----------------------------------------------------------------------------------
-            if destination == bitzer_a or destination == bitzer_b or destination == bitzer_c or destination == bitzer_d then
-		        if current_time - last_port_time < 3 then
-		             notice('You must wait before using port again; preventing inadvertent basement re-entry...') 
-                     return
-                end
-			end
             --------------------------------------------------------------------------------------
         if menu == 1022 and bitcheckinator == 0 then
             destination = aminon_
@@ -599,7 +587,6 @@ return T {
             delay = menu_B_delay,
             description = 'complete menu'
             })
-            last_port_time = os.clock()
             return actions
         end,
 -----------------------------------------------------------------------------------------------------------
