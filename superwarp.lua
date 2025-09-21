@@ -56,6 +56,7 @@ packets = require('packets')
 require('coroutine')
 config = require('config')
 resources = require('resources')
+require('vectors')
 
 require('sendall')
 require('fuzzyfind')
