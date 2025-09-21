@@ -371,12 +371,19 @@ local function find_npc(needles)
     local target_npc = nil
     local distance = nil
     local npc_key = nil
+    local me = windower.ffxi.get_mob_by_target('me')
+    local vec = V{}
     for index, npc_data in pairs(needles) do
         local npc = windower.ffxi.get_mob_by_index(index)
-        if npc and npc.valid_target and (not target_npc or npc.distance < distance) then
-            target_npc = npc
-            distance = npc.distance
-            npc_key = npc_data.key
+        if npc and npc.valid_target then
+            vec[1] = npc.x - me.x
+            vec[2] = npc.y - me.y
+            local npc_distance = vec:length()
+            if not target_npc or (npc_distance < distance) then
+                target_npc = npc
+                distance = npc_distance
+                npc_key = npc_data.key
+            end
         end
     end
     return target_npc, distance, npc_key
