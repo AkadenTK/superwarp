@@ -620,7 +620,6 @@ return T {
             expecting_zone = false,
             delay = 0.5,
             description = 'complete menu'
-
         })
 
             return actions
