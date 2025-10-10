@@ -421,15 +421,32 @@ return T {
         packet["Zone"] = zone
         packet["Menu ID"] = menu
 
-        packet["Option Index"] = destination.unknown1 
+        packet["Option Index"] = 101
         packet["_unknown1"] = 0
-        packet["Automated Message"] = false
+        packet["Automated Message"] = true
         packet["_unknown2"] = 0
         actions:append(T {
             packet = packet,
             wait_packet = 0x052,
             expecting_zone = false,
-            delay = 1,
+            delay = 0.4,
+            description = 'complete menu'
+        })
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
+
+        packet["Option Index"] = 101
+        packet["_unknown1"] = 0
+        packet["Automated Message"] = false
+        packet["_unknown2"] = 0
+        actions:append(T {
+            packet = packet,
+            --wait_packet = 0x052,
+            expecting_zone = false,
+            delay = 0.4,
             description = 'complete menu'
         })
 
@@ -541,7 +558,7 @@ return T {
             packet["_unknown2"] = 0
             actions:append(T {
                 packet = packet,
-                delay = 0.2,
+                delay = 0.3,
                 description = 'send options'
             })
 
@@ -565,28 +582,46 @@ return T {
                 description = 'same-zone move request'
             })
 
-            -- complete menu
-            packet = packets.new('outgoing', 0x05B)
-            packet["Target"] = npc.id
-            packet["Target Index"] = npc.index
-            packet["Zone"] = zone
-            packet["Menu ID"] = menu
+        -- complete menu
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
 
-            packet["Option Index"] = destination.unknown1
-            packet["_unknown1"] = 0
-            packet["Automated Message"] = false
-            packet["_unknown2"] = 0
-            local menu_B_delay = 1
-            if menu == 1013 then
-               menu_B_delay = 2  -- Extra delay for sector H to prevent casket#H1 from spawning pre-maturely
-            end
-            actions:append(T {
+        packet["Option Index"] = 101
+        packet["_unknown1"] = 0
+        packet["Automated Message"] = true
+        packet["_unknown2"] = 0
+		local menu_B_delay = 1
+		if menu == 1013 then
+		   menu_B_delay = 2  -- Extra delay for sector H to prevent casket#H1 from spawning pre-maturely
+		end
+		actions:append(T {
+		packet = packet,
+		wait_packet = 0x052,
+		expecting_zone = false,
+		delay = menu_B_delay,
+		description = 'complete menu'
+		})
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
+
+        packet["Option Index"] = 101
+        packet["_unknown1"] = 0
+        packet["Automated Message"] = false
+        packet["_unknown2"] = 0
+        actions:append(T {
             packet = packet,
-            wait_packet = 0x052,
+            --wait_packet = 0x052,
             expecting_zone = false,
-            delay = menu_B_delay,
+            delay = 0.5,
             description = 'complete menu'
-            })
+        })
+
             return actions
         end,
 -----------------------------------------------------------------------------------------------------------
@@ -606,9 +641,9 @@ return T {
         if menu == 1022 then
 		    if bitcheckinator == 0 then
                 destination = aminon_
-			    log('Normal mode has already been set; You can use the port command for the duration of this instance.')
+			    log('Normal mode has already been set, you can use the port command for the duration of this instance.')
             elseif bitcheckinator == 2 then
-		        log('Hardmode has already been set; You cannot enter normalmode for the duration of this instance and can use the port command.')
+		        log('Hardmode has already been set; you cannot enter normalmode for the duration of this instance and can use the port command.')
                 destination = aminon_h
             elseif bitcheckinator == 1 then
 		        log('Setting difficulty to normal...')
@@ -671,24 +706,42 @@ return T {
                 description = 'same-zone move request'
             })
 
-            -- complete menu
-            packet = packets.new('outgoing', 0x05B)
-            packet["Target"] = npc.id
-            packet["Target Index"] = npc.index
-            packet["Zone"] = zone
-            packet["Menu ID"] = menu
+        -- complete menu
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
 
-            packet["Option Index"] = destination.unknown1
-            packet["_unknown1"] = 0
-            packet["Automated Message"] = false
-            packet["_unknown2"] = 0
-            actions:append(T {
-                packet = packet,
-                wait_packet = 0x052,
-                expecting_zone = false,
-                delay = 1,
-                description = 'complete menu'
-            })
+        packet["Option Index"] = 101
+        packet["_unknown1"] = 0
+        packet["Automated Message"] = true
+        packet["_unknown2"] = 0
+        actions:append(T {
+            packet = packet,
+            wait_packet = 0x052,
+            expecting_zone = false,
+            delay = 0.4,
+            description = 'complete menu'
+        })
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
+
+        packet["Option Index"] = 101
+        packet["_unknown1"] = 0
+        packet["Automated Message"] = false
+        packet["_unknown2"] = 0
+        actions:append(T {
+            packet = packet,
+            --wait_packet = 0x052,
+            expecting_zone = false,
+            delay = 0.4,
+            description = 'complete menu'
+        })
+
             return actions
         end,
 -----------------------------------------------------------------------------------------------------------
@@ -708,7 +761,7 @@ return T {
         if menu == 1022 then
 		    if bitcheckinator == 0 then
                 destination = aminon_
-			    log('Normalmode has already been set; You cannot enter hardmode for the duration of this instance and can use the port command.')
+			    log('Normalmode has already been set; you cannot enter hardmode for the duration of this instance and can use the port command.')
             elseif bitcheckinator == 2 then
 		        log('Hardmode has already been set, you can use the port command for the duration of this instance..')
                 destination = aminon_h
@@ -773,24 +826,42 @@ return T {
                 description = 'same-zone move request'
             })
 
-            -- complete menu
-            packet = packets.new('outgoing', 0x05B)
-            packet["Target"] = npc.id
-            packet["Target Index"] = npc.index
-            packet["Zone"] = zone
-            packet["Menu ID"] = menu
+        -- complete menu
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
 
-            packet["Option Index"] = destination.unknown1
-            packet["_unknown1"] = 0
-            packet["Automated Message"] = false
-            packet["_unknown2"] = 0
-            actions:append(T {
-                packet = packet,
-                wait_packet = 0x052,
-                expecting_zone = false,
-                delay = 1,
-                description = 'complete menu'
-            })
+        packet["Option Index"] = 101
+        packet["_unknown1"] = 0
+        packet["Automated Message"] = true
+        packet["_unknown2"] = 0
+        actions:append(T {
+            packet = packet,
+            wait_packet = 0x052,
+            expecting_zone = false,
+            delay = 0.4,
+            description = 'complete menu'
+        })
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
+
+        packet["Option Index"] = 101
+        packet["_unknown1"] = 0
+        packet["Automated Message"] = false
+        packet["_unknown2"] = 0
+        actions:append(T {
+            packet = packet,
+            --wait_packet = 0x052,
+            expecting_zone = false,
+            delay = 0.4,
+            description = 'complete menu'
+        })
+
             return actions
         end,
 -----------------------------------------------------------------------------------------------------------
