@@ -260,3 +260,6 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 - **Feature**: Odyssey: Added exit command.
 - **Improvement**: Odyssey: Added chatlog display for warps done with the port command.
 - **Improvement**: Added map labels to increase readability when using the //sw help command in-game.
+
+#### v1.0.2
+- **Resolved**: Sortie: fixed menu structure for update
