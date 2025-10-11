@@ -378,8 +378,8 @@ local function find_npc(needles)
             local dx = npc.x - me.x
             local dy = npc.y - me.y
             local dz = npc.z - me.z
-            local npc_distance = math.sqrt((dx * dx) + (dy * dy) + (dz * dz))
-            if (not distance and npc_distance <= 6) or npc_distance < distance then
+            local npc_distance = (dx * dx) + (dy * dy) + (dz * dz)
+            if distance == nil or npc_distance < distance then
                 target_npc = npc
                 distance = npc_distance
                 npc_key = npc_data.key
