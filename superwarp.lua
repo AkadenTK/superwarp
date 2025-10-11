@@ -382,7 +382,6 @@ local function find_npc(needles)
                 target_npc = npc
                 distance = npc_distance
                 npc_key = npc_data.key
-                end
             end
         end
     end
