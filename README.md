@@ -263,3 +263,7 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 
 #### v1.0.2
 - **Resolved**: Sortie: fixed menu structure for update
+
+#### v1.0.3
+- **Resolved**: Limbus: Some NPC targets are not updated correctly in packets, resolve issue teleporting.
+- **Resolved**: Sortie: fixed menu structure (again)
