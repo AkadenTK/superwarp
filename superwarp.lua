@@ -45,7 +45,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '1.0.1'
+_addon.version = '1.0.2'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -371,21 +371,22 @@ local function find_npc(needles)
     local target_npc = nil
     local distance = nil
     local npc_key = nil
-    local me = windower.ffxi.get_mob_by_target('me')
-    local vec = V{}
     for index, npc_data in pairs(needles) do
         local npc = windower.ffxi.get_mob_by_index(index)
         if npc and npc.valid_target then
             local dx = npc.x - me.x
             local dy = npc.y - me.y
-            local npc_distance = math.sqrt((dx * dx) + (dy * dy))
+            local dz = npc.z - me.z
+            local npc_distance = math.sqrt((dx * dx) + (dy * dy) + (dz * dz))
             if npc_distance < distance then
                 target_npc = npc
                 distance = npc_distance
                 npc_key = npc_data.key
+                end
             end
         end
     end
+
     return target_npc, distance, npc_key
 end
 
