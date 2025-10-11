@@ -379,7 +379,7 @@ local function find_npc(needles)
             local dy = npc.y - me.y
             local dz = npc.z - me.z
             local npc_distance = math.sqrt((dx * dx) + (dy * dy) + (dz * dz))
-            if npc_distance < distance then
+            if (not distance and npc_distance <= 6) or npc_distance < distance then
                 target_npc = npc
                 distance = npc_distance
                 npc_key = npc_data.key
@@ -517,6 +517,7 @@ local function do_sub_cmd(map_name, sub_cmd, args)
         else
         	log('No '..map.npc_plural..' found!')
         end
+
     elseif dist > 6^2 then
         if state.loop_count > 0 then
             log(npc.name..' found, but too far! Retrying...')
