@@ -368,21 +368,22 @@ function get_fuzzy_name(name)
 end
 
 local function find_npc(needles)
-    local target_npc = nil
-    local distance = nil
-    local npc_key = nil
+    local player = windower.ffxi.get_mob_by_target('me')
+    local target_npc, distance, npc_key = nil, nil, nil
+
     for index, npc_data in pairs(needles) do
-        local me = windower.ffxi.get_mob_by_target('me')
         local npc = windower.ffxi.get_mob_by_index(index)
-        if npc and npc.valid_target and me then
-            local dx = npc.x - me.x
-            local dy = npc.y - me.y
-            local dz = npc.z - me.z
-            local npc_distance = (dx * dx) + (dy * dy) + (dz * dz)
-            if distance == nil or npc_distance < distance then
-                target_npc = npc
-                distance = npc_distance
-                npc_key = npc_data.key
+        if npc and npc.valid_target then
+            local pos_y = math.abs(npc.y - player.y)
+            local pos_z = math.abs(npc.z - player.z)
+            local pos_x = math.abs(npc.x - player.x)
+            local true_distance = math.sqrt(pos_x^2 + pos_y^2 + pos_z^2)
+            if true_distance < 15 then
+                if not target_npc or npc.distance < distance then
+                    target_npc = npc
+                    distance = npc.distance
+                    npc_key = npc_data.key
+                end
             end
         end
     end
