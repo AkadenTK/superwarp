@@ -45,7 +45,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '1.0.1'
+_addon.version = '1.0.3'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -368,16 +368,16 @@ function get_fuzzy_name(name)
 end
 
 local function find_npc(needles)
-	local player = windower.ffxi.get_mob_by_target('me')
+    local player = windower.ffxi.get_mob_by_target('me')
     local target_npc, distance, npc_key = nil, nil, nil
 
     for index, npc_data in pairs(needles) do
         local npc = windower.ffxi.get_mob_by_index(index)
         if npc and npc.valid_target then
-			local pos_y = math.abs(npc.y - player.y)
-			local pos_z = math.abs(npc.z - player.z)
-			local pos_x = math.abs(npc.x - player.x)
-			local true_distance = math.sqrt(pos_x^2 + pos_y^2 + pos_z^2)
+            local pos_y = math.abs(npc.y - player.y)
+            local pos_z = math.abs(npc.z - player.z)
+            local pos_x = math.abs(npc.x - player.x)
+            local true_distance = math.sqrt(pos_x^2 + pos_y^2 + pos_z^2)
             if true_distance < 15 then
                 if not target_npc or npc.distance < distance then
                     target_npc = npc
@@ -518,6 +518,7 @@ local function do_sub_cmd(map_name, sub_cmd, args)
         else
         	log('No '..map.npc_plural..' found!')
         end
+
     elseif dist > 6^2 then
         if state.loop_count > 0 then
             log(npc.name..' found, but too far! Retrying...')

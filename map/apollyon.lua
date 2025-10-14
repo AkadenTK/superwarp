@@ -3,6 +3,8 @@ local apollyon_zone = 38
 local npc_names = T{
     port = S{'Swirling Vortex'},
     ['next'] = S{'Swirling Vortex'},
+	['random'] = S{'Swirling Vortex'},
+	back = S{'Swirling Vortex'},
     warp = S{'Swirling Vortex'},
     enter = S{'Swirling Vortex'},
     ['exit'] = S{'Radiant Aureole'},
@@ -82,6 +84,34 @@ local function find_first_missing_floor()
     return nil
 end
 
+local function get_current_floor(menu_id)
+    for floor, data in pairs(destination_array) do
+        if data.menu_id == menu_id then
+            return floor
+        end
+    end
+    return nil
+end	
+	
+local function find_shuffled_missing_floor(menu_id)
+    local current_floor = get_current_floor(menu_id)
+    if not current_floor then return nil end
+
+    local current_tower = current_floor:sub(1, 2)
+    local fallback_floor, fallback_item = nil, nil
+    for floor, item_id in pairs(temp_item_ids) do
+        if floor ~= current_floor and not has_temp_item(item_id) then
+            if floor:sub(1, 2) == current_tower then
+                return floor, item_id
+            end
+            if not fallback_floor then
+                fallback_floor, fallback_item = floor, item_id
+            end
+        end
+    end
+    return fallback_floor, fallback_item
+end
+
 return T {
     short_name = 'ap',
     long_name = 'apollyon',
@@ -104,10 +134,11 @@ return T {
     end,
     validate = function(menu_id, zone, current_activity,p)
 		local _floor, item_id = find_first_missing_floor()
+		local _shuffle, item_id = find_shuffled_missing_floor(menu_id)
 		local destination = nil
 		local cross_tower_checkinator = nil
 		local current_floor_checkinator = nil
-        if current_activity.sub_cmd == 'port' or current_activity.sub_cmd == 'next' then
+        if current_activity.sub_cmd == 'port' or current_activity.sub_cmd == 'next' or current_activity.sub_cmd == 'back' or current_activity.sub_cmd == 'random' then
             destination = nil
         else
             destination = current_activity.activity_settings
@@ -131,6 +162,28 @@ return T {
 		if current_activity.sub_cmd == 'next' then
 			if _floor then
 				destination = destination_array[_floor]
+				current_floor_checkinator = true
+				cross_tower_checkinator = true
+			elseif menu_id == 102 or menu_id == 103 then
+				destination = destination_array.SE4
+				log('All data collected. Sending you to open the chest.')
+			elseif menu_id == 108 or menu_id == 112 or menu_id == 117 or menu_id == 121 then
+				return 'All data collected. Open the chest on this floor before proceeding. If your units are overflowing and you do not wish to open the chest, use the port command. //ap port'
+			else
+				if menu_id >= 104 and menu_id <= 107 then
+					destination = destination_array.NW5
+				elseif menu_id >= 109 and menu_id <= 111 then
+					destination = destination_array.SW4
+				elseif menu_id >= 113 and menu_id <= 116 then
+					destination = destination_array.NE5
+				elseif menu_id >= 118 and menu_id <= 120 then
+					destination = destination_array.SE4
+				end
+				log('All data collected. Sending you to open the chest.')
+			end 
+		elseif current_activity.sub_cmd == 'random' then
+			if _shuffle then
+				destination = destination_array[_shuffle]
 				current_floor_checkinator = true
 				cross_tower_checkinator = true
 			elseif menu_id == 102 or menu_id == 103 then
@@ -190,6 +243,46 @@ return T {
 				destination = destination_array.SE4
 			elseif menu_id == 121 then
 				destination = destination_array.E1
+			end
+		elseif current_activity.sub_cmd == 'back' then
+			if menu_id == 121 then
+				destination = destination_array.SE3
+			elseif menu_id == 120 then
+				destination = destination_array.SE2
+			elseif menu_id == 119 then
+				destination = destination_array.SE1
+			elseif menu_id == 118 then
+				destination = destination_array.E1
+			elseif menu_id == 117 then
+				destination = destination_array.NE4
+			elseif menu_id == 116 then
+				destination = destination_array.NE3
+			elseif menu_id == 115 then
+				destination = destination_array.NE2
+			elseif menu_id == 114 then
+				destination = destination_array.NE1
+			elseif menu_id == 113 then
+				destination = destination_array.E1
+			elseif menu_id == 112 then
+				destination = destination_array.SW3
+			elseif menu_id == 111 then
+				destination = destination_array.SW2
+			elseif menu_id == 110 then
+				destination = destination_array.SW1
+			elseif menu_id == 109 then
+				destination = destination_array.E1
+			elseif menu_id == 108 then
+				destination = destination_array.NW4
+			elseif menu_id == 107 then
+				destination = destination_array.NW3
+			elseif menu_id == 106 then
+				destination = destination_array.NW2
+			elseif menu_id == 105 then
+				destination = destination_array.NW1
+			elseif menu_id == 104 then
+				destination = destination_array.E1
+			elseif menu_id == 102 or menu_id == 103 then
+				destination = destination_array.SE4
 			end
 		end
 -----------------------------------------------------------------------------------------------------------
@@ -338,12 +431,12 @@ return T {
         return actions
     end,
     sub_commands = {
-        port = function(current_activity, zone, p, settings, warpdata)
-            local actions = T {}
-            local packet = nil
-            local menu = p["Menu ID"]
-            local npc = current_activity.npc
-			local destination = nil
+	port = function(current_activity, zone, p, settings, warpdata)
+		local actions = T {}
+		local packet = nil
+		local menu = p["Menu ID"]
+		local npc = current_activity.npc
+		local destination = nil
 
 		if current_activity.sub_cmd == 'port' then
 			if menu == 102 or menu == 103 then
@@ -465,27 +558,153 @@ return T {
             return actions
         end,
   
+	back = function(current_activity, zone, p, settings, warpdata)
+		local actions = T {}
+		local packet = nil
+		local menu = p["Menu ID"]
+		local npc = current_activity.npc
+		local destination = nil
 
-        ['next'] = function(current_activity, zone, p, settings, warpdata)
-            local actions = T {}
-            local packet = nil
-            local menu = p["Menu ID"]
-            local npc = current_activity.npc
-			local _floor, item_id = find_first_missing_floor()
-			local destination = nil
+		if current_activity.sub_cmd == 'back' then
+			if menu == 121 then
+				destination = destination_array.SE3
+			elseif menu == 120 then
+				destination = destination_array.SE2
+			elseif menu == 119 then
+				destination = destination_array.SE1
+			elseif menu == 118 then
+				destination = destination_array.E1
+			elseif menu == 117 then
+				destination = destination_array.NE4
+			elseif menu == 116 then
+				destination = destination_array.NE3
+			elseif menu == 115 then
+				destination = destination_array.NE2
+			elseif menu == 114 then
+				destination = destination_array.NE1
+			elseif menu == 113 then
+				destination = destination_array.E1
+			elseif menu == 112 then
+				destination = destination_array.SW3
+			elseif menu == 111 then
+				destination = destination_array.SW2
+			elseif menu == 110 then
+				destination = destination_array.SW1
+			elseif menu == 109 then
+				destination = destination_array.E1
+			elseif menu == 108 then
+				destination = destination_array.NW4
+			elseif menu == 107 then
+				destination = destination_array.NW3
+			elseif menu == 106 then
+				destination = destination_array.NW2
+			elseif menu == 105 then
+				destination = destination_array.NW1
+			elseif menu == 104 then
+				destination = destination_array.E1
+			elseif menu == 102 or menu == 103 then
+				destination = destination_array.SE4
+			end
+		end
+
+		    --------------------------------------------------------------------------------------
+		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+			--------------------------------------------------------------------------------------
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T {
+                packet = packet,
+                description = 'update request'
+            })
+
+            -- request map
+            packet = packets.new('outgoing', 0x114)
+            actions:append(T {
+                packet = packet,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
+                description = 'request map'
+            })
+
+            -- menu change
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = 100
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            actions:append(T {
+                packet = packet,
+                delay = 0.2,
+                description = 'send options'
+            })
+
+            -- request in-zone warp
+            packet = packets.new('outgoing', 0x05C)
+            packet["Target ID"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["X"] = destination.x
+            packet["Y"] = destination.y
+            packet["Z"] = destination.z
+            packet["_unknown1"] = destination.unknown1
+            packet["Rotation"] = destination.h
+            packet["_unknown2"] = destination.unknown2
+            actions:append(T {
+                packet = packet,
+                wait_packet = 0x052,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation) ,
+                description = 'same-zone move request'
+            })
+
+            -- complete menu
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = destination.unknown1
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+
+            actions:append(T {
+            packet = packet,
+            wait_packet = 0x052,
+            expecting_zone = false,
+            delay = 1,
+            description = 'complete menu'
+            })
+            return actions
+        end,
+
+	['next'] = function(current_activity, zone, p, settings, warpdata)
+		local actions = T {}
+		local packet = nil
+		local menu = p["Menu ID"]
+		local npc = current_activity.npc
+		local _floor, item_id = find_first_missing_floor()
+		local destination = nil
 
 
 			if _floor then
 				destination = destination_array[_floor]
-			elseif menu_id == 102 or menu_id == 103 then
+			elseif menu == 102 or menu == 103 then
 				destination = destination_array.SE4
-			elseif menu_id >= 104 and menu_id <= 107 then
+			elseif menu >= 104 and menu <= 107 then
 				destination = destination_array.NW5
-			elseif menu_id >= 109 and menu_id <= 111 then
+			elseif menu >= 109 and menu <= 111 then
 				destination = destination_array.SW4
-			elseif menu_id >= 113 and menu_id <= 116 then
+			elseif menu >= 113 and menu <= 116 then
 				destination = destination_array.NE5
-			elseif menu_id >= 118 and menu_id <= 120 then
+			elseif menu >= 118 and menu <= 120 then
 				destination = destination_array.SE4
 			end
 			
@@ -579,7 +798,121 @@ return T {
             })
             return actions
         end,
-        enter = function(current_activity, zone, p, settings)
+		
+	['random'] = function(current_activity, zone, p, settings, warpdata)
+			local actions = T {}
+			local packet = nil
+			local menu = p["Menu ID"]
+			local npc = current_activity.npc
+			local _floor, item_id = find_first_missing_floor()
+			local destination = nil
+			local _shuffle, item_id = find_shuffled_missing_floor(menu)
+
+				if _shuffle then
+					destination = destination_array[_shuffle]
+				elseif menu == 102 or menu == 103 then
+					destination = destination_array.SE4
+				elseif menu >= 104 and menu <= 107 then
+					destination = destination_array.NW5
+				elseif menu >= 109 and menu <= 111 then
+					destination = destination_array.SW4
+				elseif menu >= 113 and menu <= 116 then
+					destination = destination_array.NE5
+				elseif menu >= 118 and menu <= 120 then
+					destination = destination_array.SE4
+				end
+			
+		-----------Cross-tower warp override--------------------------------------------------------------------------------------------------------------------------------
+        if (menu >= 104 and menu <= 108) and (destination.menu_id ~= 102 and destination.menu_id ~= 103) and (destination.menu_id > 108 or destination.menu_id < 104) then
+				destination = destination_array.E1
+        ----------------West Tower--------------------------------------------------------------------------
+        elseif (menu >= 109 and menu <= 112) and (destination.menu_id ~= 102 and destination.menu_id ~= 103) and (destination.menu_id > 112 or destination.menu_id < 109) then
+				destination = destination_array.E1
+        ----------------East Tower--------------------------------------------------------------------------
+        elseif (menu >= 113 and menu <= 117) and (destination.menu_id ~= 102 and destination.menu_id ~= 103) and (destination.menu_id > 117 or destination.menu_id < 113) then
+				destination = destination_array.E1
+        ----------------Central Tower--------------------------------------------------------------------------
+        elseif (menu >= 118 and menu <= 121) and (destination.menu_id ~= 102 and destination.menu_id ~= 103) and (destination.menu_id > 121 or destination.menu_id < 118) then
+				destination = destination_array.E1
+        end
+		    --------------------------------------------------------------------------------------
+		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+			--------------------------------------------------------------------------------------
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T {
+                packet = packet,
+                description = 'update request'
+            })
+
+            -- request map
+            packet = packets.new('outgoing', 0x114)
+            actions:append(T {
+                packet = packet,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
+                description = 'request map'
+            })
+
+            -- menu change
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = 100
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            actions:append(T {
+                packet = packet,
+                delay = 0.2,
+                description = 'send options'
+            })
+
+            -- request in-zone warp
+            packet = packets.new('outgoing', 0x05C)
+            packet["Target ID"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["X"] = destination.x
+            packet["Y"] = destination.y
+            packet["Z"] = destination.z
+            packet["_unknown1"] = destination.unknown1
+            packet["Rotation"] = destination.h
+            packet["_unknown2"] = destination.unknown2
+            actions:append(T {
+                packet = packet,
+                wait_packet = 0x052,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation) ,
+                description = 'same-zone move request'
+            })
+
+            -- complete menu
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = destination.unknown1
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+
+            actions:append(T {
+            packet = packet,
+            wait_packet = 0x052,
+            expecting_zone = false,
+            delay = 1,
+            description = 'complete menu'
+            })
+            return actions
+        end,		
+	enter = function(current_activity, zone, p, settings)
             local actions = T{}
             local packet = nil
             local menu = p["Menu ID"]
