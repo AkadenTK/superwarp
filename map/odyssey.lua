@@ -97,6 +97,9 @@ return T {
 		if npc == 20975716 or npc == 20979812 then
 			return 'You cannot use superwarp in Gaol!'
 		end
+		if zone_tag ~= 298 and zone_tag ~= 279 then
+			return 'You are not in Odyssey.'
+		end
 if current_activity.sub_cmd ~= 'exit' then
         -- Destination setters
         --------------------------------------------------------------------------------------------------------------------------------------------
@@ -250,7 +253,7 @@ if current_activity.sub_cmd ~= 'exit' then
 end
         return nil
     end,
-    help_text = "|Odyssey| - [sw] od [warp/w] [all/a/@all/party/p] (1-3) -- warp between translocators in odyssey.\n[sw] od [all/a/@all] port -- warp to the other side of Veridical Confluxes.\n[sw] od [all/a/@all] exit -- Exits Odyssey (This does give the 25% touch bonus 100% of the time.)\n-----------------------------",
+    help_text = "| Odyssey |\n[sw] od [warp/w] [all/a/@all/party/p] (1-3) -- warp between translocators in odyssey.\n[sw] od [all/a/@all] port -- warp to the other side of Veridical Confluxes.\n[sw] od [all/a/@all] exit -- Exits Odyssey (This does give the 25% touch bonus 100% of the time.)\n-----------------------------",
     sub_zone_targets = S {'1','2','3'},
     auto_select_zone = function(zone)
         if zone == 298 then

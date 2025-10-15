@@ -370,7 +370,7 @@ return T {
 		cross_tower_checkinator = nil
         return nil
     end,
-    help_text = "|Temenos|\n[sw] te [warp/w] [all/a/@all/party/p] e/n1/w2/e5/c3 etc. -- warp to a designated floor in Temenos. \n[sw] te [all/a/@all] port -- warp to the next floor of any tower, if on last floor will warp to the entrance, if at entrance will warp to n1. \n[sw] te [all/a/@all] next -- warp to the first uncompleted floor in sequence, if this is in another tower, will warp to the entrance. \n-----------------------------",
+    help_text = "| Temenos |\n[sw] te [warp/w] [all/a/@all/party/p] e/n1/w2/e5/c3 etc. -- warp to a designated floor in Temenos. \n[sw] te [all/a/@all/party/p] port -- warp to the next floor of any tower, if on last floor will warp to the entrance, if at entrance will warp to n1. \n[sw] te [all/a/@all/party/p] next -- warp to the first uncompleted floor in sequence, if this is in another tower, will warp to the entrance.\n  [sw] te [all/a/@all/party/p] back -- the reverse of port command, teleports to the previous floor. If you are on the first floor of a tower this will send you to the entrance. \n [sw] te [all/a/@all/party/p] random -- Similar to the next command, sends you to floors you do not have the data for until you have collected all data; Will send you to other floors within the same tower until all are completed then will send to another tower/floor.\n-----------------------------",
     sub_zone_targets = S {'entrance','n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'w1', 'w2','w3', 'w4', 'w5', 'w6', 'w7', 'e1', 'e2', 'e3', 'e4', 'e5','e6','e7','c1','c2','c3','c4'}, 
     auto_select_zone = function(zone)
         if zone == 37 then

@@ -47,7 +47,7 @@ return T{ -- option: 2
         end
         return missing
     end,
-    help_text = "|Homepoints| - [sw] hp [warp/w] [all/a/@all/party/p] zone name [homepoint_number] -- warp to a designated homepoint. \"all\" sends ipc to all local clients.\n[sw] hp [all/a/@all] set -- set the closest homepoint as your return homepoint\n-----------------------------",
+    help_text = "| Homepoints |\n[sw] hp [warp/w] [all/a/@all/party/p] zone name [homepoint_number] -- warp to a designated homepoint. \"all\" sends ipc to all local clients.\n[sw] hp [all/a/@all] set -- set the closest homepoint as your return homepoint\n-----------------------------",
     sub_zone_targets = S{'entrance', 'mog house', 'auction house', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
