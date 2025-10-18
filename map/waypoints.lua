@@ -75,7 +75,7 @@ return T{
         end
         return missing
     end,
-    help_text = "|Waypoints| - [sw] wp [warp/w] [all/a/@all/party/p] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.\n-----------------------------",
+    help_text = "| Waypoints |\n[sw] wp [warp/w] [all/a/@all/party/p] zone name [waypoint_number] -- warp to a designated waypoint. \"all\" sends ipc to all local clients.\n-----------------------------",
     sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'couriers', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enigmatic device'},
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}

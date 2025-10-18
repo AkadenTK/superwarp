@@ -2,7 +2,9 @@ local entry_zones = S{33}
 local temenos_zone = 37
 local npc_names = T{
     port = S{'Matter Diffusion Module'},
+	back = S{'Matter Diffusion Module'},
     ['next'] = S{'Matter Diffusion Module'},
+	['random'] = S{'Matter Diffusion Module'},
     warp = S{'Matter Diffusion Module'},
 }
 
@@ -93,6 +95,34 @@ local function find_first_missing_floor()
     return nil
 end
 
+local function get_current_floor(menu_id)
+    for floor, data in pairs(destination_array) do
+        if data.menu_id == menu_id then
+            return floor
+        end
+    end
+    return nil
+end	
+	
+local function find_shuffled_missing_floor(menu_id)
+    local current_floor = get_current_floor(menu_id)
+    if not current_floor then return nil end
+
+    local current_tower = current_floor:sub(1, 1)
+    local fallback_floor, fallback_item = nil, nil
+    for floor, item_id in pairs(temp_item_ids) do
+        if floor ~= current_floor and not has_temp_item(item_id) then
+            if floor:sub(1, 1) == current_tower then
+                return floor, item_id
+            end
+            if not fallback_floor then
+                fallback_floor, fallback_item = floor, item_id
+            end
+        end
+    end
+    return fallback_floor, fallback_item
+end
+
 return T {
     short_name = 'te',
     long_name = 'temenos',
@@ -115,10 +145,11 @@ return T {
     end,
     validate = function(menu_id, zone, current_activity,p)
 		local _floor, item_id = find_first_missing_floor()
+		local _shuffle, item_id = find_shuffled_missing_floor(menu_id)
 		local destination = nil
 		local cross_tower_checkinator = nil
 		local current_floor_checkinator = nil
-        if current_activity.sub_cmd == 'port' or current_activity.sub_cmd == 'next' then
+        if current_activity.sub_cmd == 'port' or current_activity.sub_cmd == 'next' or current_activity.sub_cmd == 'back' or current_activity.sub_cmd == 'random' then
             destination = nil
         else
             destination = current_activity.activity_settings
@@ -129,6 +160,28 @@ return T {
 		if current_activity.sub_cmd == 'next' then
 			if _floor then
 				destination = destination_array[_floor]
+				current_floor_checkinator = true
+				cross_tower_checkinator = true
+			elseif menu_id == 1000 then
+				destination = destination_array.C4
+				log('All data collected. Sending you to open the chest.')
+			elseif menu_id == 1025 or menu_id == 1007 or menu_id == 1014 or menu_id == 1021 then
+				return 'All data collected. Open the chest on this floor before proceeding. If your units are overflowing and you do not wish to open the chest, use the port command. //te port'
+			else
+				if menu_id >= 1001 and menu_id <= 1006 then
+					destination = destination_array.N7
+				elseif menu_id >= 1008 and menu_id <= 1013 then
+					destination = destination_array.W7
+				elseif menu_id >= 1015 and menu_id <= 1020 then
+					destination = destination_array.E7
+				elseif menu_id >= 1022 and menu_id <= 1024 then
+					destination = destination_array.C4
+				end
+				log('All data collected. Sending you to open the chest.')
+			end 
+		elseif current_activity.sub_cmd == 'random' then
+			if _shuffle then
+				destination = destination_array[_shuffle]
 				current_floor_checkinator = true
 				cross_tower_checkinator = true
 			elseif menu_id == 1000 then
@@ -203,6 +256,60 @@ return T {
 			elseif menu_id == 1025 then
 				destination = destination_array.E
 			end
+		elseif current_activity.sub_cmd == 'back' then
+			if menu_id == 1025 then
+				destination = destination_array.C3
+			elseif menu_id == 1024 then
+				destination = destination_array.C2
+			elseif menu_id == 1023 then
+				destination = destination_array.C1
+			elseif menu_id == 1022 then
+				destination = destination_array.E
+			elseif menu_id == 1021 then
+				destination = destination_array.E6
+			elseif menu_id == 1020 then
+				destination = destination_array.E5
+			elseif menu_id == 1019 then
+				destination = destination_array.E4
+			elseif menu_id == 1018 then
+				destination = destination_array.E3
+			elseif menu_id == 1017 then
+				destination = destination_array.E2
+			elseif menu_id == 1016 then
+				destination = destination_array.E1
+			elseif menu_id == 1015 then
+				destination = destination_array.E
+			elseif menu_id == 1014 then
+				destination = destination_array.W6
+			elseif menu_id == 1013 then
+				destination = destination_array.W5
+			elseif menu_id == 1012 then
+				destination = destination_array.W4
+			elseif menu_id == 1011 then
+				destination = destination_array.W3
+			elseif menu_id == 1010 then
+				destination = destination_array.W2
+			elseif menu_id == 1009 then
+				destination = destination_array.W1
+			elseif menu_id == 1008 then
+				destination = destination_array.E
+			elseif menu_id == 1007 then
+				destination = destination_array.N6
+			elseif menu_id == 1006 then
+				destination = destination_array.N5
+			elseif menu_id == 1005 then	
+				destination = destination_array.N4
+			elseif menu_id == 1004 then	
+				destination = destination_array.N3
+			elseif menu_id == 1003 then	
+				destination = destination_array.N2
+			elseif menu_id == 1002 then	
+				destination = destination_array.N1
+			elseif menu_id == 1001 then	
+				destination = destination_array.E
+			elseif menu_id == 1000 then
+				destination = destination_array.C4
+			end
 		end
 -------------------------------------------
         if not
@@ -263,7 +370,7 @@ return T {
 		cross_tower_checkinator = nil
         return nil
     end,
-    help_text = "|Temenos|\n[sw] te [warp/w] [all/a/@all/party/p] e/n1/w2/e5/c3 etc. -- warp to a designated floor in Temenos. \n[sw] te [all/a/@all] port -- warp to the next floor of any tower, if on last floor will warp to the entrance, if at entrance will warp to n1. \n[sw] te [all/a/@all] next -- warp to the first uncompleted floor in sequence, if this is in another tower, will warp to the entrance. \n-----------------------------",
+    help_text = "| Temenos |\n[sw] te [warp/w] [all/a/@all/party/p] e/n1/w2/e5/c3 etc. -- warp to a designated floor in Temenos. \n[sw] te [all/a/@all/party/p] port -- warp to the next floor of any tower, if on last floor will warp to the entrance, if at entrance will warp to n1. \n[sw] te [all/a/@all/party/p] next -- warp to the first uncompleted floor in sequence, if this is in another tower, will warp to the entrance.\n  [sw] te [all/a/@all/party/p] back -- the reverse of port command, teleports to the previous floor. If you are on the first floor of a tower this will send you to the entrance. \n [sw] te [all/a/@all/party/p] random -- Similar to the next command, sends you to floors you do not have the data for until you have collected all data; Will send you to other floors within the same tower until all are completed then will send to another tower/floor.\n-----------------------------",
     sub_zone_targets = S {'entrance','n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'w1', 'w2','w3', 'w4', 'w5', 'w6', 'w7', 'e1', 'e2', 'e3', 'e4', 'e5','e6','e7','c1','c2','c3','c4'}, 
     auto_select_zone = function(zone)
         if zone == 37 then
@@ -492,6 +599,146 @@ return T {
             return actions
         end,
   
+        back = function(current_activity, zone, p, settings, warpdata)
+            local actions = T {}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
+			local destination = nil
+
+		if current_activity.sub_cmd == 'back' then
+			if menu == 1025 then
+				destination = destination_array.C3
+			elseif menu == 1024 then
+				destination = destination_array.C2
+			elseif menu == 1023 then
+				destination = destination_array.C1
+			elseif menu == 1022 then
+				destination = destination_array.E
+			elseif menu == 1021 then
+				destination = destination_array.E6
+			elseif menu == 1020 then
+				destination = destination_array.E5
+			elseif menu == 1019 then
+				destination = destination_array.E4
+			elseif menu == 1018 then
+				destination = destination_array.E3
+			elseif menu == 1017 then
+				destination = destination_array.E2
+			elseif menu == 1016 then
+				destination = destination_array.E1
+			elseif menu == 1015 then
+				destination = destination_array.E
+			elseif menu == 1014 then
+				destination = destination_array.W6
+			elseif menu == 1013 then
+				destination = destination_array.W5
+			elseif menu == 1012 then
+				destination = destination_array.W4
+			elseif menu == 1011 then
+				destination = destination_array.W3
+			elseif menu == 1010 then
+				destination = destination_array.W2
+			elseif menu == 1009 then
+				destination = destination_array.W1
+			elseif menu == 1008 then
+				destination = destination_array.E
+			elseif menu == 1007 then
+				destination = destination_array.N6
+			elseif menu == 1006 then
+				destination = destination_array.N5
+			elseif menu == 1005 then	
+				destination = destination_array.N4
+			elseif menu == 1004 then	
+				destination = destination_array.N3
+			elseif menu == 1003 then	
+				destination = destination_array.N2
+			elseif menu == 1002 then	
+				destination = destination_array.N1
+			elseif menu == 1001 then	
+				destination = destination_array.E
+			elseif menu == 1000 then
+				destination = destination_array.C4
+			end
+		end
+
+		    --------------------------------------------------------------------------------------
+		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+			--------------------------------------------------------------------------------------
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T {
+                packet = packet,
+                description = 'update request'
+            })
+
+            -- request map
+            packet = packets.new('outgoing', 0x114)
+            actions:append(T {
+                packet = packet,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
+                description = 'request map'
+            })
+
+            -- menu change
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = 100
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            actions:append(T {
+                packet = packet,
+                delay = 0.2,
+                description = 'send options'
+            })
+
+            -- request in-zone warp
+            packet = packets.new('outgoing', 0x05C)
+            packet["Target ID"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["X"] = destination.x
+            packet["Y"] = destination.y
+            packet["Z"] = destination.z
+            packet["_unknown1"] = destination.unknown1
+            packet["Rotation"] = destination.h
+            packet["_unknown2"] = destination.unknown2
+            actions:append(T {
+                packet = packet,
+                wait_packet = 0x052,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation) ,
+                description = 'same-zone move request'
+            })
+
+            -- complete menu
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = destination.unknown1
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+
+            actions:append(T {
+            packet = packet,
+            wait_packet = 0x052,
+            expecting_zone = false,
+            delay = 1,
+            description = 'complete menu'
+            })
+            return actions
+        end,
 
         ['next'] = function(current_activity, zone, p, settings, warpdata)
             local actions = T {}
@@ -504,15 +751,15 @@ return T {
 
 			if _floor then
 				destination = destination_array[_floor]
-			elseif menu_id == 1000 then
+			elseif menu == 1000 then
 				destination = destination_array.C4
-			elseif menu_id >= 1001 and menu_id <= 1006 then
+			elseif menu >= 1001 and menu <= 1006 then
 				destination = destination_array.N7
-			elseif menu_id >= 1008 and menu_id <= 1013 then
+			elseif menu >= 1008 and menu <= 1013 then
 				destination = destination_array.W7
-			elseif menu_id >= 1015 and menu_id <= 1020 then
+			elseif menu >= 1015 and menu <= 1020 then
 				destination = destination_array.E7
-			elseif menu_id >= 1022 and menu_id <= 1024 then
+			elseif menu >= 1022 and menu <= 1024 then
 				destination = destination_array.C4
 			end 
 
@@ -605,6 +852,122 @@ return T {
             })
             return actions
         end,
+		
+	['random'] = function(current_activity, zone, p, settings, warpdata)
+            local actions = T {}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
+			local _floor, item_id = find_first_missing_floor()
+			local destination = nil
+			local _shuffle, item_id = find_shuffled_missing_floor(menu)
+			if _shuffle then
+				destination = destination_array[_shuffle]
+			elseif menu == 1000 then
+				destination = destination_array.C4
+			elseif menu >= 1001 and menu <= 1006 then
+				destination = destination_array.N7
+			elseif menu >= 1008 and menu <= 1013 then
+				destination = destination_array.W7
+			elseif menu >= 1015 and menu <= 1020 then
+				destination = destination_array.E7
+			elseif menu >= 1022 and menu <= 1024 then
+				destination = destination_array.C4
+			end 
+
+        if (menu >= 1001 and menu <= 1007) and destination.menu_id ~= 1000 and (destination.menu_id > 1007 or destination.menu_id < 1001) then
+				destination = destination_array.E
+        ----------------West Tower--------------------------------------------------------------------------
+        elseif (menu >= 1008 and menu <= 1014) and destination.menu_id ~= 1000 and (destination.menu_id > 1014 or destination.menu_id < 1008) then
+				destination = destination_array.E
+        ----------------East Tower--------------------------------------------------------------------------
+        elseif (menu >= 1015 and menu <= 1021) and destination.menu_id ~= 1000 and (destination.menu_id > 1021 or destination.menu_id < 1015) then
+				destination = destination_array.E
+        ----------------Central Tower--------------------------------------------------------------------------
+        elseif (menu >= 1022 and menu <= 1025) and destination.menu_id ~= 1000 and (destination.menu_id > 1025 or destination.menu_id < 1022) then
+				destination = destination_array.E
+        end
+		if menu == destination.menu_id then
+				destination = destination_array.E
+			log('Cannot warp to same floor. Suspicious packets averted.')
+		end
+		    --------------------------------------------------------------------------------------
+		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+			--------------------------------------------------------------------------------------
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T {
+                packet = packet,
+                description = 'update request'
+            })
+
+            -- request map
+            packet = packets.new('outgoing', 0x114)
+            actions:append(T {
+                packet = packet,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
+                description = 'request map'
+            })
+
+            -- menu change
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = 100
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            actions:append(T {
+                packet = packet,
+                delay = 0.2,
+                description = 'send options'
+            })
+
+            -- request in-zone warp
+            packet = packets.new('outgoing', 0x05C)
+            packet["Target ID"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["X"] = destination.x
+            packet["Y"] = destination.y
+            packet["Z"] = destination.z
+            packet["_unknown1"] = destination.unknown1
+            packet["Rotation"] = destination.h
+            packet["_unknown2"] = destination.unknown2
+            actions:append(T {
+                packet = packet,
+                wait_packet = 0x052,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation) ,
+                description = 'same-zone move request'
+            })
+
+            -- complete menu
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Target Index"] = npc.index
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+
+            packet["Option Index"] = destination.unknown1
+            packet["_unknown1"] = 0
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+
+            actions:append(T {
+            packet = packet,
+            wait_packet = 0x052,
+            expecting_zone = false,
+            delay = 1,
+            description = 'complete menu'
+            })
+            return actions
+        end,		
     },
     warpdata = T{
         ['Temenos'] = T{  

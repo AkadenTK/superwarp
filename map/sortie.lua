@@ -342,7 +342,7 @@ return T {
     end
         return nil
     end,
-    help_text = "|Sortie| - [sw] so [warp/w] [all/a/@all/party/p] 0/1/2/3/4  OR  s/#a/#b/#c/#d -- warp to a designated Device in Sortie. (Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget. \n[sw] so [all/a/@all] normal -- set Aminon difficulty to normal and warp into his chamber. \n[sw] so [all/a/@all] hard -- set Aminon difficulty to hard and warp into his chamber. \n[sw] so repop -- Rematerialize monsters at a device or downstairs bitzer. \n-----------------------------",
+    help_text = "| Sortie |\n[sw] so [warp/w] [all/a/@all/party/p] 0/1/2/3/4  OR  s/#a/#b/#c/#d -- warp to a designated Device in Sortie. (Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget. \n[sw] so [all/a/@all] normal -- set Aminon difficulty to normal and warp into his chamber. \n[sw] so [all/a/@all] hard -- set Aminon difficulty to hard and warp into his chamber. \n[sw] so repop -- Rematerialize monsters at a device or downstairs bitzer. \n-----------------------------",
     sub_zone_targets = S {'0', '1', '2', '3', '4', 's', '#a', '#b', '#c', '#d'}, -- Because 'a' is short for 'all' superwarp will try to interpret this as all and will always give a long pause before attempting to warp all characters to a, the best workaround is using # before a and then for balance we'll just go ahead and put it before b, c and d. we'll leave s (start) alone because s is just s; The device doesn't have a # in its name. 
     auto_select_zone = function(zone)
         if zone == 275 then
@@ -368,15 +368,6 @@ return T {
             packet = packet,
             description = 'update request'
         })
-
-        -- request map
-        packet = packets.new('outgoing', 0x114)
-        actions:append(T {
-            packet = packet,
-            delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
-            description = 'request map'
-        })
-
         -- menu change
         packet = packets.new('outgoing', 0x05B)
         packet["Target"] = npc.id
@@ -390,7 +381,7 @@ return T {
         packet["_unknown2"] = 0
         actions:append(T {
             packet = packet,
-            delay = 0.2,
+            delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
             description = 'send options'
         })
 
@@ -429,7 +420,7 @@ return T {
             packet = packet,
             wait_packet = 0x052,
             expecting_zone = false,
-            delay = 0.4,
+            delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
             description = 'complete menu'
         })
         packet = packets.new('outgoing', 0x05B)
@@ -444,9 +435,9 @@ return T {
         packet["_unknown2"] = 0
         actions:append(T {
             packet = packet,
-            --wait_packet = 0x052,
+            wait_packet = 0x052,
             expecting_zone = false,
-            delay = 0.4,
+            delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
             description = 'complete menu'
         })
 
@@ -537,28 +528,19 @@ return T {
                 description = 'update request'
             })
 
-            -- request map
-            packet = packets.new('outgoing', 0x114)
-            actions:append(T {
-                packet = packet,
-                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
-                description = 'request map'
-            })
-
             -- menu change
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
             packet["Target Index"] = npc.index
             packet["Zone"] = zone
             packet["Menu ID"] = menu
-
             packet["Option Index"] = 100
             packet["_unknown1"] = 0
             packet["Automated Message"] = true
             packet["_unknown2"] = 0
             actions:append(T {
                 packet = packet,
-                delay = 0.3,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
                 description = 'send options'
             })
 
@@ -588,12 +570,11 @@ return T {
         packet["Target Index"] = npc.index
         packet["Zone"] = zone
         packet["Menu ID"] = menu
-
         packet["Option Index"] = 101
         packet["_unknown1"] = 0
         packet["Automated Message"] = true
         packet["_unknown2"] = 0
-		local menu_B_delay = 1
+		local menu_B_delay = 0.5
 		if menu == 1013 then
 		   menu_B_delay = 2  -- Extra delay for sector H to prevent casket#H1 from spawning pre-maturely
 		end
@@ -604,23 +585,44 @@ return T {
 		delay = menu_B_delay,
 		description = 'complete menu'
 		})
+    if menu >= 1010 and menu <= 1013 then
+            -- Spawn trigger packet
         packet = packets.new('outgoing', 0x05B)
         packet["Target"] = npc.id
         packet["Target Index"] = npc.index
         packet["Zone"] = zone
         packet["Menu ID"] = menu
 
+        packet["Option Index"] = destination.unknown1
+        packet["_unknown1"] = 0
+        packet["Automated Message"] = false
+        packet["_unknown2"] = 0
+
+        actions:append(T {
+        packet = packet,
+        wait_packet = 0x052,
+        expecting_zone = false,
+        delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation) ,
+        description = 'complete menu'
+        })  
+    else
+        packet = packets.new('outgoing', 0x05B)
+        packet["Target"] = npc.id
+        packet["Target Index"] = npc.index
+        packet["Zone"] = zone
+        packet["Menu ID"] = menu
         packet["Option Index"] = 101
         packet["_unknown1"] = 0
         packet["Automated Message"] = false
         packet["_unknown2"] = 0
         actions:append(T {
             packet = packet,
-            --wait_packet = 0x052,
+            wait_packet = 0x052,
             expecting_zone = false,
-            delay = 0.5,
+            delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
             description = 'complete menu'
         })
+    end
 
             return actions
         end,
@@ -661,14 +663,6 @@ return T {
                 description = 'update request'
             })
 
-            -- request map
-            packet = packets.new('outgoing', 0x114)
-            actions:append(T {
-                packet = packet,
-                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
-                description = 'request map'
-            })
-
             -- menu change
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
@@ -682,7 +676,7 @@ return T {
             packet["_unknown2"] = 0
             actions:append(T {
                 packet = packet,
-                delay = 0.2,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
                 description = 'send options'
             })
 
@@ -721,7 +715,7 @@ return T {
             packet = packet,
             wait_packet = 0x052,
             expecting_zone = false,
-            delay = 0.4,
+            delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
             description = 'complete menu'
         })
         packet = packets.new('outgoing', 0x05B)
@@ -736,9 +730,9 @@ return T {
         packet["_unknown2"] = 0
         actions:append(T {
             packet = packet,
-            --wait_packet = 0x052,
+            wait_packet = 0x052,
             expecting_zone = false,
-            delay = 0.4,
+            delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
             description = 'complete menu'
         })
 
@@ -781,14 +775,6 @@ return T {
                 description = 'update request'
             })
 
-            -- request map
-            packet = packets.new('outgoing', 0x114)
-            actions:append(T {
-                packet = packet,
-                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
-                description = 'request map'
-            })
-
             -- menu change
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
@@ -802,7 +788,7 @@ return T {
             packet["_unknown2"] = 0
             actions:append(T {
                 packet = packet,
-                delay = 0.2,
+                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
                 description = 'send options'
             })
 
@@ -841,7 +827,7 @@ return T {
             packet = packet,
             wait_packet = 0x052,
             expecting_zone = false,
-            delay = 0.4,
+            delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
             description = 'complete menu'
         })
         packet = packets.new('outgoing', 0x05B)
@@ -856,9 +842,9 @@ return T {
         packet["_unknown2"] = 0
         actions:append(T {
             packet = packet,
-            --wait_packet = 0x052,
+            wait_packet = 0x052,
             expecting_zone = false,
-            delay = 0.4,
+            delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
             description = 'complete menu'
         })
 

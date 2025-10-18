@@ -43,7 +43,7 @@ return T{ -- option: 1
         end
         return missing
     end,
-    help_text = "|Unity| - [sw] un [warp/w] [all/a/@all/party/p] zone name -- warp to a designated unity zone. \"all\" sends ipc to all local clients.\n-----------------------------",
+    help_text = "| Unity |\n[sw] un [warp/w] [all/a/@all/party/p] zone name -- warp to a designated unity zone. \"all\" sends ipc to all local clients.\n-----------------------------",
     sub_zone_targets = S{},
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
