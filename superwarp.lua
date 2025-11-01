@@ -85,7 +85,7 @@ local defaults = {
     retry_delay = 2,                        -- delay (seconds) between retries
     simulated_response_time = 0,            -- response time (seconds) for selecting a single menu item. Note this can happen multiple times per warp.
     simulated_response_variation = 0,       -- random variation (seconds) from the base simulated_response_time in either direction (+ or -)
-    default_packet_wait_timeout = 5,        -- timeout (seconds) for waiting on a packet response before continuing on.
+    default_packet_wait_timeout = 3,        -- timeout (seconds) for waiting on a packet response before continuing on.
     enable_same_zone_teleport = true,       -- enable teleporting between points in the same zone. This is the default behavior in-game. Turning it off will look different than teleporting manually.
     enable_fast_retry_on_interrupt = false, -- after an event skip event, attempt a fast-retry that doesn't wait for packets or delay.
     use_tabs_at_survival_guides = false,    -- use tabs instead of gil at survival guides.
@@ -133,7 +133,8 @@ if settings.default_packet_wait_timeout > 10 then
     settings.default_packet_wait_timeout = 10
 end
 config.save(settings)
-
+local poke_time = nil
+local poke_response_time = nil
 local state = {
     loop_count = nil,
     fast_retry = false,
@@ -306,13 +307,17 @@ end
 
 function poke_npc(id, index)
     local first_poke = true
+    local first_retry = true
     while id and index and current_activity and not current_activity.caught_poke do
         current_activity.poked_npc_index = index
         current_activity.poked_npc_id = id
         if not first_poke then
             if state.loop_count > 0 then
                 state.loop_count = state.loop_count - 1
-                log("Timed out waiting for response from the poke. Retrying...")
+                if not first_retry then
+                    log("Timed out waiting for response from the poke. Retrying...")
+                end
+                first_retry = false
             else 
                 log("Timed out waiting for response from the poke.")
                 current_activity = nil
@@ -321,7 +326,7 @@ function poke_npc(id, index)
         end
 
         debug("poke npc: "..tostring(id)..' '..tostring(index))
-        first_poke = false
+        
         local packet = packets.new('outgoing', 0x01A, {
             ["Target"]=id,
             ["Target Index"]=index,
@@ -329,9 +334,17 @@ function poke_npc(id, index)
             ["Param"]=0,
             ["_unknown1"]=0})
         packets.inject(packet)
-
-        coroutine.sleep(settings.default_packet_wait_timeout)
+        if not poke_time then
+            poke_time = os.clock()
+        end
+        if first_poke then
+            first_poke = false
+            coroutine.sleep(1.5)
+        else
+            coroutine.sleep(settings.default_packet_wait_timeout)
+        end
     end
+    poke_time = nil
 end
 
 function set_target(index)
@@ -821,9 +834,11 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             if state.loop_count > 0 then
                 if settings.enable_fast_retry_on_interrupt then
                     log("Detected event-skip. Retrying (fast)...")
+                    current_activity.interrupted = true
                     handle_warp:schedule(0.1, state.current_warp, state.current_args, true, state.loop_count - 1)
                 else
                     log("Detected event-skip. Retrying...")
+                    current_activity.interrupted = true
                     handle_warp:schedule(0.1, state.current_warp, state.current_args, false, state.loop_count - 1)
                 end
             end
@@ -835,6 +850,9 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
         
         if current_activity and not current_activity.running then
             current_activity.caught_poke = true
+            poke_response_time = os.clock()
+            debug("Response time: "..string.format("%.2f", poke_response_time - poke_time).." seconds")
+            poke_response_time = nil
             local zone = windower.ffxi.get_info()['zone']
             local map = maps[current_activity.type]
 
@@ -919,7 +937,6 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             end
         end
     end
-
 end)
 windower.register_event('outgoing chunk',function(id,data,modified,injected,blocked)
     if id == 0x01A and not injected and current_activity and not current_activity.canceled then
