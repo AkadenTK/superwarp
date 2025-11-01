@@ -834,11 +834,9 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             if state.loop_count > 0 then
                 if settings.enable_fast_retry_on_interrupt then
                     log("Detected event-skip. Retrying (fast)...")
-                    current_activity.interrupted = true
                     handle_warp:schedule(0.1, state.current_warp, state.current_args, true, state.loop_count - 1)
                 else
                     log("Detected event-skip. Retrying...")
-                    current_activity.interrupted = true
                     handle_warp:schedule(0.1, state.current_warp, state.current_args, false, state.loop_count - 1)
                 end
             end
