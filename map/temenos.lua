@@ -166,7 +166,8 @@ return T {
 				destination = destination_array.C4
 				log('All data collected. Sending you to open the chest.')
 			elseif menu_id == 1025 or menu_id == 1007 or menu_id == 1014 or menu_id == 1021 then
-				return 'All data collected. Open the chest on this floor before proceeding. If your units are overflowing and you do not wish to open the chest, use the port command. //te port'
+				destination = destination_array.E
+				log('All data collected. Sending you to the entrance.')
 			else
 				if menu_id >= 1001 and menu_id <= 1006 then
 					destination = destination_array.N7
@@ -188,7 +189,8 @@ return T {
 				destination = destination_array.C4
 				log('All data collected. Sending you to open the chest.')
 			elseif menu_id == 1025 or menu_id == 1007 or menu_id == 1014 or menu_id == 1021 then
-				return 'All data collected. Open the chest on this floor before proceeding. If your units are overflowing and you do not wish to open the chest, use the port command. //te port'
+				destination = destination_array.E
+				log('All data collected. Sending you to the entrance.')
 			else
 				if menu_id >= 1001 and menu_id <= 1006 then
 					destination = destination_array.N7
@@ -761,6 +763,8 @@ return T {
 				destination = destination_array.E7
 			elseif menu >= 1022 and menu <= 1024 then
 				destination = destination_array.C4
+            elseif menu == 1007 or menu == 1014 or menu == 1021 or menu == 1025 then
+				destination = destination_array.E
 			end 
 
         if (menu >= 1001 and menu <= 1007) and destination.menu_id ~= 1000 and (destination.menu_id > 1007 or destination.menu_id < 1001) then
@@ -873,6 +877,8 @@ return T {
 				destination = destination_array.E7
 			elseif menu >= 1022 and menu <= 1024 then
 				destination = destination_array.C4
+            elseif menu == 1007 or menu == 1014 or menu == 1021 or menu == 1025 then
+				destination = destination_array.E
 			end 
 
         if (menu >= 1001 and menu <= 1007) and destination.menu_id ~= 1000 and (destination.menu_id > 1007 or destination.menu_id < 1001) then

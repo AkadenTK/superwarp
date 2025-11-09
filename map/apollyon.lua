@@ -168,7 +168,8 @@ return T {
 				destination = destination_array.SE4
 				log('All data collected. Sending you to open the chest.')
 			elseif menu_id == 108 or menu_id == 112 or menu_id == 117 or menu_id == 121 then
-				return 'All data collected. Open the chest on this floor before proceeding. If your units are overflowing and you do not wish to open the chest, use the port command. //ap port'
+				destination = destination_array.E1
+				log('All data collected. Sending you to the entrance.')
 			else
 				if menu_id >= 104 and menu_id <= 107 then
 					destination = destination_array.NW5
@@ -190,7 +191,8 @@ return T {
 				destination = destination_array.SE4
 				log('All data collected. Sending you to open the chest.')
 			elseif menu_id == 108 or menu_id == 112 or menu_id == 117 or menu_id == 121 then
-				return 'All data collected. Open the chest on this floor before proceeding. If your units are overflowing and you do not wish to open the chest, use the port command. //ap port'
+				destination = destination_array.E1
+				log('All data collected. Sending you to the entrance.')
 			else
 				if menu_id >= 104 and menu_id <= 107 then
 					destination = destination_array.NW5
@@ -706,6 +708,8 @@ return T {
 				destination = destination_array.NE5
 			elseif menu >= 118 and menu <= 120 then
 				destination = destination_array.SE4
+			elseif menu == 108 or menu == 112 or menu == 117 or menu == 121 then
+				destination = destination_array.E1
 			end
 			
 		-----------Cross-tower warp override--------------------------------------------------------------------------------------------------------------------------------
@@ -820,6 +824,8 @@ return T {
 					destination = destination_array.NE5
 				elseif menu >= 118 and menu <= 120 then
 					destination = destination_array.SE4
+		    	elseif menu == 108 or menu == 112 or menu == 117 or menu == 121 then
+				    destination = destination_array.E1
 				end
 			
 		-----------Cross-tower warp override--------------------------------------------------------------------------------------------------------------------------------
