@@ -64,7 +64,13 @@ maps = require('map/maps')
 
 warp_list = T{}
 for k, map in pairs(maps) do
-    warp_list:append(map.short_name)
+    if type(map.short_name) == 'table' then
+        for _, alias in ipairs(map.short_name) do
+            warp_list:append(alias)
+        end
+    else
+        warp_list:append(map.short_name)
+    end
 end
 
 sub_zone_aliases = {
@@ -80,7 +86,7 @@ sub_zone_aliases = {
 
 local defaults = {
     debug = false,
-    send_all_delay = 0.4,                   -- delay (seconds) between each character
+    send_all_delay = 0.3,                   -- delay (seconds) between each character
     max_retries = 6,                        -- max retries for loading NPCs.
     retry_delay = 2,                        -- delay (seconds) between retries
     simulated_response_time = 0,            -- response time (seconds) for selecting a single menu item. Note this can happen multiple times per warp.
@@ -577,6 +583,20 @@ local function do_find_missing_destinations(map_name, args)
     end    
 end
 
+local function handle_map_short_name(map, name)
+    if not map or not map.short_name or not name then return false end
+    if type(map.short_name) == 'string' then
+        return map.short_name:lower() == name:lower()
+    elseif type(map.short_name) == 'table' then
+        for _, alias in ipairs(map.short_name) do
+            if type(alias) == 'string' and alias:lower() == name:lower() then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 local function handle_warp(warp, args, fast_retry, retries_remaining)
 
     warp = warp:lower()
@@ -587,11 +607,19 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
     end
     state.fast_retry = fast_retry
 
-    -- because I can't stop typing "hp warp X" because I've been trained. 
-    if args[1]:lower() == 'warp' or args[1]:lower() == 'w' then args:remove(1) end
+    -- make args safe to index
+    if args:length() == 0 then
+        -- no args provided; make an empty string so :lower() calls won't error
+        args:append('') 
+    end
 
-    local all = S{'all','a','@all'}:contains(args[1]:lower())
-    local party = S{'party','p','@party'}:contains(args[1]:lower())
+    -- because I can't stop typing "hp warp X" because I've been trained. 
+    if args[1] and args[1]:lower() == 'warp' or (args[1] and args[1]:lower() == 'w') then 
+        args:remove(1) 
+        if args:length() == 0 then args:append('') end
+    end
+    local all = S{'all','a','@all'}:contains(args[1]:lower()) and args[2]
+    local party = S{'party','p','@party'}:contains(args[1]:lower()) and args[2]
     if all or party then 
         args:remove(1) 
 
@@ -608,26 +636,25 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
 
         return
     end
-    if args[1]:lower() == 'missing' then
+    if args[1] and args[1]:lower() == 'missing' then
         args:remove(1)         
         for key,map in pairs(maps) do
-            if map.short_name == warp then
+            if handle_map_short_name(map, warp) then
                 do_find_missing_destinations(key, args)
                 return
             end
         end
         return
     end
-
     state.current_warp = warp
     state.current_args = args:copy()
 
     for key,map in pairs(maps) do
-        if map.short_name == warp then
+        if handle_map_short_name(map, warp) then
             local sub_cmd = nil
             if map.sub_commands then
                 for sc, fn in pairs(map.sub_commands) do
-                    if sc:lower() == args[1]:lower() then
+                    if sc:lower() == (args[1] and args[1]:lower() or '') then
                         sub_cmd = sc
                     end
                 end
@@ -640,7 +667,8 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
             else
                 local sub_zone_target = nil
                 if map.sub_zone_targets then
-                    local target_candidate = resolve_sub_zone_aliases(args:last())
+                    local last_arg = args:last() or ''
+                    local target_candidate = resolve_sub_zone_aliases(last_arg)
                     if map.sub_zone_targets:contains(target_candidate:lower()) then
                         sub_zone_target = target_candidate
                         args:remove(args:length())
@@ -662,6 +690,9 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
             end
         end
     end
+
+    -- if we get here nothing matched
+    debug('No map found matching short name: '..tostring(warp))
 end
 
 local function received_warp_command(cmd, args)
@@ -708,6 +739,7 @@ windower.register_event('addon command', function(...)
         for key, map in pairs(maps) do
             log(map.help_text)
         end
+        log('|Superwarp|\ncancel - Cancels pending warp command.\nreset - Attemps to clear menu lock.')
     end
 end)
 
@@ -954,8 +986,6 @@ windower.register_event('zone change',function(id,data,modified,injected,blocked
     end
     expecting_zone = false
 end)
-
-
 -- debugging
 windower.register_event('outgoing chunk',function(id,data,modified,injected,blocked)
     if id == 0x05C then
