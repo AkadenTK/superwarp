@@ -736,7 +736,15 @@ windower.register_event('addon command', function(...)
             end
         end
     else
-        for key, map in pairs(maps) do
+        local keys = {}
+        for key in pairs(maps) do
+            table.insert(keys, key)
+        end
+
+        table.sort(keys)  -- alphabetical sort
+
+        for _, key in ipairs(keys) do
+            local map = maps[key]
             log(map.help_text)
         end
         log('|Superwarp|\ncancel - Cancels pending warp command.\nreset - Attemps to clear menu lock.')

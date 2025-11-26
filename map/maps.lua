@@ -1,7 +1,7 @@
 local maps =  {
     ['homepoints'] = require('map/homepoints'),
     ['waypoints'] = require('map/waypoints'),
-    ['guides'] = require('map/guides'),
+    ['survivalguides'] = require('map/survivalguides'),
     ['escha'] = require('map/escha'),
     ['unity'] = require('map/unity'),
     ['abyssea'] = require('map/abyssea'),
