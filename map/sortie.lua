@@ -134,7 +134,7 @@ local find_bitzer_by_id = function(id)
 end
 
 return T {
-    short_name = 'so',
+    short_name = {'so','se','sor','sortie'},
     long_name = 'sortie',
     move_in_zone = true,
     npc_plural = 'Diaphanous Objects',
@@ -343,7 +343,7 @@ return T {
         return nil
     end,
     help_text = "| Sortie |\n[sw] so [warp/w] [all/a/@all/party/p] 0/1/2/3/4  OR  s/#a/#b/#c/#d -- warp to a designated Device in Sortie. (Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget. \n[sw] so [all/a/@all] normal -- set Aminon difficulty to normal and warp into his chamber. \n[sw] so [all/a/@all] hard -- set Aminon difficulty to hard and warp into his chamber. \n[sw] so repop -- Rematerialize monsters at a device or downstairs bitzer. \n-----------------------------",
-    sub_zone_targets = S {'0', '1', '2', '3', '4', 's', '#a', '#b', '#c', '#d'}, -- Because 'a' is short for 'all' superwarp will try to interpret this as all and will always give a long pause before attempting to warp all characters to a, the best workaround is using # before a and then for balance we'll just go ahead and put it before b, c and d. we'll leave s (start) alone because s is just s; The device doesn't have a # in its name. 
+    sub_zone_targets = S {'0', '1', '2', '3', '4','#a','#b','#c','#d', 's','a', 'b', 'c', 'd'},
     auto_select_zone = function(zone)
         if zone == 275 then
             return 'Outer Ra\'Kaznar [U1]'
@@ -924,40 +924,53 @@ return T {
     warpdata = T{
 					--The bitzer and gadget destinations are not handled this way.
         ['Outer Ra\'Kaznar [U1]'] = T{  
-                ['s']  = { shortcut = '0' },
-                ['#a'] = { shortcut = '1' },
-                ['#b'] = { shortcut = '2' },
-                ['#c'] = { shortcut = '3' },
-                ['#d'] = { shortcut = '4' },
-  --[[Device]]  ['0'] =   { menu_id = 1000, index = 817, zone = 275,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
+                 ['0']  = { shortcut = 'S' },
+                 ['A'] =  { shortcut = '1' }, -- This is for the display_name, it shows 1 instead of A when a is input , it is done as a multiple assignment in superwarp and 
+                 ['2'] =  { shortcut = 'B' }, -- resolve_warp() handles this in such a way with these single character keys this is easier fix.
+                 ['3'] =  { shortcut = 'C' },
+                 ['4'] =  { shortcut = 'D' },
+                 ['#A'] = { shortcut = '1' },
+                 ['#B'] = { shortcut = 'B' },
+                 ['#C'] = { shortcut = 'C' },
+                 ['#D'] = { shortcut = 'D' },
+  --[[Device]]  ['S'] =   { menu_id = 1000, index = 817, zone = 275,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
   --[[Device A]]['1'] =   { menu_id = 1001, index = 818, zone = 275,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
-  --[[Device B]]['2'] =   { menu_id = 1002, index = 819, zone = 275,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
-  --[[Device C]]['3'] =   { menu_id = 1003, index = 820, zone = 275,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
-  --[[Device D]]['4'] =   { menu_id = 1004, index = 821, zone = 275,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
+  --[[Device B]]['B'] =   { menu_id = 1002, index = 819, zone = 275,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
+  --[[Device C]]['C'] =   { menu_id = 1003, index = 820, zone = 275,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
+  --[[Device D]]['D'] =   { menu_id = 1004, index = 821, zone = 275,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
 		},
 		['Outer Ra\'Kaznar [U2]'] = T{
-                 ['s']  = { shortcut = '0' },
-                 ['#a'] = { shortcut = '1' },
-                 ['#b'] = { shortcut = '2' },
-                 ['#c'] = { shortcut = '3' },
-                 ['#d'] = { shortcut = '4' },
-   --[[Device]]  ['0'] =   { menu_id = 1000, index = 817, zone = 133,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
+                 ['0']  = { shortcut = 'S' },
+                 ['A'] =  { shortcut = '1' },
+                 ['2'] =  { shortcut = 'B' },
+                 ['3'] =  { shortcut = 'C' },
+                 ['4'] =  { shortcut = 'D' },
+                 ['#A'] = { shortcut = '1' },
+                 ['#B'] = { shortcut = 'B' },
+                 ['#C'] = { shortcut = 'C' },
+                 ['#D'] = { shortcut = 'D' },
+   --[[Device]]  ['S'] =   { menu_id = 1000, index = 817, zone = 133,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
    --[[Device A]]['1'] =   { menu_id = 1001, index = 818, zone = 133,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
-   --[[Device B]]['2'] =   { menu_id = 1002, index = 819, zone = 133,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
-   --[[Device C]]['3'] =   { menu_id = 1003, index = 820, zone = 133,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
-   --[[Device D]]['4'] =   { menu_id = 1004, index = 821, zone = 133,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
+   --[[Device B]]['B'] =   { menu_id = 1002, index = 819, zone = 133,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
+   --[[Device C]]['C'] =   { menu_id = 1003, index = 820, zone = 133,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
+   --[[Device D]]['D'] =   { menu_id = 1004, index = 821, zone = 133,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
 		},
 		['Outer Ra\'Kaznar [U3]'] = T{
-                 ['s']  = { shortcut = '0' },
-                 ['#a'] = { shortcut = '1' },
-                 ['#b'] = { shortcut = '2' },
-                 ['#c'] = { shortcut = '3' },
-                 ['#d'] = { shortcut = '4' },
-   --[[Device]]  ['0']  =  { menu_id = 1000, index = 817, zone = 189,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
+                 
+                 ['0']  = { shortcut = 'S' },
+                 ['A'] =  { shortcut = '1' },
+                 ['2'] =  { shortcut = 'B' },
+                 ['3'] =  { shortcut = 'C' },
+                 ['4'] =  { shortcut = 'D' },
+                 ['#A'] = { shortcut = '1' },
+                 ['#B'] = { shortcut = 'B' },
+                 ['#C'] = { shortcut = 'C' },
+                 ['#D'] = { shortcut = 'D' },
+   --[[Device]]  ['S']  =  { menu_id = 1000, index = 817, zone = 189,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
    --[[Device A]]['1']  =  { menu_id = 1001, index = 818, zone = 189,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
-   --[[Device B]]['2']  =  { menu_id = 1002, index = 819, zone = 189,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
-   --[[Device C]]['3']  =  { menu_id = 1003, index = 820, zone = 189,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
-   --[[Device D]]['4']  =  { menu_id = 1004, index = 821, zone = 189,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
+   --[[Device B]]['B']  =  { menu_id = 1002, index = 819, zone = 189,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
+   --[[Device C]]['C']  =  { menu_id = 1003, index = 820, zone = 189,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
+   --[[Device D]]['D']  =  { menu_id = 1004, index = 821, zone = 189,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
 		},
     },
 }

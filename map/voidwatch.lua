@@ -5,7 +5,7 @@ local npc_names = T{
     warp = S{"Atmacite Refiner"},
 }
 return T{ --  index: 1
-    short_name = 'vw',
+    short_name = {'vw','vo'},
     long_name = 'voidwatch',
     npc_plural = 'atmacite refiners',
     npc_names = npc_names,

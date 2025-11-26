@@ -64,7 +64,13 @@ maps = require('map/maps')
 
 warp_list = T{}
 for k, map in pairs(maps) do
-    warp_list:append(map.short_name)
+    if type(map.short_name) == 'table' then
+        for _, alias in ipairs(map.short_name) do
+            warp_list:append(alias)
+        end
+    else
+        warp_list:append(map.short_name)
+    end
 end
 
 sub_zone_aliases = {
@@ -80,12 +86,12 @@ sub_zone_aliases = {
 
 local defaults = {
     debug = false,
-    send_all_delay = 0.4,                   -- delay (seconds) between each character
+    send_all_delay = 0.3,                   -- delay (seconds) between each character
     max_retries = 6,                        -- max retries for loading NPCs.
     retry_delay = 2,                        -- delay (seconds) between retries
     simulated_response_time = 0,            -- response time (seconds) for selecting a single menu item. Note this can happen multiple times per warp.
     simulated_response_variation = 0,       -- random variation (seconds) from the base simulated_response_time in either direction (+ or -)
-    default_packet_wait_timeout = 5,        -- timeout (seconds) for waiting on a packet response before continuing on.
+    default_packet_wait_timeout = 3,        -- timeout (seconds) for waiting on a packet response before continuing on.
     enable_same_zone_teleport = true,       -- enable teleporting between points in the same zone. This is the default behavior in-game. Turning it off will look different than teleporting manually.
     enable_fast_retry_on_interrupt = false, -- after an event skip event, attempt a fast-retry that doesn't wait for packets or delay.
     use_tabs_at_survival_guides = false,    -- use tabs instead of gil at survival guides.
@@ -133,7 +139,8 @@ if settings.default_packet_wait_timeout > 10 then
     settings.default_packet_wait_timeout = 10
 end
 config.save(settings)
-
+local poke_time = nil
+local poke_response_time = nil
 local state = {
     loop_count = nil,
     fast_retry = false,
@@ -306,13 +313,17 @@ end
 
 function poke_npc(id, index)
     local first_poke = true
+    local first_retry = true
     while id and index and current_activity and not current_activity.caught_poke do
         current_activity.poked_npc_index = index
         current_activity.poked_npc_id = id
         if not first_poke then
             if state.loop_count > 0 then
                 state.loop_count = state.loop_count - 1
-                log("Timed out waiting for response from the poke. Retrying...")
+                if not first_retry then
+                    log("Timed out waiting for response from the poke. Retrying...")
+                end
+                first_retry = false
             else 
                 log("Timed out waiting for response from the poke.")
                 current_activity = nil
@@ -321,7 +332,7 @@ function poke_npc(id, index)
         end
 
         debug("poke npc: "..tostring(id)..' '..tostring(index))
-        first_poke = false
+        
         local packet = packets.new('outgoing', 0x01A, {
             ["Target"]=id,
             ["Target Index"]=index,
@@ -329,9 +340,17 @@ function poke_npc(id, index)
             ["Param"]=0,
             ["_unknown1"]=0})
         packets.inject(packet)
-
-        coroutine.sleep(settings.default_packet_wait_timeout)
+        if not poke_time then
+            poke_time = os.clock()
+        end
+        if first_poke then
+            first_poke = false
+            coroutine.sleep(1.5)
+        else
+            coroutine.sleep(settings.default_packet_wait_timeout)
+        end
     end
+    poke_time = nil
 end
 
 function set_target(index)
@@ -564,6 +583,20 @@ local function do_find_missing_destinations(map_name, args)
     end    
 end
 
+local function handle_map_short_name(map, name)
+    if not map or not map.short_name or not name then return false end
+    if type(map.short_name) == 'string' then
+        return map.short_name:lower() == name:lower()
+    elseif type(map.short_name) == 'table' then
+        for _, alias in ipairs(map.short_name) do
+            if type(alias) == 'string' and alias:lower() == name:lower() then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 local function handle_warp(warp, args, fast_retry, retries_remaining)
 
     warp = warp:lower()
@@ -574,11 +607,19 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
     end
     state.fast_retry = fast_retry
 
-    -- because I can't stop typing "hp warp X" because I've been trained. 
-    if args[1]:lower() == 'warp' or args[1]:lower() == 'w' then args:remove(1) end
+    -- make args safe to index
+    if args:length() == 0 then
+        -- no args provided; make an empty string so :lower() calls won't error
+        args:append('') 
+    end
 
-    local all = S{'all','a','@all'}:contains(args[1]:lower())
-    local party = S{'party','p','@party'}:contains(args[1]:lower())
+    -- because I can't stop typing "hp warp X" because I've been trained. 
+    if args[1] and args[1]:lower() == 'warp' or (args[1] and args[1]:lower() == 'w') then 
+        args:remove(1) 
+        if args:length() == 0 then args:append('') end
+    end
+    local all = S{'all','a','@all'}:contains(args[1]:lower()) and args[2]
+    local party = S{'party','p','@party'}:contains(args[1]:lower()) and args[2]
     if all or party then 
         args:remove(1) 
 
@@ -595,26 +636,25 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
 
         return
     end
-    if args[1]:lower() == 'missing' then
+    if args[1] and args[1]:lower() == 'missing' then
         args:remove(1)         
         for key,map in pairs(maps) do
-            if map.short_name == warp then
+            if handle_map_short_name(map, warp) then
                 do_find_missing_destinations(key, args)
                 return
             end
         end
         return
     end
-
     state.current_warp = warp
     state.current_args = args:copy()
 
     for key,map in pairs(maps) do
-        if map.short_name == warp then
+        if handle_map_short_name(map, warp) then
             local sub_cmd = nil
             if map.sub_commands then
                 for sc, fn in pairs(map.sub_commands) do
-                    if sc:lower() == args[1]:lower() then
+                    if sc:lower() == (args[1] and args[1]:lower() or '') then
                         sub_cmd = sc
                     end
                 end
@@ -627,7 +667,8 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
             else
                 local sub_zone_target = nil
                 if map.sub_zone_targets then
-                    local target_candidate = resolve_sub_zone_aliases(args:last())
+                    local last_arg = args:last() or ''
+                    local target_candidate = resolve_sub_zone_aliases(last_arg)
                     if map.sub_zone_targets:contains(target_candidate:lower()) then
                         sub_zone_target = target_candidate
                         args:remove(args:length())
@@ -649,6 +690,9 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
             end
         end
     end
+
+    -- if we get here nothing matched
+    debug('No map found matching short name: '..tostring(warp))
 end
 
 local function received_warp_command(cmd, args)
@@ -692,9 +736,18 @@ windower.register_event('addon command', function(...)
             end
         end
     else
-        for key, map in pairs(maps) do
+        local keys = {}
+        for key in pairs(maps) do
+            table.insert(keys, key)
+        end
+
+        table.sort(keys)  -- alphabetical sort
+
+        for _, key in ipairs(keys) do
+            local map = maps[key]
             log(map.help_text)
         end
+        log('|Superwarp|\ncancel - Cancels pending warp command.\nreset - Attemps to clear menu lock.')
     end
 end)
 
@@ -835,6 +888,9 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
         
         if current_activity and not current_activity.running then
             current_activity.caught_poke = true
+            poke_response_time = os.clock()
+            debug("Response time: "..string.format("%.2f", poke_response_time - poke_time).." seconds")
+            poke_response_time = nil
             local zone = windower.ffxi.get_info()['zone']
             local map = maps[current_activity.type]
 
@@ -919,7 +975,6 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             end
         end
     end
-
 end)
 windower.register_event('outgoing chunk',function(id,data,modified,injected,blocked)
     if id == 0x01A and not injected and current_activity and not current_activity.canceled then
@@ -939,8 +994,6 @@ windower.register_event('zone change',function(id,data,modified,injected,blocked
     end
     expecting_zone = false
 end)
-
-
 -- debugging
 windower.register_event('outgoing chunk',function(id,data,modified,injected,blocked)
     if id == 0x05C then

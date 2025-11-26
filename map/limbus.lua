@@ -221,7 +221,7 @@ local function find_shuffled_missing_temenos_floor(menu_id)
 end
 
 return T {
-    short_name = 'li',
+    short_name = { 'li', 'te', 'ap' },
     long_name = 'limbus',
     move_in_zone = true,
     npc_plural = 'Limbus warps',
@@ -279,7 +279,8 @@ if zone == 38 then
 				destination = destination_array.apollyon.SE4
 				log('All data collected. Sending you to open the chest.')
 			elseif menu_id == 108 or menu_id == 112 or menu_id == 117 or menu_id == 121 then
-				return 'All data collected. Open the chest on this floor before proceeding. If your units are overflowing and you do not wish to open the chest, use the port command. //ap port'
+				destination = destination_array.apollyon.E1
+				log('All data collected. Sending you to the entrance.')
 			else
 				if menu_id >= 104 and menu_id <= 107 then
 					destination = destination_array.apollyon.NW5
@@ -301,7 +302,8 @@ if zone == 38 then
 				destination = destination_array.apollyon.SE4
 				log('All data collected. Sending you to open the chest.')
 			elseif menu_id == 108 or menu_id == 112 or menu_id == 117 or menu_id == 121 then
-				return 'All data collected. Open the chest on this floor before proceeding. If your units are overflowing and you do not wish to open the chest, use the port command. //ap port'
+				destination = destination_array.apollyon.E1
+				log('All data collected. Sending you to the entrance.')
 			else
 				if menu_id >= 104 and menu_id <= 107 then
 					destination = destination_array.apollyon.NW5
@@ -460,7 +462,8 @@ elseif zone == 37 then
 				destination = destination_array.temenos.C4
 				log('All data collected. Sending you to open the chest.')
 			elseif menu_id == 1025 or menu_id == 1007 or menu_id == 1014 or menu_id == 1021 then
-				return 'All data collected. Open the chest on this floor before proceeding. If your units are overflowing and you do not wish to open the chest, use the port command. //te port'
+				destination = destination_array.temenos.E
+				log('All data collected. Sending you to the entrance.')
 			else
 				if menu_id >= 1001 and menu_id <= 1006 then
 					destination = destination_array.temenos.N7
@@ -482,7 +485,8 @@ elseif zone == 37 then
 				destination = destination_array.temenos.C4
 				log('All data collected. Sending you to open the chest.')
 			elseif menu_id == 1025 or menu_id == 1007 or menu_id == 1014 or menu_id == 1021 then
-				return 'All data collected. Open the chest on this floor before proceeding. If your units are overflowing and you do not wish to open the chest, use the port command. //te port'
+				destination = destination_array.temenos.E
+				log('All data collected. Sending you to the entrance.')
 			else
 				if menu_id >= 1001 and menu_id <= 1006 then
 					destination = destination_array.temenos.N7
@@ -1190,8 +1194,9 @@ end
 				destination = destination_array.apollyon.NE5
 			elseif menu >= 118 and menu <= 120 then
 				destination = destination_array.apollyon.SE4
+			elseif menu == 108 or menu == 112 or menu == 117 or menu == 121 then
+				destination = destination_array.apollyon.E1
 			end
-			
 		-----------Cross-tower warp override--------------------------------------------------------------------------------------------------------------------------------
         if (menu >= 104 and menu <= 108) and (destination.menu_id ~= 102 and destination.menu_id ~= 103) and (destination.menu_id > 108 or destination.menu_id < 104) then
 				destination = destination_array.apollyon.E1
@@ -1218,6 +1223,8 @@ end
 				destination = destination_array.temenos.E7
 			elseif menu >= 1022 and menu <= 1024 then
 				destination = destination_array.temenos.C4
+			elseif menu == 1007 or menu == 1014 or menu == 1021 or menu == 1025 then
+				destination = destination_array.temenos.E
 			end 
 
         if (menu >= 1001 and menu <= 1007) and destination.menu_id ~= 1000 and (destination.menu_id > 1007 or destination.menu_id < 1001) then
@@ -1337,6 +1344,8 @@ end
             destination = destination_array.apollyon.NE5
         elseif menu >= 118 and menu <= 120 then
             destination = destination_array.apollyon.SE4
+		elseif menu == 108 or menu == 112 or menu == 117 or menu == 121 then
+			destination = destination_array.apollyon.E1
         end
     
 		-----------Cross-tower warp override--------------------------------------------------------------------------------------------------------------------------------
@@ -1365,6 +1374,8 @@ end
 				destination = destination_array.temenos.E7
 			elseif menu >= 1022 and menu <= 1024 then
 				destination = destination_array.temenos.C4
+			elseif menu == 1007 or menu == 1014 or menu == 1021 or menu == 1025 then
+				destination = destination_array.temenos.E
 			end 
 
         if (menu >= 1001 and menu <= 1007) and destination.menu_id ~= 1000 and (destination.menu_id > 1007 or destination.menu_id < 1001) then
