@@ -3,7 +3,7 @@ local npc_names = T{
     set = S{'Home Point'},
 }
 return T{ -- option: 2
-    short_name = 'hp',
+    short_name = {'hp','ho','home'},
     long_name = 'homepoint',
     npc_plural = 'homepoints',
     npc_names = npc_names,

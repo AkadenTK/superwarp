@@ -3,7 +3,7 @@ npc_names = T{
 }
 local adoulin = S(require('resources').zones:en(string.endswith-{' Adoulin'}):map(table.get-{'id'}))
 return T{
-    short_name = 'wp',
+    short_name = {'wp','way','wa'},
     long_name = 'waypoint',
     npc_plural = 'waypoints',
     npc_names = npc_names,

@@ -221,7 +221,7 @@ local function find_shuffled_missing_temenos_floor(menu_id)
 end
 
 return T {
-    short_name = 'li',
+    short_name = { 'li', 'te', 'ap' },
     long_name = 'limbus',
     move_in_zone = true,
     npc_plural = 'Limbus warps',

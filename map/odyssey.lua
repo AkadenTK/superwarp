@@ -65,7 +65,7 @@ local function table_contains(t, value)
 end
 
 return T {
-    short_name = 'od',
+    short_name = {'od','oy','ody'},
     long_name = 'odyssey',
     move_in_zone = true,
     npc_plural = 'Odyssey NPCs',

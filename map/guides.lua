@@ -2,7 +2,7 @@ local npc_names = T{
     warp = S{'Survival Guide'},
 }
 return T{ -- option: 1
-    short_name = 'sg',
+    short_name = {'sg','sur','book'},
     long_name = 'survival guide',
     npc_plural = 'survival guides',
     npc_names = npc_names,

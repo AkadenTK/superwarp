@@ -8,7 +8,7 @@ local npc_names = T{
     exit = S{'Cavernous Maw'},
 }
 return T{
-    short_name = 'ab',
+    short_name = {'ab','aby','aa'},
     long_name = 'veridical conflux',
     npc_plural = 'abyssean npcs',
     npc_names = npc_names,

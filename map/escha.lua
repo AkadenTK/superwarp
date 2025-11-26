@@ -7,7 +7,7 @@ local npc_names = T{
     exit= S{'Undulating Confluence', 'Dimensional Portal'},
 }
 return T{
-    short_name = 'ew',
+    short_name = {'ew','es','ea'},
     long_name = 'eschan portal',
     npc_plural = 'eschan npcs',
     npc_names = npc_names,

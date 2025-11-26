@@ -134,7 +134,7 @@ local find_bitzer_by_id = function(id)
 end
 
 return T {
-    short_name = 'so',
+    short_name = {'so','se','sor','sortie'},
     long_name = 'sortie',
     move_in_zone = true,
     npc_plural = 'Diaphanous Objects',
