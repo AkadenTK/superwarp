@@ -5,6 +5,11 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 ### Commands:
 The //sw command prefix is only needed if the user is running another addon that is using the command prefix for the warp system you are operating. i.e. //te  for temenos. In that case the user would need to use //sw te or /console sw te in a macro instead of just //te until the other addon is unloaded.
 
+#### Menu Commands
+| Command | Action |
+| --- | --- |
+| //sw menu | Toggles the warp menu.
+
 #### Homepoint Commands
 | Command | Action |
 | --- | --- |
@@ -179,6 +184,8 @@ Thanks to Lili for researching a better fuzzy matching logic.
 
 Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temenos and Apollyon warp systems.
 
+Thanks to Fauxfeld for implementing the UI menu system.
+
 ### Updates
 #### v0.96
 - **Feature**: Homepoints now uses same-zone teleporting feature.
@@ -267,3 +274,10 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 #### v1.0.3
 - **Resolved**: Limbus: Some NPC targets are not updated correctly in packets, resolve issue teleporting.
 - **Resolved**: Sortie: fixed menu structure (again)
+
+#### v1.0.4
+- **Feature**: Added UI menu system.
+- **Improvement**: Added click offset and scale for menu buttons.
+- **Improvement**: Added page navigation to the menu.
+- **Improvement**: Added close button to the menu.
+- **Improvement**: Added send mode toggle to the menu.
