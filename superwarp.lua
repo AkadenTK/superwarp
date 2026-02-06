@@ -39,6 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Sortie  support implementation: Staticvoid
         Odyssey support implementation: Staticvoid
         Apollyon  and  Temenos support: Staticvoid
+        UI menu implementation: Fauxfeld
 ]]
 
 _addon.name = 'superwarp'
@@ -61,6 +62,8 @@ require('sendall')
 require('fuzzyfind')
 
 maps = require('map/maps')
+sw_menu = require('ui/menu')
+sw_buttons = require('ui/buttons')
 
 warp_list = T{}
 for k, map in pairs(maps) do
@@ -103,9 +106,19 @@ local defaults = {
     simulate_client_lock = false,           -- lock the local client during a warp/subcommand, simulating menu behavior.
     send_all_order_mode = 'melast',         -- order modes: melast, mefirst, alphabetical
     chat_log_use = 'log',                   -- log messages to 'log', 'console', or 'none'. If debug is on, it will always log to the chat log
+    menu_position = { x = 100, y = 50 },   -- screen position of the warp menu
+    menu_items_per_page = 15,               -- number of items per menu page
+    menu_button_spacing = 22,               -- vertical spacing between menu buttons
+    menu_button_width = 30,                 -- character width of menu buttons
+    click_offset = { x = 0, y = 0 },       -- fixed offset for click/hover detection
+    click_scale = { x = 1.0, y = 1.05 },   -- scale multiplier for click/hover detection (for DPI/resolution scaling)
 }
 
 local settings = config.load(defaults)
+
+-- Apply click offset and scale for menu buttons (handles DPI/resolution scaling)
+sw_buttons.set_click_offset(tonumber(settings.click_offset.x) or 0, tonumber(settings.click_offset.y) or 0)
+sw_buttons.set_click_scale(tonumber(settings.click_scale.x) or 1.0, tonumber(settings.click_scale.y) or 1.0)
 
 -- bounds checks.
 if settings.send_all_delay < 0 then
@@ -696,6 +709,9 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
 end
 
 local function received_warp_command(cmd, args)
+    if sw_menu.is_visible() then
+        sw_menu.close()
+    end
     if current_activity ~= nil then
         log('Superwarp is currently busy. To cancel the last request try "//sw cancel"')
     else
@@ -726,6 +742,13 @@ windower.register_event('addon command', function(...)
             windower.send_ipc_message('reset')
         end
 
+    elseif cmd == 'menu' then
+        if sw_menu.is_visible() then
+            sw_menu.close()
+        else
+            sw_menu.open(maps, received_warp_command, settings)
+        end
+
     elseif cmd == 'debug' then
         settings.debug = not settings.debug
         log('Debug is now '..tostring(settings.debug))
@@ -747,7 +770,7 @@ windower.register_event('addon command', function(...)
             local map = maps[key]
             log(map.help_text)
         end
-        log('|Superwarp|\ncancel - Cancels pending warp command.\nreset - Attemps to clear menu lock.')
+        log('|Superwarp|\ncancel - Cancels pending warp command.\nreset - Attemps to clear menu lock.\nmenu - Toggle clickable warp destination menu.')
     end
 end)
 
@@ -989,6 +1012,9 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
 end)
 windower.register_event('zone change',function(id,data,modified,injected,blocked)
 	state.client_lock = false
+    if sw_menu.is_visible() then
+        sw_menu.close()
+    end
     if expecting_zone then 
         handle_on_arrival:schedule(math.max(0, settings.command_delay_on_arrival))
     end
@@ -1012,6 +1038,9 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
 end)
 
 windower.register_event('unload', function()
+	if sw_menu.is_visible() then
+		sw_menu.close()
+	end
 	if windower.ffxi.get_info().logged_in then
 		reset(true)
 	end
