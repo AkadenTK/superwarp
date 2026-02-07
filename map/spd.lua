@@ -4,8 +4,8 @@ local npc_names = T{
 }
 return T{
     short_name = 'spd',
-    long_name = 'spatial displacement',
-    npc_plural = 'displacements',
+    long_name = 'Spatial displacement',
+    npc_plural = 'spatial displacements',
     npc_names = npc_names,
     zone_npc_list = function(type)
         local mlist = windower.ffxi.get_mob_list()

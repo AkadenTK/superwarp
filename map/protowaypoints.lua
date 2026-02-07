@@ -3,7 +3,7 @@ local npc_names = T{
 }
 return T{
     short_name = {'pwp','pw','pro'},
-    long_name = 'proto-waypoint',
+    long_name = 'Proto-waypoint',
     npc_plural = 'proto-waypoints',
     npc_names = npc_names,
     zone_npc_list = function(type)

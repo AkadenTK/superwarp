@@ -9,7 +9,7 @@ local npc_names = T{
 }
 return T{
     short_name = {'ab','aby','aa'},
-    long_name = 'veridical conflux',
+    long_name = 'Abyssea',
     npc_plural = 'abyssean npcs',
     npc_names = npc_names,
     zone_npc_list = function(type)

@@ -3,7 +3,7 @@ local npc_names = T{
 }
 return T{ -- option: 1
     short_name = {'un','unity','uy'},
-    long_name = 'unity',
+    long_name = 'Unity',
     npc_plural = 'unity npcs',
     npc_names = T{
         warp = T{"Igsli", "Urbiolaine", "Teldro-Kesdrodo", "Yonolala", "Nunaarl Bthtrogg"},

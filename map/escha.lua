@@ -8,7 +8,7 @@ local npc_names = T{
 }
 return T{
     short_name = {'ew','es','ea'},
-    long_name = 'eschan portal',
+    long_name = 'Escha',
     npc_plural = 'eschan npcs',
     npc_names = npc_names,
     zone_npc_list = function(type)

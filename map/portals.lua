@@ -5,7 +5,7 @@ local npc_names = T{
 }
 return T{
     short_name = {'po','por','ps'},
-    long_name = 'runic portal',
+    long_name = 'Runic portal',
     npc_plural = 'runic portals',
     npc_names = npc_names,
     zone_npc_list = function(type)

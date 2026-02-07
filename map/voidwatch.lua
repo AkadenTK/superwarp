@@ -6,7 +6,7 @@ local npc_names = T{
 }
 return T{ --  index: 1
     short_name = {'vw','vo'},
-    long_name = 'voidwatch',
+    long_name = 'Voidwatch',
     npc_plural = 'atmacite refiners',
     npc_names = npc_names,
     zone_npc_list = function(type)
