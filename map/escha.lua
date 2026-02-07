@@ -77,7 +77,7 @@ return T{
         end
         return missing
     end,
-    help_text = "| Escha |\n[sw] ew [warp/w] [all/a/@all/party/p] portal number -- warp to a designated portal in your current escha zone.\n[sw] ew [all/a/@all] enter -- enter the eschan zone corresponding to the entrance zone.\n[sw] ew [all/a/@all] domain -- get Elvorseal if needed and warp to the domain invasion arena.\n[sw] ew [all/a/@all] domain return -- return Elvorseal.\n[sw] ew [all/a/@all] exit -- leave escha.\n-----------------------------",
+    help_text = "| Escha |\n Command options [ew, es, ea]\n- ew portal number -- warp to a designated portal in your current escha zone.\n- ew enter -- enter the eschan zone corresponding to the entrance zone.\n- ew domain -- get Elvorseal if needed and warp to the domain invasion arena.\n- ew domain return -- return Elvorseal.\n- ew exit -- leave escha.\n-----------------------------",
     sub_zone_targets =  S{'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15' },
     auto_select_zone = function(zone)
         if zone == 288 then return 'Escha Zi\'tah' end

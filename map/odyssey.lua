@@ -5,7 +5,6 @@ local npc_names = T{
     port = S{'Veridical Conflux'},
     warp = S{'Translocator'},
 }
---88888888888888888888888888888888888888888888888888888888888888888888888888888-----destinations-----888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888-
 	zone_tag = windower.ffxi.get_info().zone
 Sheol_A = {
    ['translocator_1'] = { display_name = 'Translocator #1', menu_id = 1020, index = 562, zone = zone_tag,npc = 20951602, npc2 = 20955698, offset = 0, x = 160, y = 156, z = 59.500003814697 , h = 63, unknown1 = 1  , unknown2 = 1}, 
@@ -49,7 +48,6 @@ Sheol_C = {
    ['conflux_5']      = {display_name = 'Conflux #5',      menu_id = 1004, index = 570, zone = zone_tag,npc = 20967994, npc2 = 20972090, offset = 5, x = 670.00006103516, y = -260, z = 35.5 , h = 127, unknown1 = 6, unknown2 = 1},
    ['conflux_6']      = {display_name = 'Conflux #6',      menu_id = 1005, index = 571, zone = zone_tag,npc = 20967995, npc2 = 20972091, offset = 6, x = -350.00003051758, z = 23.500001907349, y = 180.00001525879,  h = 0, unknown1 = 5, unknown2 = 1}
 }
---88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888-
 
 -- Categorize NPCs to prevent warping between different NPC types
 conflux_menu_ids = T {1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011}
@@ -253,7 +251,7 @@ if current_activity.sub_cmd ~= 'exit' then
 end
         return nil
     end,
-    help_text = "| Odyssey |\n[sw] od [warp/w] [all/a/@all/party/p] (1-3) -- warp between translocators in odyssey.\n[sw] od [all/a/@all] port -- warp to the other side of Veridical Confluxes.\n[sw] od [all/a/@all] exit -- Exits Odyssey (This does give the 25% touch bonus 100% of the time.)\n-----------------------------",
+    help_text = "| Odyssey |\n Command options [od, oy, ody]\n- od (1-3) -- warp between translocators in odyssey.\n- od port -- warp to the other side of Veridical Confluxes.\n- od exit -- Exits Odyssey (This does give the 25% touch bonus 100% of the time.)\n-----------------------------",
     sub_zone_targets = S {'1','2','3'},
     auto_select_zone = function(zone)
         if zone == 298 then
