@@ -11,7 +11,7 @@ The //sw command prefix is only needed if the user is running another addon that
 | //[sw] hp [warp] [all/party] zone_name [homepoint_number]  | Warp to a specified homepoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "entrance" (or simpler "e"), "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the homepoint_number is omitted, the first homepoint will be chosen (from the mapping). |
 | //[sw] hp [all/party] set  | Set the nearest homepoint as your home point. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 | //[sw] hp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
-
+|alt cmds: ho / home |
 
 #### Waypoint Commands
 | Command | Action |
@@ -20,14 +20,15 @@ The //sw command prefix is only needed if the user is running another addon that
 | //[sw] pwp [warp] [all/party] zone_name  | Warp to a specified proto-waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 | //[sw] wp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
 | //[sw] pwp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
-
+|alt wp cmds: wa / way |
+|alt pwp cmds: pro / pw |
 
 #### Survival Guide Commands
 | Command | Action |
 | --- | --- |
 | //[sw] sg [warp] [all/party] zone_name  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] sg [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
-
+|alt cmds: sur / book |
 
 #### Escha Commands
 | Command | Action |
@@ -38,14 +39,14 @@ The //sw command prefix is only needed if the user is running another addon that
 | //[sw] ew [all/party] domain return  | Returns the Elvorseal status effect if your character has it.  |
 | //[sw] ew [all/party] exit  | Leaves the Escha/Reis zones from the undulating confluenc or dimensional portal in within the zone. "sw" is optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] ew [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. Note: this can only be done inside a zone, and only for the zone you are currently in. |
-
+|alt cmds: es / ea |
 
 #### Unity Commands
 | Command | Action |
 | --- | --- |
 | //[sw] un [warp] [all/party] zone_name  | Warp to a specified zone or the correct zone for a specified Unity NM. If an NM is specified, Superwarp will display the coordinates for the spawn NPCs. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] un [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
-
+|alt cmds: uy / unity |
 
 #### Abyssea Commands
 | Command | Action |
@@ -54,6 +55,7 @@ The //sw command prefix is only needed if the user is running another addon that
 | //[sw] ab [all/party] enter  | Enter the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] ab [all/party] exit  | Leave the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] ab [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. Note: this can only be done inside a zone, and only for the zone you are currently in. |
+|alt cmds: aby / aa |
 
 #### Runic Portal Commands
 | Command | Action |
@@ -62,12 +64,14 @@ The //sw command prefix is only needed if the user is running another addon that
 | //[sw] po [all/party] assault  | Be taken to your current assault mission staging point. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] po [all/party] return  | Leave the assault staging area and return to Whitegate. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] po [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
+|alt cmds: por / ps |
 
 #### Voidwatch Commands
 | Command | Action |
 | --- | --- |
 | //[sw] vw [warp] [all/party] zone_name  | Warp to a specified zone through the Voidwatcher NPC. Note that you cannot warp to the past from the present (or vice versa). "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] vw [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
+|alt cmds: vo |
 
 #### Sortie
 | Command | Action |
@@ -76,6 +80,7 @@ The //sw command prefix is only needed if the user is running another addon that
 | //[sw] so [all/party] port | Warp via the nearby gadget or bitzer. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 | //[sw] so [all/party] normal | Set Aminon difficulty to normal and enter his chamber. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 | //[sw] so [all/party] hard | Set Aminon difficulty to hard (deepest dark) and enter his chamber. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
+|alt cmds: se / sor |
 
 #### Odyssey
 | Command | Action |
@@ -83,22 +88,26 @@ The //sw command prefix is only needed if the user is running another addon that
 |//[sw] od [warp] [all/party] 1/2/3 | Warp to a specified translocator by number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] od [all/party] port | Warp to the other side of the Veridical Conflux "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] od [all/party] exit | Exit the Odyssey zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|alt cmds: oy / ody |
 
-#### Temenos (New!) 
+#### Limbus
 | Command | Action |
 | --- | --- |
-|//[sw] te [warp] [all/party] n1/w2/e3 | Warp to any specified tower/floor by letter&number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-|//[sw] te [all/party] port | Warp to the next floor or if on last floor will warp the user to the entrance, from the entrance specify a letter&number to start a new tower or use the next command. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-|//[sw] te [all/party] next | Warps you to the lowest floor you have not completed. Sophisticated decision making. Enjoy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] li [warp] [all/party] nw1/sw2/ne3/se4 | Warp to any specified tower/floor by letters&number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] li [all/party] port | Warp to the next floor irrespective of data or if on last floor will warp the user to the entrance, from the entrance specify a letter&number to start a new tower or use the next or random command. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] li [all/party] back | Warp to the previous floor irrespective of data or if on first floor will warp the user to the entrance, from the entrance specify a letter&number to start a new tower or use the next or random command. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] li [all/party] next | Warps you to the lowest floor you have NOT collected data for. Sophisticated decision making. Enjoy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] li [all/party] random | Warps you to a floor you have NOT collected data for in a shuffled order; Use this to seperate from crowd of people climbing. Enjoy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] li [all/party] enter| Enter the Apollyon zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] li [all/party] exit | Exit the Apollyon zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|alt cmds: te / ap |
 
-#### Apollyon (New!)
+#### Campaign (New!)
 | Command | Action |
 | --- | --- |
-|//[sw] ap [warp] [all/party] nw1/sw2/ne3/se4 | Warp to any specified tower/floor by letters&number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-|//[sw] ap [all/party] port | Warp to the next floor or if on last floor will warp the user to the entrance, from the entrance specify a letter&number to start a new tower or use the next command. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-|//[sw] ap [all/party] next | Warps you to the lowest floor you have not collected data for. Sophisticated decision making. Enjoy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-|//[sw] ap [all/party] enter| Enter the Apollyon zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-|//[sw] ap [all/party] exit | Exit the Apollyon zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] ca [warp] [all/party] | warp to a designated [S] zone via a Campaign Arbiter in a [S] city. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] ca [all/party] return | return to your [S] home nation. via any [S] 2 initial field NPC i.e. Amaliya, C.A. . "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|alt wp cmds: cn / cam |
 
 #### Misc. Commands
 | Command | Action |
@@ -177,7 +186,7 @@ Thanks to Ivaar for also helping with the elvorseal state and receive packets, d
 
 Thanks to Lili for researching a better fuzzy matching logic.
 
-Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temenos and Apollyon warp systems.
+Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temenos, Apollyon and Campaign warp systems.
 
 ### Updates
 #### v0.96
@@ -267,3 +276,9 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 #### v1.0.3
 - **Resolved**: Limbus: Some NPC targets are not updated correctly in packets, resolve issue teleporting.
 - **Resolved**: Sortie: fixed menu structure (again)
+
+#### v1.0.4
+- **Feature**: Campaign warp system added.
+- **Resolved**: A bug that could occur with higher send_all_delay setting where one or more characters would fail to warp.
+- **Improvement**: Help text readability.
+- **Improvement**: Added shortcut in apollyon for entrance.

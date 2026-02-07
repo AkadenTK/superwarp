@@ -4,7 +4,7 @@ local npc_names = T{
     assault = S{'Runic Portal'},
 }
 return T{
-    short_name = 'po',
+    short_name = {'po','por','ps'},
     long_name = 'runic portal',
     npc_plural = 'runic portals',
     npc_names = npc_names,
@@ -65,7 +65,7 @@ return T{
         end
         return missing
     end,
-    help_text = "| Portals |\n[sw] po [warp/w] [all/a/@all/party/p] staging point -- warp to a designated staging point.\n[sw] po [all/a/@all] return -- Return to Whitegate from the staging point.\n[sw] po [all/a/@all] assault -- Head to your current assault tag location.\n-----------------------------",
+    help_text = "| Portals |\n Command options [po, por, ps]\n- po staging point -- warp to a designated staging point.\n- po return -- Return to Whitegate from the staging point.\n- po assault -- Head to your current assault tag location.\n-----------------------------",
     sub_zone_targets =  nil,
     auto_select_zone = function(zone)
     end,

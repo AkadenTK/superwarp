@@ -342,7 +342,7 @@ return T {
     end
         return nil
     end,
-    help_text = "| Sortie |\n[sw] so [warp/w] [all/a/@all/party/p] 0/1/2/3/4  OR  s/#a/#b/#c/#d -- warp to a designated Device in Sortie. (Use only with devices)\n[sw] so [all/a/@all] port -- warp to the other side of any bitzer or gadget. \n[sw] so [all/a/@all] normal -- set Aminon difficulty to normal and warp into his chamber. \n[sw] so [all/a/@all] hard -- set Aminon difficulty to hard and warp into his chamber. \n[sw] so repop -- Rematerialize monsters at a device or downstairs bitzer. \n-----------------------------",
+    help_text = "| Sortie |\n Command options [so, se, sor]\n- so s/a/b/c/d (# now optional i.e. [#b]) OR  0/1/2/3/4 -- warp to a designated Device in Sortie. (Use only with devices)\n- so port -- warp to the other side of any bitzer or gadget. \n- so normal -- set Aminon difficulty to normal and warp into his chamber. \n- so hard -- set Aminon difficulty to hard and warp into his chamber. \n- so repop -- Rematerialize monsters at a device or downstairs bitzer. \n-----------------------------",
     sub_zone_targets = S {'0', '1', '2', '3', '4','#a','#b','#c','#d', 's','a', 'b', 'c', 'd'},
     auto_select_zone = function(zone)
         if zone == 275 then

@@ -44,7 +44,7 @@ return T{ --  index: 1
         end
         return missing
     end,
-    help_text = "| Voidwatch |\n[sw] vw [warp/w] [all/a/@all/party/p] zone name -- warp to a designated voidwatch zone. \"all\" sends ipc to all local clients.\n-----------------------------",
+    help_text = "| Voidwatch |\n Command options [vw, vo]\n- vw zone name -- warp to a designated voidwatch zone.\n-----------------------------",
     sub_zone_targets = S{},
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}

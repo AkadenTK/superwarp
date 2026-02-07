@@ -45,7 +45,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '1.0.3'
+_addon.version = '1.0.4'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -91,7 +91,7 @@ local defaults = {
     retry_delay = 2,                        -- delay (seconds) between retries
     simulated_response_time = 0,            -- response time (seconds) for selecting a single menu item. Note this can happen multiple times per warp.
     simulated_response_variation = 0,       -- random variation (seconds) from the base simulated_response_time in either direction (+ or -)
-    default_packet_wait_timeout = 3,        -- timeout (seconds) for waiting on a packet response before continuing on.
+    default_packet_wait_timeout = 4,        -- timeout (seconds) for waiting on a packet response before continuing on.
     enable_same_zone_teleport = true,       -- enable teleporting between points in the same zone. This is the default behavior in-game. Turning it off will look different than teleporting manually.
     enable_fast_retry_on_interrupt = false, -- after an event skip event, attempt a fast-retry that doesn't wait for packets or delay.
     use_tabs_at_survival_guides = false,    -- use tabs instead of gil at survival guides.
@@ -491,7 +491,10 @@ local function do_warp(map_name, zone, sub_zone)
 
     local warp_settings, display_name = resolve_warp(map_name, zone, sub_zone)
     if warp_settings and warp_settings.index then
-        local npc, dist, npc_key = find_npc(map.zone_npc_list('warp'))
+        local npc, dist, npc_key
+        if map.zone_npc_list then
+            npc, dist, npc_key = find_npc(map.zone_npc_list('warp'))
+        end
         warp_settings.npc = npc and npc.index or warp_settings.npc
 
         if not npc then
@@ -736,6 +739,7 @@ windower.register_event('addon command', function(...)
             end
         end
     else
+        windower.add_to_chat(207,'\n| Superwarp |\nUse [all/a/@all/party/p] after the command prefix and before the destination to warp all characters or all party/alliance members. (//li p next)\n*If a command prefix is in use by another addon, use sw first (//sw li next), otherwise omit.\nYou may still use [warp] if you learned to include it or still have macros written this way. (sw hp warp eastern adoulin 1) (Legacy support)\n-----------------------------')
         local keys = {}
         for key in pairs(maps) do
             table.insert(keys, key)
@@ -745,9 +749,10 @@ windower.register_event('addon command', function(...)
 
         for _, key in ipairs(keys) do
             local map = maps[key]
-            log(map.help_text)
+            windower.add_to_chat(207,map.help_text)
         end
-        log('|Superwarp|\ncancel - Cancels pending warp command.\nreset - Attemps to clear menu lock.')
+        windower.add_to_chat(207,'| Superwarp |\nUse [all/a/@all/party/p] after the command prefix and before the destination to warp all characters or all party/alliance members. (//li p next)\n*If a command prefix is in use by another addon, use sw first (//sw li next), otherwise omit.\nYou may still use [warp] if you learned to include it or still have macros written this way. (sw hp warp eastern adoulin 1) (Legacy support)\n-----------------------------')
+        windower.add_to_chat(207,'sw cancel -- Cancels pending warp command.\nsw reset -- Attemps to clear menu lock.')
     end
 end)
 
@@ -1010,7 +1015,9 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
         --debug("out 0x05B: "..t.name.." oi:"..tostring(p['Option Index']).." _u1:"..tostring(p['_unknown1']).." _u2:"..tostring(p['_unknown2']).." menu:"..tostring(p['Menu ID']).." auto:"..tostring(p['Automated Message']))
     end
 end)
-
+windower.register_event('load', function()
+   windower.add_to_chat(207,'//sw help to list all commands.')
+end)
 windower.register_event('unload', function()
 	if windower.ffxi.get_info().logged_in then
 		reset(true)

@@ -85,7 +85,7 @@ return T{
         end
         return missing
     end,
-    help_text = "| Abyssea |\n[sw] ab [warp/w] [all/a/@all/party/p] conflux number -- warp to a designated conflux in your current abyssea zone.\n[sw] ab [all/a/@all] enter -- enter the abyssea zone corresponding to the entrance zone.\n[sw] ab [all/a/@all] exit -- exit the abyssea zone.\n-----------------------------",
+    help_text = "| Abyssea |\n Command options [ab, aby, aa]\n- ab conflux number -- warp to a designated conflux in your current abyssea zone.\n- ab enter -- enter the abyssea zone corresponding to the entrance zone.\n- ab exit -- exit the abyssea zone.\n-----------------------------",
     sub_zone_targets =  S{'00', '0', '1', '2', '3', '4', '5', '6', '7', '8', 'Cavernous Maw'},
     auto_select_zone = function(zone)
         if zone == 15 then return 'Abyssea - Konschtat' end

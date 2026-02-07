@@ -686,7 +686,7 @@ end
 		cross_tower_checkinator = nil
         return nil
     end,
-    help_text = "| Limbus |\n Commands: (Floor), port, next, back, random, enter, exit \n[sw] li [warp/w] [all/a/@all/party/p]  e1/nw1/sw2/ne5/se3   e/n1/w2/e5/c3 etc. -- warp to a designated tower and floor in limbus. \n[sw] li [all/a/@all/party/p]  port -- warp to the next floor of any tower, if on last floor will warp to the entrance, if at entrance will warp to first floor of the first tower. \n[sw] li [all/a/@all/party/p]  next -- warp to the first uncompleted floor in sequence, if this is in another tower, will warp to the entrance.\n [sw] li [all/a/@all/party/p]  back -- the reverse of port command, teleports to the previous floor. If you are on the first floor of a tower this will send you to the entrance, if you are at the entrance this command will send you to the last floor of the last tower.\n[sw] li [all/a/@all/party/p]  random -- Similar to the next command, sends you to floors you do not have the data for until you have collected all data; Will send you to other floors within the same tower until all are completed then will send to another tower/floor.\n [sw] li [all/a/@all/party/p]  enter -- enter apollyon. \n[sw] li [all/a/@all/party/p]  exit -- exit apollyon.\n------------------------------",
+    help_text = "| Limbus |\n Command options [li, te, ap]\n- li e1/nw1/sw2/ne5/se3   e/n1/w2/e5/c3 etc. -- warp to a designated tower and floor in limbus. \n- li next -- warp to the first uncompleted floor in sequence, if this is in another tower, will warp to the entrance.\n- li random -- Similar to the next command, sends you to floors you do not have the data for until you have collected all data; Will send you to other floors within the same tower until all are completed then will send to another tower/floor.\n- li port -- warp to the next floor of any tower, if on last floor will warp to the entrance, if at entrance will warp to first floor of the first tower. \n- li back -- the reverse of port command, teleports to the previous floor. If you are on the first floor of a tower this will send you to the entrance, if you are at the entrance this command will send you to the last floor of the last tower.\n- li enter -- enter apollyon. \n- li exit -- exit apollyon.\n------------------------------",
     sub_zone_targets = S {'e1', 'e2', 'nw1', 'nw2', 'nw3', 'nw4', 'nw5', 'sw1', 'sw2', 'sw3','sw4', 'ne1', 'ne2', 'ne3', 'ne4', 'ne5', 'se1', 'se2', 'se3', 'se4','entrance','n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'w1', 'w2','w3', 'w4', 'w5', 'w6', 'w7', 'e1', 'e2', 'e3', 'e4', 'e5','e6','e7','c1','c2','c3','c4'}, 
     auto_select_zone = function(zone)
         if zone == 38 then
@@ -1551,7 +1551,8 @@ end
         end,
     },
     warpdata = T{
-        ['apollyon'] = T{  
+        ['apollyon'] = T{
+			   ['Entrance']  = { shortcut = 'E1' },
                ['E1'] = {display_name = 'Entrance 1', zone = 38,  menu_id = 102, index = 671, npc = 16933535, offset = 1, x = -608,z = 0, y = -600,h = 126, unknown1 = 1,unknown2 = 1},
 			   ['E2'] = {display_name = 'Entrance 2', zone = 38, menu_id = 103, index = 672, npc = 16933536, offset = 1, x = 608, z = 0, y = -600,h = 0,unknown1 = 1,  unknown2 = 1},
 			   ['NW1'] = {display_name = 'Northwest 1', zone = 38, menu_id = 104, index = 673, npc = 16933537, offset = 1, x = -440.00003051758, z = 0, y = -88.000007629395, h = 191, unknown1 = 11, unknown2 = 1},
