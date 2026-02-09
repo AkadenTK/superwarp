@@ -222,7 +222,7 @@ end
 
 return T {
     short_name = { 'li', 'te', 'ap' },
-    long_name = 'limbus',
+    long_name = 'Limbus',
     move_in_zone = true,
     npc_plural = 'Limbus warps',
     npc_names = npc_names,
@@ -1551,7 +1551,7 @@ end
         end,
     },
     warpdata = T{
-        ['apollyon'] = T{
+        ['Apollyon'] = T{
 			   ['Entrance']  = { shortcut = 'E1' },
                ['E1'] = {display_name = 'Entrance 1', zone = 38,  menu_id = 102, index = 671, npc = 16933535, offset = 1, x = -608,z = 0, y = -600,h = 126, unknown1 = 1,unknown2 = 1},
 			   ['E2'] = {display_name = 'Entrance 2', zone = 38, menu_id = 103, index = 672, npc = 16933536, offset = 1, x = 608, z = 0, y = -600,h = 0,unknown1 = 1,  unknown2 = 1},

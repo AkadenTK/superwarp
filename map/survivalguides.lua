@@ -3,7 +3,7 @@ local npc_names = T{
 }
 return T{ -- option: 1
     short_name = {'sg','sur','book'},
-    long_name = 'survival guide',
+    long_name = 'Survival guide',
     npc_plural = 'survival guides',
     npc_names = npc_names,
     zone_npc_list = function(type)

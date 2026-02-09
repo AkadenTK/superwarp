@@ -4,7 +4,7 @@ local npc_names = T{
 }
 return T{ -- option: 2
     short_name = {'hp','ho','home'},
-    long_name = 'homepoint',
+    long_name = 'Homepoint',
     npc_plural = 'homepoints',
     npc_names = npc_names,
     zone_npc_list = function(type)

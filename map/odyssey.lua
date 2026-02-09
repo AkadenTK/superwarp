@@ -64,7 +64,7 @@ end
 
 return T {
     short_name = {'od','oy','ody'},
-    long_name = 'odyssey',
+    long_name = 'Odyssey',
     move_in_zone = true,
     npc_plural = 'Odyssey NPCs',
     npc_names = npc_names,
