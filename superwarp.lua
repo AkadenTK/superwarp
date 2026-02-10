@@ -865,8 +865,57 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             current_action.incoming_packet = packets.parse('incoming',data)
             perform_next_action()
         end
-    end 
-
+    end
+    ----
+    if id == 0x05C and current_activity and current_activity.type == 'campaign' then
+        local envelope = packets.parse('incoming', data)
+        local campparam1 = data:unpack('I', 9)
+        local campnpc = data:unpack('I', 5)
+        if current_activity.find_missing then
+            local map = maps.campaign
+            if map.missing then
+                if current_activity.type == 'campaign' then
+                    local zone = windower.ffxi.get_info()['zone']
+                    local check_flag = true
+                    local missing, err = map.missing(map.warpdata, zone, envelope, check_flag)
+                    if err then
+                        log("Error: "..err)
+                    elseif missing ~= nil then
+                        if #missing > 0 then
+                            log("You are missing these "..map.long_name.." destinations: ")
+                            for i=1, math.min(#missing, current_activity.missing_max) do
+                                log(missing[i] or 'nil')
+                            end
+                            if #missing > current_activity.missing_max then
+                                log("..and "..(#missing-current_activity.missing_max)..' more...')
+                            end
+                        else
+                            log("You are not missing any destinations.")
+                        end
+                    else
+                        log("An unknown error occurred when finding missing destinations.")                        
+                    end
+                end
+                return
+            end
+        else
+            if campnpc ~= 0 then
+                local permission = envelope["Menu Parameters"]:unpack('I', 1)
+                if bit.band(permission, current_activity.activity_settings.permission) ~= 0 then
+                    debug("Destination is unlocked...")
+                else
+                    log("Destination not unlocked yet...")
+                    reset(true)
+                end
+            else
+                if allied_notes < campparam1 then
+                    log("Insufficient Allied Notes")
+                    reset(true)
+                end
+            end
+        end
+    end
+    ----
     if id == 0x37 and not injected and state.client_lock then
         local p = packets.parse('incoming', data)
         p['_flags3'] = bit.bor(p['_flags3'], 2)
@@ -930,14 +979,16 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
                         else
                             log("You are not missing any destinations.")
                         end
-                    else
+                    elseif current_activity.type ~= 'campaign' then
                         log("An unknown error occurred when finding missing destinations.")                        
                     end
                 end
-
-                -- reset
-                reset:schedule(0.1, true)
-
+                if current_activity.type ~= 'campaign' then
+                    -- reset
+                    reset:schedule(0.1, true)
+                else
+                    reset:schedule(1, true)
+                end
                 return true
             end
 
@@ -965,11 +1016,8 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 
             if current_activity.action_queue and type(current_activity.action_queue) == 'table' then
                 -- startup actions.
-
                 current_activity.running = true
-
                 perform_next_action:schedule(0)
-
                 return true
             else
                 log("No action required.")

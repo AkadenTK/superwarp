@@ -1,6 +1,6 @@
 local past_zones = S{80,81,82,83,84,87,88,89,90,91,94,95,96,97,98,136,137,164,171,175}
 local past_town_zones = S{80,87,94}
-local menu_ids = S{454,455,456,458}
+local menu_ids = S{454,455,456,457,458}
 local npc_names = T{
     warp = S{'Scarlette, C.A.', 'Wenonah, C.A.', 'Narkissa, C.A.'},
     ['return'] = S{'Estaud','Sleiney','Timid Scorpion','Yimi Jomkeh','Disserond','Gray Colossus','Moana','Luk Leotih','Myllue','Telford','Gisbert','Wayward Echo','Hdya Mhirako','Marius','Larkin','Roiloux','Stray Boar','Barnett','Dhen Kwherri','Kearney','Felicia','Toulsard','Polished Fang','Xenia','Lamurara','Wren','Arlayse','Waldo','Jagged Onyx','Uriah','Addison','Mhik Ljusihlo','Darden','Tomoa-Nomoa','Astrid','Landon','Amaliya','Renvriche'},
@@ -22,10 +22,10 @@ return T{
     end,
     validate = function(menu_id, zone, current_activity,p)
         local destination = current_activity.activity_settings
-        local allied_notes = p["Menu Parameters"]:unpack('I', 9)
-        local warp_cost = 100 -- Standard 100 minimum, while the cost varies we'll just keep superwarp's business at a 100 minimum. If you have less than 100 you have limitless copper vouchers to exchange anyway.
+        allied_notes = p["Menu Parameters"]:unpack('I', 9)
+        local warp_cost = 40 --Minimum check, warp costs vary and it gets checked again along with the destination locks.
         if allied_notes < warp_cost then
-            return "You have less than 100 Allied Notes; Warp manually if the teleport costs < 100"
+            return "You have less than 40 Allied Notes."
         end
         if not menu_ids:contains(menu_id) then 
             return "Incorrect menu detected! Menu ID: "..menu_id
@@ -37,6 +37,37 @@ return T{
             return 'Not in past town zone.'
         end
         return nil
+    end,
+    missing = function(warpdata, zone, p, secondcall)
+        -- Little tricky since the unlocks are handled different from any other map. Two calls, one to trigger the 5C and another for the operation.
+        if not secondcall then
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = p['NPC']
+            packet["Option Index"] = 50
+            packet["_unknown1"] = 0
+            packet["Target Index"] = p['NPC Index']
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = p["Menu ID"]
+            packets.inject(packet)
+        elseif secondcall then
+            local missing = T{}
+            local unlock_bits = p["Menu Parameters"]:unpack('I', 1)
+
+            for z, zd in pairs(warpdata) do
+                if not zd.shortcut then
+                    if zd.permission then
+                        if bit.band(unlock_bits, zd.permission) ~= 0 then
+
+                        else
+                            missing:append(z)
+                        end
+                    end
+                end
+            end
+            return missing
+        end
     end,
     help_text = "| Campaign |\n Command options [ca, cn, cam]\n- ca zone name -- warp to a designated [S] zone via a Campaign Arbiter in a [S] city.\n- ca return -- return to your [S] home nation. via any [S] 2 initial field NPC i.e. Amaliya, C.A.\n-----------------------------",
     sub_zone_targets = S{},
@@ -67,7 +98,7 @@ return T{
         packet["_unknown2"] = 0
         packet["Zone"] = zone
         packet["Menu ID"] = menu
-        actions:append(T{packet=packet, delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
+        actions:append(T{packet=packet, wait_packet=0x05C, delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation) + 1, description='send options'})
 
         packet = packets.new('outgoing', 0x05B)
         packet["Target"] = npc.id
@@ -78,7 +109,7 @@ return T{
         packet["_unknown2"] = 0
         packet["Zone"] = zone
         packet["Menu ID"] = menu
-        actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=2, description='complete menu'})
+        actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu'})
 
         return actions
     end,
@@ -122,22 +153,22 @@ return T{
         end,
     },
     warpdata = T{
-        ['Xarcabard [S]'] =             {index = 1, oi=1, menu_id =458},
-        ['Beaucedine Glacier [S]'] =    {index = 2, oi=2, menu_id =458},
-        ['Batallia Downs [S]'] =        {index = 3, oi=3, menu_id =458},
-        ['Rolanberry Fields [S]'] =     {index = 4, oi=4, menu_id =458},
-        ['Sauromugue Champaign [S]'] =  {index = 5, oi=5, menu_id =458},
-        ['Jugner Forest [S]'] =         {index = 6, oi=6, menu_id =458},
-        ['Pashhow Marshlands [S]'] =    {index = 7, oi=7, menu_id =458},
-        ['Meriphataud Mountains [S]'] = {index = 8, oi=8, menu_id =458},
-        ['Vunkerl Inlet [S]'] =         {index = 9, oi=9, menu_id =458},
-        ['Grauberg [S]'] =              {index = 10, oi=10, menu_id =458},
-        ['Fort Karugo-Narugo [S]'] =    {index = 11, oi=11, menu_id =458},
-        ['East Ronfaure [S]'] =         {index = 12, oi=12, menu_id =458},
-        ['North Gustaberg [S]'] =       {index = 13, oi=13, menu_id =458},
-        ['West Sarutabaruta [S]'] =     {index = 14, oi=14, menu_id =458},
-        ['Garlaige Citadel [S]'] =      {index = 15, oi=18, menu_id =458},
-        ['Crawlers\' Nest [S]'] =       {index = 16, oi=19, menu_id =458},
-        ['Eldieme Necropolis [S]'] =    {index = 17, oi=20, menu_id =458},
+        ['Xarcabard [S]'] =             {index = 1, oi=1,   menu_id =458, permission = 0x00000002},
+        ['Beaucedine Glacier [S]'] =    {index = 2, oi=2,   menu_id =458, permission = 0x00000004},
+        ['Batallia Downs [S]'] =        {index = 3, oi=3,   menu_id =458, permission = 0x00000008},
+        ['Rolanberry Fields [S]'] =     {index = 4, oi=4,   menu_id =458, permission = 0x00000010},
+        ['Sauromugue Champaign [S]'] =  {index = 5, oi=5,   menu_id =458, permission = 0x00000020},
+        ['Jugner Forest [S]'] =         {index = 6, oi=6,   menu_id =458, permission = 0x00000040},
+        ['Pashhow Marshlands [S]'] =    {index = 7, oi=7,   menu_id =458, permission = 0x00000080},
+        ['Meriphataud Mountains [S]'] = {index = 8, oi=8,   menu_id =458, permission = 0x00000100},
+        ['Vunkerl Inlet [S]'] =         {index = 9, oi=9,   menu_id =458, permission = 0x00000200},
+        ['Grauberg [S]'] =              {index = 10, oi=10, menu_id =458, permission = 0x00000400},
+        ['Fort Karugo-Narugo [S]'] =    {index = 11, oi=11, menu_id =458, permission = 0x00000800},
+        ['East Ronfaure [S]'] =         {index = 12, oi=12, menu_id =458, permission = 0x00001000},
+        ['North Gustaberg [S]'] =       {index = 13, oi=13, menu_id =458, permission = 0x00002000},
+        ['West Sarutabaruta [S]'] =     {index = 14, oi=14, menu_id =458, permission = 0x00004000},
+        ['Garlaige Citadel [S]'] =      {index = 15, oi=18, menu_id =458, permission = 0x00040000},
+        ['Crawlers\' Nest [S]'] =       {index = 16, oi=19, menu_id =458, permission = 0x00080000},
+        ['Eldieme Necropolis [S]'] =    {index = 17, oi=20, menu_id =458, permission = 0x00100000},
     },
 }
