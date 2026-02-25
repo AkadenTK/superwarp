@@ -1,12 +1,13 @@
-local entry_zones = S {247}
 local odyssey_zones = S {298,279}
+local all_warp_zones = S{298,279}
+local zone_tag = windower.ffxi.get_info().zone
 local npc_names = T{
     exit = S{'Otherworldly Vortex'},
     port = S{'Veridical Conflux'},
     warp = S{'Translocator'},
 }
-	zone_tag = windower.ffxi.get_info().zone
-Sheol_A = {
+
+local Sheol_A = {
    ['translocator_1'] = { display_name = 'Translocator #1', menu_id = 1020, index = 562, zone = zone_tag,npc = 20951602, npc2 = 20955698, offset = 0, x = 160, y = 156, z = 59.500003814697 , h = 63, unknown1 = 1  , unknown2 = 1}, 
    ['translocator_2'] = { display_name = 'Translocator #2', menu_id = 1021, index = 563, zone = zone_tag,npc = 20951603, npc2 = 20955699, offset = 1, x = 332.00003051758, y = -600, z = -0.5 , h = 127, unknown1 = 2 , unknown2 = 1}, 
    ['translocator_3'] = { display_name = 'Translocator #3', menu_id = 1022, index = 564, zone = zone_tag,npc = 20951604, npc2 = 20955700, offset = 2, x = -420.00003051758, y = -218.00001525879, z = 19.5 , h = 191, unknown1 = 3 , unknown2 = 1},
@@ -23,7 +24,7 @@ Sheol_A = {
    ['conflux_11']     = { display_name = 'Conflux #11', menu_id = 1010, index = 575, zone = zone_tag,npc = 20951615, npc2 = 20955711, offset = 11, x = -526, y = 700.00006103516, z = 18 , h = 127, unknown1 = 12, unknown2 = 1},
    ['conflux_12']     = { display_name = 'Conflux #12', menu_id = 1011, index = 576, zone = zone_tag,npc = 20951616, npc2 = 20955712, offset = 12, x = -314, z = 0, y = 580,  h = 0, unknown1 = 11, unknown2 = 1},
 }
-Sheol_B = {                                                        -- [P1] and [P2] , annoyingly, have different target ids  
+local Sheol_B = {                                                        -- [P1] and [P2] , annoyingly, have different target ids  
    ['translocator_1'] = {display_name = 'Translocator #1', menu_id = 1020, index = 665, zone = zone_tag,npc = 20959897, npc2 = 20963993, offset = 0, x = 680.00006103516, y = -788.00006103516, z = 36 , h = 191, unknown1 = 1  , unknown2 = 1},
    ['translocator_2'] = {display_name = 'Translocator #2', menu_id = 1021, index = 666, zone = zone_tag,npc = 20959898, npc2 = 20963994, offset = 1, x = 212.00001525879, y = 560, z = 17.5 , h = 0, unknown1 = 2 , unknown2 = 1},
    ['translocator_3'] = {display_name = 'Translocator #3', menu_id = 1022, index = 667, zone = zone_tag,npc = 20959899, npc2 = 20963995, offset = 2, x = -552, y = 320, z = -0.5 , h = 127, unknown1 = 3 , unknown2 = 1},
@@ -38,7 +39,7 @@ Sheol_B = {                                                        -- [P1] and [
    ['conflux_9']      = {display_name = 'Conflux #9', menu_id = 1008, index = 676, zone = zone_tag,npc = 20959908, npc2 = 20964004, offset = 9, x = 140, y = -284, z = 17.5 , h = 63, unknown1 = 10, unknown2 = 1},
    ['conflux_10']     = {display_name = 'Conflux #10', menu_id = 1009, index = 677, zone = zone_tag,npc = 20959909, npc2 = 20964005, offset = 10, x = -500.00003051758, z = 35.5, y = 204.00001525879,  h = 191, unknown1 = 9, unknown2 = 1},
 }
-Sheol_C = {
+local Sheol_C = {
    ['translocator_1'] = {display_name = 'Translocator #1', menu_id = 1020, index = 564, zone = zone_tag,npc = 20967988, npc2 = 20972084, offset = 0, x = 526, y = 234.00001525879, z = 59.500003814697 , h = 31, unknown1 = 1  , unknown2 = 1},
    ['translocator_2'] = {display_name = 'Translocator #2', menu_id = 1021, index = 565, zone = zone_tag,npc = 20967989, npc2 = 20972085, offset = 1, x = -700.00006103516, y = -338.00003051758, z = -18.10000038147 , h = 63, unknown1 = 2 , unknown2 = 1},
    ['conflux_1']      = {display_name = 'Conflux #1',      menu_id = 1000, index = 566, zone = zone_tag,npc = 20967990, npc2 = 20972086, offset = 1, x = 630, z = -0.5, y = 340.00003051758,  h = 127, unknown1 = 2, unknown2 = 1},
@@ -63,11 +64,12 @@ local function table_contains(t, value)
 end
 
 return T {
-    short_name = {'od','oy','ody'},
+    short_name = {'od','ody'},
     long_name = 'Odyssey',
     move_in_zone = true,
     npc_plural = 'Odyssey NPCs',
     npc_names = npc_names,
+    all_warp_zones = all_warp_zones,
     ----------------------------------------------------------------------------------------------
 
     ------------------------------------------------------------------------------------
@@ -251,14 +253,14 @@ if current_activity.sub_cmd ~= 'exit' then
 end
         return nil
     end,
-    help_text = "| Odyssey |\n Command options [od, oy, ody]\n- od (1-3) -- warp between translocators in odyssey.\n- od port -- warp to the other side of Veridical Confluxes.\n- od exit -- Exits Odyssey (This does give the 25% touch bonus 100% of the time.)\n-----------------------------",
+    help_text = "| Odyssey |\n Command options [od, ody]\n- od (1-3) -- warp between translocators in odyssey.\n- od port -- warp to the other side of Veridical Confluxes.\n- od exit -- Exits Odyssey (This does give the 25% touch bonus 100% of the time.)\n-----------------------------",
     sub_zone_targets = S {'1','2','3'},
     auto_select_zone = function(zone)
         if zone == 298 then
-            return 'Walk of Echoes [P1]'
+            return 'Walk of Echoes'
         end
         if zone == 279 then
-            return 'Walk of Echoes [P2]'
+            return 'Walk of Echoes'
         end
     end,
     build_warp_packets = function(current_activity, zone, p, settings)
@@ -579,12 +581,12 @@ end
     },
     warpdata = T{
 		           
-			['Walk of Echoes [P1]'] = T{  
-  --[[translocator 1]]['1'] =   { menu_id = 1020, index = 562, zone = 298,npc = 20951602, offset = 0,--[[ x = 160, y = 156, z = 59.500003814697 , h = 63, unknown1 = 1  , unknown2 = 1]]}, 
-  --[[translocator 2]]['2'] =   { menu_id = 1021, index = 563, zone = 298,npc = 20951603, offset = 1,--[[ x = 332.00003051758, y = -600, z = -0.5 , h = 127, unknown1 = 2 , unknown2 = 1]]},
-  --[[translocator 3]]['3'] =   { menu_id = 1022, index = 564, zone = 298,npc = 20951604, offset = 2,--[[ x = -420.00003051758, y = -218.00001525879, z = 19.5 , h = 191, unknown1 = 3 , unknown2 = 1]]},
-		},
-			['Walk of Echoes [P2]'] = T{
+			--['Walk of Echoes'] = T{  
+  --[[translocator 1]]--['1'] =   { menu_id = 1020, index = 562, zone = 298,npc = 20951602, offset = 0,--[[ x = 160, y = 156, z = 59.500003814697 , h = 63, unknown1 = 1  , unknown2 = 1]]}, 
+  --[[translocator 2]]--['2'] =   { menu_id = 1021, index = 563, zone = 298,npc = 20951603, offset = 1,--[[ x = 332.00003051758, y = -600, z = -0.5 , h = 127, unknown1 = 2 , unknown2 = 1]]},
+  --[[translocator 3]]--['3'] =   { menu_id = 1022, index = 564, zone = 298,npc = 20951604, offset = 2,--[[ x = -420.00003051758, y = -218.00001525879, z = 19.5 , h = 191, unknown1 = 3 , unknown2 = 1]]},
+		--},
+			['Walk of Echoes'] = T{
   --[[translocator 1]]['1'] =   { menu_id = 1020, index = 562, zone = 279,npc = 20951602, offset = 0,--[[ x = 160, y = 156, z = 59.500003814697 , h = 63, unknown1 = 1  , unknown2 = 1]]},
   --[[translocator 2]]['2'] =   { menu_id = 1021, index = 563, zone = 279,npc = 20951603, offset = 1,--[[ x = 332.00003051758, y = -600, z = -0.5 , h = 127, unknown1 = 2 , unknown2 = 1]]},
   --[[translocator 3]]['3'] =   { menu_id = 1022, index = 564, zone = 279,npc = 20951604, offset = 2,--[[ x = -420.00003051758, y = -218.00001525879, z = 19.5 , h = 191, unknown1 = 3 , unknown2 = 1]]},

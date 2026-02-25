@@ -3,7 +3,7 @@
 This is an addon for Windower4 for FFXI. It allows text commands to teleport using Homepoints, Waypoints, Proto-Waypoints, Survival Guides, Escha Portals and Reisenjima Ingresses, Voidwatch and Unity NPCs, Abyssea Confluxes, Runic Portals, Odyssey Confluxes and Translocators, and Sortie Gadgets, Bitzers, and Devices, Temenos Matter Diffusion Modules and Apollyon Swirling Vortices.
 
 ### Commands:
-The //sw command prefix is only needed if the user is running another addon that is using the command prefix for the warp system you are operating. i.e. //te  for temenos. In that case the user would need to use //sw te or /console sw te in a macro instead of just //te until the other addon is unloaded.
+The //sw command prefix can now be used for all maps. It may still be used in the manner it was previously if the user so desired.
 
 #### Homepoint Commands
 | Command | Action |
@@ -11,7 +11,7 @@ The //sw command prefix is only needed if the user is running another addon that
 | //[sw] hp [warp] [all/party] zone_name [homepoint_number]  | Warp to a specified homepoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). This, otherwise, works just like the homepoint addon, with additional shortcuts such as "entrance" (or simpler "e"), "auction" (or simpler "ah") or "mog" (or simpler "mh"). If the homepoint_number is omitted, the first homepoint will be chosen (from the mapping). |
 | //[sw] hp [all/party] set  | Set the nearest homepoint as your home point. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 | //[sw] hp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
-|alt cmds: ho / home |
+|alt cmd: ho |
 
 #### Waypoint Commands
 | Command | Action |
@@ -20,15 +20,15 @@ The //sw command prefix is only needed if the user is running another addon that
 | //[sw] pwp [warp] [all/party] zone_name  | Warp to a specified proto-waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 | //[sw] wp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
 | //[sw] pwp [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
-|alt wp cmds: wa / way |
-|alt pwp cmds: pro / pw |
+|alt wp cmd: wa |
+|alt pwp cmd: pw |
 
 #### Survival Guide Commands
 | Command | Action |
 | --- | --- |
 | //[sw] sg [warp] [all/party] zone_name  | Warp to a specified waypoint. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] sg [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
-|alt cmds: sur / book |
+|alt cmd: sur |
 
 #### Escha Commands
 | Command | Action |
@@ -46,7 +46,7 @@ The //sw command prefix is only needed if the user is running another addon that
 | --- | --- |
 | //[sw] un [warp] [all/party] zone_name  | Warp to a specified zone or the correct zone for a specified Unity NM. If an NM is specified, Superwarp will display the coordinates for the spawn NPCs. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] un [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
-|alt cmds: uy / unity |
+|alt cmd: uy |
 
 #### Abyssea Commands
 | Command | Action |
@@ -55,7 +55,7 @@ The //sw command prefix is only needed if the user is running another addon that
 | //[sw] ab [all/party] enter  | Enter the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] ab [all/party] exit  | Leave the abyssea zone when next to a cavernous maw. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] ab [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. Note: this can only be done inside a zone, and only for the zone you are currently in. |
-|alt cmds: aby / aa |
+|alt cmd: aa |
 
 #### Runic Portal Commands
 | Command | Action |
@@ -64,7 +64,7 @@ The //sw command prefix is only needed if the user is running another addon that
 | //[sw] po [all/party] assault  | Be taken to your current assault mission staging point. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] po [all/party] return  | Leave the assault staging area and return to Whitegate. "sw" is optional, and does nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] po [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
-|alt cmds: por / ps |
+|alt cmd: ps |
 
 #### Voidwatch Commands
 | Command | Action |
@@ -76,11 +76,11 @@ The //sw command prefix is only needed if the user is running another addon that
 #### Sortie
 | Command | Action |
 | --- | --- |
-| //[sw] so [warp] [all/party] 0/1/2/3/4  OR  s/#a/#b/#c/#d | Warp to a specified device by number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] so [warp] [all/party] s/a/b/c/d OR 0/1/2/3/4 | Warp to a specified device by number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] so [all/party] port | Warp via the nearby gadget or bitzer. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 | //[sw] so [all/party] normal | Set Aminon difficulty to normal and enter his chamber. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
 | //[sw] so [all/party] hard | Set Aminon difficulty to hard (deepest dark) and enter his chamber. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck). |
-|alt cmds: se / sor |
+|alt cmd: se |
 
 #### Odyssey
 | Command | Action |
@@ -88,7 +88,7 @@ The //sw command prefix is only needed if the user is running another addon that
 |//[sw] od [warp] [all/party] 1/2/3 | Warp to a specified translocator by number. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] od [all/party] port | Warp to the other side of the Veridical Conflux "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] od [all/party] exit | Exit the Odyssey zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-|alt cmds: oy / ody |
+|alt cmd: oy |
 
 #### Limbus
 | Command | Action |
@@ -107,12 +107,33 @@ The //sw command prefix is only needed if the user is running another addon that
 | --- | --- |
 |//[sw] ca [warp] [all/party] | warp to a designated [S] zone via a Campaign Arbiter in a [S] city. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] ca [all/party] return | return to your [S] home nation. via any [S] 2 initial field NPC i.e. Amaliya, C.A. . "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-|alt wp cmds: cn / cam |
+|alt cmd: cn |
+
+#### Incursion (New!)
+| Command | Action |
+| --- | --- |
+|//[sw] in [warp] [all/party] [part of boss name] | warp to a designated boss chamber inside Incursion. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] in missing| Check which destinations you lack, incase you wanted to do it; I wrote it so i'm putting it in here. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|alt cmd: inc |
+
+#### Walk Of Echoes (New!)
+| Command | Action |
+| --- | --- |
+|//[sw] woe [all/party] zone| Zone into or out of the Walk Of Echoes zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] woe [all/party] enter | Enter a battlefield you are standing within 6 yalms of while inside Walk Of Echoes. (There is no point at which more than one conflux is <= 6 yalms.) "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] woe [all/party] exit | Exit a battlefield inside Walk Of Echoes. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|alt cmd: we |
+
+#### The Superwarp™ (New!)
+| Command | Action |
+| --- | --- |
+| //sw [a/p]  Passes the appropriate command for the circumstance. Some users might consider a hotkey for this, like alt + S to pass the smartcommand with no typing and no macro. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 
 #### Misc. Commands
 | Command | Action |
 | --- | --- |
 | //sw debug  | Toggles debug mode which displays debug messages in the log. If debug mode was off, will display the debug logs of the last warp command as well.   |
+| //sw missing | Displays the destinations the user is missing from the warp system nearest you where applicable. |
 | //sw cancel [all/party]  | Cancels the current in-progress warp.   |
 | //sw reset [all/party]  | Resets client menu lock. This should be exceedingly rare, but it's here in case it's needed.   |
 
@@ -282,3 +303,21 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 - **Resolved**: A bug that could occur with higher send_all_delay setting where one or more characters would fail to warp.
 - **Improvement**: Help text readability.
 - **Improvement**: Added shortcut in apollyon for entrance.
+
+#### v1.1
+- **Feature**: All commands for all maps can now be dispatched with 'sw'.
+- **Feature**: Introducing The Superwarp. A new general command that uses logic to become the appropriate command based on the circumstances. Give it a spin.
+- **Feature**: The 'next' and 'random' commands for the Limbus map now have the ability to track the chests you open and will always send you to the 4th-to-last chest you opened in sequence irrespective of repeat opens. If you received 5k from a chest and wish to try the same chest again, the tracking will ignore the repeat open. Multiboxers will wish to rotate regardless since opening different chests with different characters is a headache.
+- **Feature**: Incursion warp system added.
+- **Feature**: Walk Of Echoes warp system added.
+- **Feature**: New command (port) added to Campaign map to travel back and forward through Cavernous Maws.
+- **Improvement**: Homepoints now defaults to the most popular homepoint of frequently visited zones when a sub-command is not specified; This allows the user to leverage the fuzzyfind feature and command interpretation to execute common warps with very little typing. Examples - '//sw no' = Norg #2, '//sw eas' = Eastern Adoulin #2 with no custom alias configuration. 
+- **Improvement**: Waypoints now default to the Frontier Station of non-town zones when a sub-zone destination is not given, defaults to AH for Eastern Adoulin, and MH for Western Adoulin.
+- **Improvement**: (Waypoints) Shortcut added to more easily travel to Frontier Station; There are now multiple accepted inputs such as 'front' and 'frontier' to go these WPs. Some users may have struggled with this in the past if unaware of the pre-programmed 'fs' alias.
+- **Improvement**: Sortie Device warps now default to S device when a destination is not specified. i.e. //sw
+- **Improvement**: Help text readability.
+- **Resolved**: (Proto-waypoints) Zoning and warping back to the same location of the same zone is now guarded against.
+- **Resolved**: (Survival-Guides) Zoning and warping back to the same location of the same zone is now guarded against.
+- **Resolved**: (Abyssea) Warping to the same location is now guarded against.
+- **Resolved**: An issue wherein loading or reloading superwarp on multiple characters simultaneously could flash the settings.xml file, resetting to default values. Each character now has their own xml file.
+- **Resolved**: Minor bugs.

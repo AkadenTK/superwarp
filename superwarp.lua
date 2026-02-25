@@ -45,7 +45,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '1.0.4'
+_addon.version = '1.1'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -86,7 +86,7 @@ sub_zone_aliases = {
 
 local defaults = {
     debug = false,
-    send_all_delay = 0.3,                   -- delay (seconds) between each character
+    send_all_delay = 0.3,                  -- delay (seconds) between each character
     max_retries = 6,                        -- max retries for loading NPCs.
     retry_delay = 2,                        -- delay (seconds) between retries
     simulated_response_time = 0,            -- response time (seconds) for selecting a single menu item. Note this can happen multiple times per warp.
@@ -103,9 +103,20 @@ local defaults = {
     simulate_client_lock = false,           -- lock the local client during a warp/subcommand, simulating menu behavior.
     send_all_order_mode = 'melast',         -- order modes: melast, mefirst, alphabetical
     chat_log_use = 'log',                   -- log messages to 'log', 'console', or 'none'. If debug is on, it will always log to the chat log
+    limbus_chests = {
+        temenos = {
+            ["N7"] = 2,["W7"] = 3,["E7"] = 4,["C4"] = 1
+    },
+        apollyon = {
+            ["NW5"] = 1,["SW4"] = 2,["NE5"] = 3,["SE4"] = 4
+        },
+    }
 }
+local settings
+local player_info = windower.ffxi.get_info().logged_in and windower.ffxi.get_player().name
+if player_info then settings = config.load('data/settings_'..player_info..'.xml', defaults) else settings = config.load(defaults) end
 
-local settings = config.load(defaults)
+
 
 -- bounds checks.
 if settings.send_all_delay < 0 then
@@ -139,14 +150,43 @@ if settings.default_packet_wait_timeout > 10 then
     settings.default_packet_wait_timeout = 10
 end
 config.save(settings)
-local poke_time = nil
-local poke_response_time = nil
+local current_zone = windower.ffxi.get_info().zone
+local in_limbus_zone = (current_zone == 37 or current_zone == 38)
+local timing = {}
+timing.poke_time = nil
+timing.poke_response_time = nil
+timing.warp_cmd_time = nil
+timing.warp_init_time = nil
+local smartcmd = false
+local smartcheck
+if not (maps.abyssea.target_ids and maps.campaign.target_ids and maps.odyssey.all_warp_zones and maps.incursion and maps.walkofechoes.all_warp_zones) then --Version check
+    smartcheck = false
+else
+    smartcheck = true
+end
 local state = {
     loop_count = nil,
     fast_retry = false,
     debug_stack = T{},
     client_lock = false,
 }
+
+local function add_table_entry(zone, entry)
+    local t = settings.limbus_chests[zone]
+    if not t then return end
+    if t[entry] == 1 then return end
+    t[entry] = 1
+
+    for k, v in pairs(t) do
+        if k ~= entry then
+            t[k] = v + 1
+            if t[k] > 4 then
+                t[k] = 4
+            end
+        end
+    end
+    config.save(settings)
+end
 
 function log(msg)
     if settings.chat_log_use == 'log' or settings.debug then
@@ -304,10 +344,13 @@ local function resolve_warp(map_name, zone, sub_zone)
             debug("Found zone settings. No sub-zones defined.")
             return zone_map, closest_zone_name    
         end
-    else
+    elseif zone and closest_zone_name then
         log('Search returned no matches: '..zone)
         debug('Failed search. Term="'..zone..'", nearest match="'..(closest_zone_name or nil)..'", value='..(closest_zone_value or '-1'))
-        return nil
+    else
+        log('Search returned no matches.')
+        debug('Failed search.')
+    return nil
     end
 end 
 
@@ -340,8 +383,8 @@ function poke_npc(id, index)
             ["Param"]=0,
             ["_unknown1"]=0})
         packets.inject(packet)
-        if not poke_time then
-            poke_time = os.clock()
+        if not timing.poke_time then
+            timing.poke_time = os.clock()
         end
         if first_poke then
             first_poke = false
@@ -350,7 +393,7 @@ function poke_npc(id, index)
             coroutine.sleep(settings.default_packet_wait_timeout)
         end
     end
-    poke_time = nil
+    timing.poke_time = nil
 end
 
 function set_target(index)
@@ -406,7 +449,6 @@ local function find_npc(needles)
             end
         end
     end
-
     return target_npc, distance, npc_key
 end
 
@@ -416,7 +458,7 @@ function general_release()
     windower.packets.inject_incoming(0x052, string.char(0,0,0,0,1,0,0,0))
 end
 function release(menu_id)
-    windower.packets.inject_incoming(0x052, 'ICHC':pack(0,2,menu_id,0))
+    windower.packets.inject_incoming(0x052, ('ICHC'):pack(0,2,menu_id,0))
     windower.packets.inject_incoming(0x052, string.char(0,0,0,0,1,0,0,0)) -- likely not needed
 
 end
@@ -520,6 +562,12 @@ local function do_warp(map_name, zone, sub_zone)
             current_activity = {type=map_name, npc=npc, activity_settings=warp_settings, zone=zone, sub_zone=sub_zone}
             handle_before_warp()
             log('Warping via ' .. npc.name .. ' to '..display_name..'.')
+            timing.warp_init_time = os.clock()
+            if timing.warp_cmd_time then
+                debug("Warp initialization time: "..string.format("%.3f", timing.warp_init_time - timing.warp_cmd_time).." seconds")
+                timing.warp_cmd_time = nil
+                timing.warp_init_time = nil
+            end
             poke_npc(npc.id, npc.index)
         end
     else
@@ -552,6 +600,12 @@ local function do_sub_cmd(map_name, sub_cmd, args)
     elseif npc and npc.id and npc.index and dist <= 6^2 then
         current_activity = {type=map_name, sub_cmd=sub_cmd, args=args, npc=npc}
         handle_before_warp()
+        timing.warp_init_time = os.clock()
+        if timing.warp_cmd_time then
+            debug("Warp initialization time: "..string.format("%.3f", timing.warp_init_time - timing.warp_cmd_time).." seconds")
+            timing.warp_cmd_time = nil
+            timing.warp_init_time = nil
+        end
         poke_npc(npc.id, npc.index)
     end
 end
@@ -615,14 +669,13 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
         -- no args provided; make an empty string so :lower() calls won't error
         args:append('') 
     end
-
     -- because I can't stop typing "hp warp X" because I've been trained. 
     if args[1] and args[1]:lower() == 'warp' or (args[1] and args[1]:lower() == 'w') then 
         args:remove(1) 
         if args:length() == 0 then args:append('') end
     end
-    local all = S{'all','a','@all'}:contains(args[1]:lower()) and args[2]
-    local party = S{'party','p','@party'}:contains(args[1]:lower()) and args[2]
+    local all = S{'all','a','@all'}:contains(args[1]:lower()) and (args[2] or smartcmd)
+    local party = S{'party','p','@party'}:contains(args[1]:lower()) and (args[2] or smartcmd)
     if all or party then 
         args:remove(1) 
 
@@ -639,6 +692,7 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
 
         return
     end
+    smartcmd = false
     if args[1] and args[1]:lower() == 'missing' then
         args:remove(1)         
         for key,map in pairs(maps) do
@@ -685,8 +739,9 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
                 if map.auto_select_zone and map.auto_select_zone(zone) then
                     zone_target = map.auto_select_zone(zone)
                 end
-                if map.auto_select_sub_zone and map.auto_select_sub_zone(zone) then
-                    sub_zone_target = map.auto_select_sub_zone(zone)
+                local specified = {zone = zone_target, subzone = sub_zone_target}
+                if map.auto_select_sub_zone and map.auto_select_sub_zone(zone, specified) then
+                    sub_zone_target = map.auto_select_sub_zone(zone, specified)
                 end
                 do_warp(key, zone_target, sub_zone_target)
                 return
@@ -699,23 +754,224 @@ local function handle_warp(warp, args, fast_retry, retries_remaining)
 end
 
 local function received_warp_command(cmd, args)
+    if not timing.warp_cmd_time then
+        timing.warp_cmd_time = os.clock()
+    end
     if current_activity ~= nil then
         log('Superwarp is currently busy. To cancel the last request try "//sw cancel"')
     else
-        state.debug_stack = T{}
+        if not smartcmd then
+            state.debug_stack = T{}
+        end
         handle_warp(cmd, args)
     end
 end
+---------------------------------------------
+--             [Smart Command]             --
+--  (Automatically pass the appropriate    -- 
+--     sub command with '//sw' only.)      --
+---------------------------------------------
+local function smart_command(best, short_name)
+    local zone_check = windower.ffxi.get_info().zone
+    if best.interaction == 'enter' then
+        if (maps.abyssea.abyssea_zones and maps.abyssea.abyssea_zones:contains(zone_check)) or (maps.escha.escha_zones and maps.escha.escha_zones:contains(zone_check)) then
+            best.interaction = 'exit'
+        elseif best.map_name == 'limbus' and zone_check ~= 33 then
+            best.interaction = 'next'
+        end
+    elseif best.map_name == 'limbus' and best.interaction ~= 'exit' then
+        best.interaction = 'next'
+    elseif best.map_name == 'sortie' then
+        if best.npc.name:find('Device', 1, true) then
+            best.interaction = 'warp'
+        elseif best.npc.name:find('Bitzer', 1, true) or best.npc.name:find('Gadget', 1, true) then
+            best.interaction = 'port'
+        end
+    elseif best.map_name == 'portals' then
+        if zone_check == 50 then
+            best.interaction = 'assault'
+        else
+            best.interaction = 'return'
+        end
+    elseif best.map_name == 'odyssey' and best.interaction == 'port' and (zone_check == 247 or zone_check == 248) then
+        best.interaction = 'warp'
+    elseif best.map_name == 'walkofechoes' and best.interaction == 'zone' and best.npc.name:find("#", 1, true) then
+        best.interaction = 'enter'
+    elseif best.map_name == 'campaign' and best.interaction == 'port' then
+        if maps.abyssea.target_ids:contains(best.npc.id) then
+            short_name = 'ab'
+            best.interaction = 'enter'
+        end
+    end
+    return best.interaction, short_name
+end
 
+local last_cache = {
+    zone = nil,
+    map_name = nil,
+    interaction = nil,
+}
+local function magic_map()
+    local best = {
+        map_name = nil,
+        interaction = nil,
+        distance = nil,
+        npc = nil,
+    }
+    local zone_check = windower.ffxi.get_info().zone
+    local max_dist = 36
+
+    -- eliminate overhead if possible
+    if last_cache.zone == zone_check
+        and last_cache.map_name
+        and maps[last_cache.map_name]
+    then
+        local map = maps[last_cache.map_name]
+
+        if map.zone_npc_list and map.npc_names then
+            local warp_zones = not map.all_warp_zones
+                or (map.all_warp_zones and map.all_warp_zones:contains(zone_check))
+
+            if warp_zones then
+                -- just create an order to run through with ipairs with the one last_cache is holding checked first
+                local interaction_order = {}
+
+                if last_cache.interaction then
+                    table.insert(interaction_order, last_cache.interaction)
+                end
+
+                for interaction_type, _ in pairs(map.npc_names) do
+                    if interaction_type ~= last_cache.interaction then
+                        table.insert(interaction_order, interaction_type)
+                    end
+                end
+
+                for _, interaction_type in ipairs(interaction_order) do
+                    local npc_list = map.zone_npc_list(interaction_type)
+
+                    for index, npc_data in pairs(npc_list) do
+                        local npc = windower.ffxi.get_mob_by_index(index)
+
+                        if npc and npc.valid_target then
+                            if not best.distance or npc.distance < best.distance then
+                                best.map_name = last_cache.map_name
+                                best.interaction = interaction_type
+                                best.distance = npc.distance
+                                best.npc = npc
+                            end
+                        end
+                    end
+                    -- if within 6 yalms our work is done
+                    if best.npc and best.distance and best.distance < max_dist then
+                        last_cache.zone = zone_check
+                        last_cache.map_name = best.map_name
+                        last_cache.interaction = best.interaction
+                        return best
+                    end
+                end
+            end
+        end
+    end
+
+    --   full scan if cache doesn't do the trick
+    for map_name, map in pairs(maps) do
+        if map.zone_npc_list and map.npc_names then
+            local warp_zones = not map.all_warp_zones
+                or (map.all_warp_zones and map.all_warp_zones:contains(zone_check))
+
+            if warp_zones then
+                for interaction_type, _ in pairs(map.npc_names) do
+                    local npc_list = map.zone_npc_list(interaction_type)
+
+                    for index, npc_data in pairs(npc_list) do
+                        local npc = windower.ffxi.get_mob_by_index(index)
+
+                        if npc and npc.valid_target then
+                            if not best.distance or npc.distance < best.distance then
+                                best.map_name = map_name
+                                best.interaction = interaction_type
+                                best.distance = npc.distance
+                                best.npc = npc
+                            end
+
+                            -- if within 6 yalms our work is done
+                            if best.distance and best.distance < max_dist then
+                                last_cache.zone = zone_check
+                                last_cache.map_name = best.map_name
+                                last_cache.interaction = best.interaction
+                                return best
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if best.map_name then
+        last_cache.zone = zone_check
+        last_cache.map_name = best.map_name
+        last_cache.interaction = best.interaction
+    end
+
+    return best
+end
+---------------------------------------------
+--            [The Superwarp™]             --
+---------------------------------------------
+local function the_superwarp(genArgs, dispatcher, retries)
+
+    if retries == nil then
+        state.loop_count = 4
+    else
+        state.loop_count = retries
+    end
+
+    local result = magic_map()
+    if not result.map_name then
+        if state.loop_count > 0 then
+            log('Searching for warp NPCs...')
+            state.loop_count = state.loop_count - 1
+            the_superwarp:schedule(3, genArgs, dispatcher, state.loop_count)
+        else
+            log('No warp NPCs nearby.')
+        end
+        return
+    end
+    state.debug_stack = T{}
+    debug('Using '..result.npc.name..' for '..result.map_name..'.')
+    state.loop_count = nil
+    local map = maps[result.map_name]
+
+    local short_name
+    if type(map.short_name) == 'table' then
+        short_name = map.short_name[1]
+    else
+        short_name = map.short_name
+    end
+    for i,v in pairs(genArgs) do genArgs[i]=windower.convert_auto_trans(genArgs[i]) end
+    if genArgs:length() == 0 then
+        local smart_cmd
+        smart_cmd, short_name = smart_command(result, short_name)
+        if smart_cmd ~= 'warp' and short_name ~= 'hp' then
+            debug('No sub-command provided, using '..smart_cmd..'.')
+            genArgs:append(smart_cmd)
+        end
+    end
+    if dispatcher then genArgs:insert(1, dispatcher) end
+    smartcmd = true
+    received_warp_command(short_name, genArgs)
+end
 
 windower.register_event('addon command', function(...)
     local args = T{...}
+    local genArgs = args:copy()
     local cmd = args[1]
     args:remove(1)
     for i,v in pairs(args) do args[i]=windower.convert_auto_trans(args[i]) end
     local item = table.concat(args," "):lower()
 
-    if warp_list:contains(cmd:lower()) then
+    if cmd and warp_list:contains(cmd:lower()) and args[1] then
         received_warp_command(cmd, args)
     elseif cmd == 'cancel' then
         reset()
@@ -738,8 +994,10 @@ windower.register_event('addon command', function(...)
                 log(m)
             end
         end
-    else
-        windower.add_to_chat(207,'\n| Superwarp |\nUse [all/a/@all/party/p] after the command prefix and before the destination to warp all characters or all party/alliance members. (//li p next)\n*If a command prefix is in use by another addon, use sw first (//sw li next), otherwise omit.\nYou may still use [warp] if you learned to include it or still have macros written this way. (sw hp warp eastern adoulin 1) (Legacy support)\n-----------------------------')
+    elseif cmd == 'help' then
+        windower.add_to_chat(207,'\n| READ ME |\n[New!] You may now use "//sw" or "/console sw" for all maps with no extra command prefix. i.e. //sw port, or //sw rab to go to Rabao #2')
+        windower.add_to_chat(207,'[New!] Superwarp (smartcommand) - You may now use just //sw with no command for all warps that do not require a destination to be specified. i.e. enter and exit commands for abyssea, escha zones and apollyon, domain invasion enter, next command in limbus, port in odyssey and sortie, runic portal assault and return, campaign npcs return and Cavernous Maw port, all 4 Walk Of Echoes commands. It can also be used to go to the default destination in cases that call for specification. "//sw p" to use the smart command with all party members, or "a" for all. Use with confidence. Layers of failsafes are in place.')
+        windower.add_to_chat(207,'\nUse [all/a/@all/party/p] after the command prefix and before the destination to warp all characters or all party/alliance members. (//li p next)\nYou may still use [warp] if you learned to include it or still have macros written this way. (sw hp warp eastern adoulin 1) (Legacy support)\n-----------------------------')
         local keys = {}
         for key in pairs(maps) do
             table.insert(keys, key)
@@ -751,8 +1009,39 @@ windower.register_event('addon command', function(...)
             local map = maps[key]
             windower.add_to_chat(207,map.help_text)
         end
-        windower.add_to_chat(207,'| Superwarp |\nUse [all/a/@all/party/p] after the command prefix and before the destination to warp all characters or all party/alliance members. (//li p next)\n*If a command prefix is in use by another addon, use sw first (//sw li next), otherwise omit.\nYou may still use [warp] if you learned to include it or still have macros written this way. (sw hp warp eastern adoulin 1) (Legacy support)\n-----------------------------')
-        windower.add_to_chat(207,'sw cancel -- Cancels pending warp command.\nsw reset -- Attemps to clear menu lock.')
+        windower.add_to_chat(207,'| Superwarp |\nsw cancel -- Cancels pending warp command.\nsw reset -- Attempts to clear menu lock.\nsw menu - Toggle clickable warp destination menu.\n-----------------------------')
+        windower.add_to_chat(207,'Use [all/a/@all/party/p] after the command prefix and before the destination to warp all characters or all party/alliance members. (//li p next)\nYou may still use [warp] if you learned to include it or still have macros written this way. (sw hp warp eastern adoulin 1) (Legacy support)\n\n[New!] You may now use "//sw" or "/console sw" for all maps with no extra command prefix. i.e. //sw port , or //sw rab to go to Rabao #2')
+        windower.add_to_chat(207,'[New!] Superwarp (smartcommand) - You may now use just //sw with no command for all warps that do not require a destination to be specified. i.e. enter and exit commands for abyssea, escha zones and apollyon, domain invasion enter, next command in limbus, port in odyssey and sortie, runic portal assault and return, campaign npcs return and Cavernous Maw port, all 4 Walk Of Echoes commands. It can also be used to go to the default destination in cases that call for specification. "//sw p" to use the smart command with all party members, or "a" for all. Use with confidence. Layers of failsafes are in place.')
+    else
+        timing.warp_cmd_time = os.clock()
+        if smartcheck then
+            local all, party
+            if genArgs[1] and genArgs[1]:lower() == 'warp' or (genArgs[1] and genArgs[1]:lower() == 'w') then 
+                genArgs:remove(1) 
+            end
+            if genArgs:length() ~= 0 then
+                all = S{'all','a','@all'}:contains(genArgs[1]:lower())
+                party = S{'party','p','@party'}:contains(genArgs[1]:lower())
+                if all then
+                    local _zs = S{275, 133, 189}
+                    local zone_exclusion = windower.ffxi.get_info().zone
+                    if _zs:contains(zone_exclusion) and not genArgs[2] then
+                        all = nil
+                        genArgs[1] = '#a'
+                    else
+                        genArgs:remove(1)
+                    end
+                elseif party then 
+                    genArgs:remove(1)
+                end
+            end
+            local dispatcher
+            if party then dispatcher = 'p' elseif all then dispatcher = 'a' end
+            the_superwarp(genArgs,dispatcher)
+        else
+            log('Please update all of superwarp\'s files for version 1.1.')
+            return
+        end
     end
 end)
 
@@ -854,7 +1143,6 @@ local function perform_next_action()
         end
     end
 end
-
 -- Handle menu interraction. 
 windower.register_event('incoming chunk',function(id,data,modified,injected,blocked)
     if current_activity and current_activity.action_queue and current_activity.running then
@@ -867,7 +1155,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
         end
     end
     ----
-    if id == 0x05C and current_activity and current_activity.type == 'campaign' then
+    if id == 0x05C and current_activity and current_activity.type == 'campaign' and not current_activity.sub_cmd then
         local envelope = packets.parse('incoming', data)
         local campparam1 = data:unpack('I', 9)
         local campnpc = data:unpack('I', 5)
@@ -899,7 +1187,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
                 return
             end
         else
-            if campnpc ~= 0 then
+            if campnpc and campnpc ~= 0 then
                 local permission = envelope["Menu Parameters"]:unpack('I', 1)
                 if bit.band(permission, current_activity.activity_settings.permission) ~= 0 then
                     debug("Destination is unlocked...")
@@ -942,9 +1230,9 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
         
         if current_activity and not current_activity.running then
             current_activity.caught_poke = true
-            poke_response_time = os.clock()
-            debug("Response time: "..string.format("%.2f", poke_response_time - poke_time).." seconds")
-            poke_response_time = nil
+            timing.poke_response_time = os.clock()
+            debug("Response time: "..string.format("%.2f", timing.poke_response_time - timing.poke_time).." seconds")
+            timing.poke_response_time = nil
             local zone = windower.ffxi.get_info()['zone']
             local map = maps[current_activity.type]
 
@@ -993,7 +1281,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
             end
 
             local validation_message = nil
-            if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity, p) end
+            if map.validate then validation_message = map.validate(p["Menu ID"], zone, current_activity, p, settings) end
             if validation_message ~= nil then
                 log("WARNING: "..validation_message.." Canceling action.")
                 last_activity = current_activity
@@ -1041,7 +1329,13 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
     end
 end)
 windower.register_event('zone change',function(id,data,modified,injected,blocked)
-	state.client_lock = false
+    current_zone = windower.ffxi.get_info().zone
+    if current_zone == 37 or current_zone == 38 then
+        in_limbus_zone = true
+    else
+        in_limbus_zone = false
+    end
+    state.client_lock = false
     if expecting_zone then 
         handle_on_arrival:schedule(math.max(0, settings.command_delay_on_arrival))
     end
@@ -1056,7 +1350,47 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
         --local p = packets.parse('outgoing', data)
         --local t = windower.ffxi.get_mob_by_index(p['Target Index'])
         --debug("out 0x05C: "..t.name..", menu:"..tostring(p['Menu ID'])..", zone:"..tostring(p['Zone'])..", x:"..string.format('%0.3f', p['X'])..", z:"..string.format('%0.3f', p['Z'])..", y:"..string.format('%0.3f', p['Y'])..", _u1:"..tostring(p['_unknown1'])..", _u3:"..tostring(p['_unknown3']))
-    elseif id == 0x05B then
+    elseif id == 0x05B and in_limbus_zone then  -- only look at these packets when we're in limbus
+        local p = packets.parse('outgoing', data)
+        if p["Target"] >= 16929653 and p["Target"] <= 16929656 then
+            if p['Automated Message'] == true then --Filter x2 calls and/or interrupts
+                if current_zone == 37 then
+                    local zone = 'temenos'
+                    local tower = nil
+                    if p["Target"] == 16929653 then
+                        tower = "N7"
+                    elseif p["Target"] == 16929654 then
+                        tower = "W7"
+                    elseif p["Target"] == 16929655 then
+                        tower = "E7"
+                    elseif p["Target"] == 16929656 then
+                        tower = "C4"
+                    end
+                    if tower then
+                        add_table_entry(zone, tower)
+                    end
+                end
+            end
+        elseif p["Target"] >= 16933556 and p["Target"] <= 16933559 then
+            if p['Automated Message'] == true then --Filter x2 calls and/or interrupts
+                if current_zone == 38 then
+                    local zone = 'apollyon'
+                    local tower = nil
+                    if p["Target"] == 16933556 then
+                        tower = "NW5"
+                    elseif p["Target"] == 16933557 then
+                        tower = "SW4"
+                    elseif p["Target"] == 16933558 then
+                        tower = "NE5"
+                    elseif p["Target"] == 16933559 then
+                        tower = "SE4"
+                    end
+                    if tower then
+                        add_table_entry(zone, tower)
+                    end
+                end
+            end
+        end
         --print(data:unpack('b7b4b3b7b8', 9))
         --local p = packets.parse('outgoing', data)
         --local t = windower.ffxi.get_mob_by_index(p['Target Index'])
@@ -1064,7 +1398,14 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
     end
 end)
 windower.register_event('load', function()
-   windower.add_to_chat(207,'//sw help to list all commands.')
+   windower.add_to_chat(207,'\n Now use sw in place of  hp, wp, sg, un, so, li, ew, ab etc -   for all warp commands!!\n The new smart-command is "//sw" by itself. It autohandles all warp scenarios where a destination need not be specified. i.e. so port or ab enter. It works as any subcommand for any map.')
+   windower.add_to_chat(207,' All legacy functionality is unchanged.')
+   windower.add_to_chat(207,' sw help to list all information.')
+end)
+windower.register_event('login', function()
+    player_info = windower.ffxi.get_player()
+    if not player_info then return end
+    settings = config.load(('data/settings_%s.xml'):format(player_info.name),defaults)
 end)
 windower.register_event('unload', function()
 	if windower.ffxi.get_info().logged_in then

@@ -1,5 +1,6 @@
 local entry_zones = S{267}
 local sortie_zones = S{275, 133, 189}
+local zone_tag = windower.ffxi.get_info().zone
 local npc_names = T{
     port = S{'Diaphanous Bitzer','Diaphanous Bitzer #A','Diaphanous Bitzer #B','Diaphanous Bitzer #C','Diaphanous Bitzer #D','Diaphanous Gadget'},
     warp = S{'Diaphanous Device'},
@@ -7,35 +8,35 @@ local npc_names = T{
     hard = S{'Diaphanous Gadget #?'},
     repop = S{'Diaphanous Device','Diaphanous Bitzer'},
 }
---///////////////////////////////////////////////////////////////////---Destinations---/////////////////////////////////////////////////////////////////////////////////////////////////////////////-
-   device_  = {display_name = 'Device' ,         menu_id = 1000, index = 817, zone = zone_tag,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1}
-   device_a = {display_name = 'Device #A',       menu_id = 1001, index = 818, zone = zone_tag,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1}
-   device_b = {display_name = 'Device #B',       menu_id = 1002, index = 819, zone = zone_tag,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1}
-   device_c = {display_name = 'Device #C',       menu_id = 1003, index = 820, zone = zone_tag,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1}
-   device_d = {display_name = 'Device #D',       menu_id = 1004, index = 821, zone = zone_tag,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}
-   gadget_a = {display_name = 'Gadget #A',       menu_id = 1005, index = 822, zone = zone_tag,npc = 21001014, offset = 1, x = -900.00006103516, y = 416.00003051758, z = -200.00001525879 , h = 63, unknown1 = 1, unknown2 = 1}
-   gadget_b = {display_name = 'Gadget #B',       menu_id = 1006, index = 823, zone = zone_tag,npc = 21001015, offset = 2, x = -24.000001907349, y = 420.00003051758, z = -200.00001525879 , h = 127, unknown1 = 2, unknown2 = 1}
-   gadget_c = {display_name = 'Gadget #C',       menu_id = 1007, index = 824, zone = zone_tag,npc = 21001016, offset = 3, x = -20, y = -456.00003051758, z = -200.00001525879 , h = 191, unknown1 = 3, unknown2 = 1}
-   gadget_d = {display_name = 'Gadget #D',       menu_id = 1008, index = 825, zone = zone_tag,npc = 21001017, offset = 4, x = -896.00006103516, y = -460.00003051758, z = -200.00001525879 , h = 0, unknown1 = 4, unknown2 = 1}
-   gadget_  = {display_name = 'Gadget',          menu_id = 1009, index = 826, zone = zone_tag,npc = 21001018, offset = 0, x = 624, y = -620, z = 100.00000762939 , h = 0, unknown1 = 1, unknown2 = 1}
-   gadget_e = {display_name = 'Gadget #E',       menu_id = 1018, index = 827, zone = zone_tag,npc = 21001019, offset = 5, x = 280, y = 276, z = 70 , h = 63, unknown1 = 5, unknown2 = 1}
-   gadget_f = {display_name = 'Gadget #F',       menu_id = 1019, index = 828, zone = zone_tag,npc = 21001020, offset = 6, x = 876.00006103516, y = 280, z = 70 , h = 127, unknown1 = 6, unknown2 = 1}
-   gadget_g = {display_name = 'Gadget #G',       menu_id = 1020, index = 829, zone = zone_tag,npc = 21001021, offset = 7, x = 880.00006103516, y = -316, z = 70 , h = 191, unknown1 = 7, unknown2 = 1}
-   gadget_h = {display_name = 'Gadget #H',       menu_id = 1021, index = 830, zone = zone_tag,npc = 21001022, offset = 8, x = 284, z = 70, y = -320.00,  h = 0, unknown1 = 8, unknown2 = 1}
-   gadget_q = {display_name = 'Gadget #?',       menu_id = 1022, index = 831, zone = zone_tag,npc = 21001023, offset = 9, x = 186.50001525879, z = 60.000003814697, y = -20,  h = 255, unknown1 = 1, unknown2 = 1}
-   aminon_  = {display_name = 'Aminon (Normal)', menu_id = 1023, index = 832, zone = zone_tag,npc = 21001024, offset = 10,x = 184.00001525879, z = 100.00000762939, y = -660.00006103516,  h = 0, unknown1 = 1, unknown2 = 1}
-   aminon_h = {display_name = 'Aminon (Hard)',   menu_id = 1023, index = 832, zone = zone_tag,npc = 21001024, offset = 10,x = 184.00001525879, z = 100.00000762939, y = -660.00006103516,  h = 0, unknown1 = 2, unknown2 = 1}
-   bitzer_a = {display_name = 'Bitzer #A',       menu_id = 1010, index = 833, zone = zone_tag,npc = 21001025, offset = 1, x = -460.00003051758, z = -140, y = 35.5,  h = 191, unknown1 = 5, unknown2 = 1}
-   bitzer_b = {display_name = 'Bitzer #B',       menu_id = 1011, index = 834, zone = zone_tag,npc = 21001026, offset = 2, x = -404.50003051758, z = -140, y = -20,  h = 0, unknown1 = 6, unknown2 = 1}
-   bitzer_c = {display_name = 'Bitzer #C',       menu_id = 1012, index = 835, zone = zone_tag,npc = 21001027, offset = 3, x = -460.00003051758, y = -75.5, z = -140 , h = 63, unknown1 = 7, unknown2 = 1}
-   bitzer_d = {display_name = 'Bitzer #D',       menu_id = 1013, index = 836, zone = zone_tag,npc = 21001028, offset = 4, x = -515.5, z = -140, y = -20,  h = 127, unknown1 = 8, unknown2 = 1}
-   bitzer_e = {display_name = 'Bitzer #E',       menu_id = 1014, index = 837, zone = zone_tag,npc = 21001029, offset = 5, x = 580, y = 31.500001907349, z = 100.00000762939 , h = 191, unknown1 = 1, unknown2 = 1}
-   bitzer_f = {display_name = 'Bitzer #F',       menu_id = 1015, index = 838, zone = zone_tag,npc = 21001030, offset = 6, x = 631.5, z = 100.00000762939, y = -20,  h = 0, unknown1 = 2, unknown2 = 1}
-   bitzer_g = {display_name = 'Bitzer #G',       menu_id = 1016, index = 839, zone = zone_tag,npc = 21001031, offset = 7, x = 580, y = -71.5, z = 100.00000762939 , h = 63, unknown1 = 3, unknown2 = 1}
-   bitzer_h = {display_name = 'Bitzer #H',       menu_id = 1017, index = 840, zone = zone_tag,npc = 21001032, offset = 8, x = 528.5, z = 100.00000762939, y = -20,  h = 127, unknown1 = 4, unknown2 = 1}
---////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-
+local destination_array = {
+        device_  = {display_name = 'Device' ,         menu_id = 1000, index = 817, zone = zone_tag,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
+        device_a = {display_name = 'Device #A',       menu_id = 1001, index = 818, zone = zone_tag,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
+        device_b = {display_name = 'Device #B',       menu_id = 1002, index = 819, zone = zone_tag,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
+        device_c = {display_name = 'Device #C',       menu_id = 1003, index = 820, zone = zone_tag,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
+        device_d = {display_name = 'Device #D',       menu_id = 1004, index = 821, zone = zone_tag,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1},
+        gadget_a = {display_name = 'Gadget #A',       menu_id = 1005, index = 822, zone = zone_tag,npc = 21001014, offset = 1, x = -900.00006103516, y = 416.00003051758, z = -200.00001525879 , h = 63, unknown1 = 1, unknown2 = 1},
+        gadget_b = {display_name = 'Gadget #B',       menu_id = 1006, index = 823, zone = zone_tag,npc = 21001015, offset = 2, x = -24.000001907349, y = 420.00003051758, z = -200.00001525879 , h = 127, unknown1 = 2, unknown2 = 1},
+        gadget_c = {display_name = 'Gadget #C',       menu_id = 1007, index = 824, zone = zone_tag,npc = 21001016, offset = 3, x = -20, y = -456.00003051758, z = -200.00001525879 , h = 191, unknown1 = 3, unknown2 = 1},
+        gadget_d = {display_name = 'Gadget #D',       menu_id = 1008, index = 825, zone = zone_tag,npc = 21001017, offset = 4, x = -896.00006103516, y = -460.00003051758, z = -200.00001525879 , h = 0, unknown1 = 4, unknown2 = 1},
+        gadget_  = {display_name = 'Gadget',          menu_id = 1009, index = 826, zone = zone_tag,npc = 21001018, offset = 0, x = 624, y = -620, z = 100.00000762939 , h = 0, unknown1 = 1, unknown2 = 1},
+        gadget_e = {display_name = 'Gadget #E',       menu_id = 1018, index = 827, zone = zone_tag,npc = 21001019, offset = 5, x = 280, y = 276, z = 70 , h = 63, unknown1 = 5, unknown2 = 1},
+        gadget_f = {display_name = 'Gadget #F',       menu_id = 1019, index = 828, zone = zone_tag,npc = 21001020, offset = 6, x = 876.00006103516, y = 280, z = 70 , h = 127, unknown1 = 6, unknown2 = 1},
+        gadget_g = {display_name = 'Gadget #G',       menu_id = 1020, index = 829, zone = zone_tag,npc = 21001021, offset = 7, x = 880.00006103516, y = -316, z = 70 , h = 191, unknown1 = 7, unknown2 = 1},
+        gadget_h = {display_name = 'Gadget #H',       menu_id = 1021, index = 830, zone = zone_tag,npc = 21001022, offset = 8, x = 284, z = 70, y = -320.00,  h = 0, unknown1 = 8, unknown2 = 1},
+        gadget_q = {display_name = 'Gadget #?',       menu_id = 1022, index = 831, zone = zone_tag,npc = 21001023, offset = 9, x = 186.50001525879, z = 60.000003814697, y = -20,  h = 255, unknown1 = 1, unknown2 = 1},
+        aminon_  = {display_name = 'Aminon (Normal)', menu_id = 1023, index = 832, zone = zone_tag,npc = 21001024, offset = 10,x = 184.00001525879, z = 100.00000762939, y = -660.00006103516,  h = 0, unknown1 = 1, unknown2 = 1},
+        aminon_h = {display_name = 'Aminon (Hard)',   menu_id = 1023, index = 832, zone = zone_tag,npc = 21001024, offset = 10,x = 184.00001525879, z = 100.00000762939, y = -660.00006103516,  h = 0, unknown1 = 2, unknown2 = 1},
+        bitzer_a = {display_name = 'Bitzer #A',       menu_id = 1010, index = 833, zone = zone_tag,npc = 21001025, offset = 1, x = -460.00003051758, z = -140, y = 35.5,  h = 191, unknown1 = 5, unknown2 = 1},
+        bitzer_b = {display_name = 'Bitzer #B',       menu_id = 1011, index = 834, zone = zone_tag,npc = 21001026, offset = 2, x = -404.50003051758, z = -140, y = -20,  h = 0, unknown1 = 6, unknown2 = 1},
+        bitzer_c = {display_name = 'Bitzer #C',       menu_id = 1012, index = 835, zone = zone_tag,npc = 21001027, offset = 3, x = -460.00003051758, y = -75.5, z = -140 , h = 63, unknown1 = 7, unknown2 = 1},
+        bitzer_d = {display_name = 'Bitzer #D',       menu_id = 1013, index = 836, zone = zone_tag,npc = 21001028, offset = 4, x = -515.5, z = -140, y = -20,  h = 127, unknown1 = 8, unknown2 = 1},
+        bitzer_e = {display_name = 'Bitzer #E',       menu_id = 1014, index = 837, zone = zone_tag,npc = 21001029, offset = 5, x = 580, y = 31.500001907349, z = 100.00000762939 , h = 191, unknown1 = 1, unknown2 = 1},
+        bitzer_f = {display_name = 'Bitzer #F',       menu_id = 1015, index = 838, zone = zone_tag,npc = 21001030, offset = 6, x = 631.5, z = 100.00000762939, y = -20,  h = 0, unknown1 = 2, unknown2 = 1},
+        bitzer_g = {display_name = 'Bitzer #G',       menu_id = 1016, index = 839, zone = zone_tag,npc = 21001031, offset = 7, x = 580, y = -71.5, z = 100.00000762939 , h = 63, unknown1 = 3, unknown2 = 1},
+        bitzer_h = {display_name = 'Bitzer #H',       menu_id = 1017, index = 840, zone = zone_tag,npc = 21001032, offset = 8, x = 528.5, z = 100.00000762939, y = -20,  h = 127, unknown1 = 4, unknown2 = 1},
+}
 
-gadget_menu_identification = T {
+local gadget_menu_identification = T {
     ["Gadget A"] = 1005,
     ["Gadget B"] = 1006,
     ["Gadget C"] = 1007,
@@ -46,7 +47,7 @@ gadget_menu_identification = T {
     ["Gadget G"] = 1020,
     ["Gadget H"] = 1021
 }
-bitzer_menu_identification = T {
+local bitzer_menu_identification = T {
     ["Bitzer A"] = 1010,
     ["Bitzer B"] = 1011,
     ["Bitzer C"] = 1012,
@@ -59,9 +60,9 @@ bitzer_menu_identification = T {
 
 -- Categorize NPCs to prevent warping between different NPC types
 
-bitzer_menu_ids = T {1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017}
-gadget_menu_ids = T {1005, 1006, 1007, 1008, 1009, 1018, 1019, 1020, 1021}
-device_menu_ids = T {1000, 1001, 1002, 1003, 1004}
+local bitzer_menu_ids = T {1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017}
+local gadget_menu_ids = T {1005, 1006, 1007, 1008, 1009, 1018, 1019, 1020, 1021}
+local device_menu_ids = T {1000, 1001, 1002, 1003, 1004}
 
 --------------------------------------------------------------------------------
 
@@ -134,7 +135,7 @@ local find_bitzer_by_id = function(id)
 end
 
 return T {
-    short_name = {'so','se','sor'},
+    short_name = {'so','se'},
     long_name = 'Sortie',
     move_in_zone = true,
     npc_plural = 'Diaphanous Objects',
@@ -171,28 +172,28 @@ return T {
         --------------------------------------------------------------------------------------------------------------------------------------------
     if current_activity.sub_cmd ~= 'repop' then
         if menu_id == 1010 then
-            destination = bitzer_e
+            destination = destination_array.bitzer_e
         elseif menu_id == 1011 then
-            destination = bitzer_f
+            destination = destination_array.bitzer_f
         elseif menu_id == 1012 then
-            destination = bitzer_g
+            destination = destination_array.bitzer_g
         elseif menu_id == 1013 then
-            destination = bitzer_h
+            destination = destination_array.bitzer_h
         elseif menu_id == 1014 then
-            destination = bitzer_a
+            destination = destination_array.bitzer_a
         elseif menu_id == 1015 then
-            destination = bitzer_b
+            destination = destination_array.bitzer_b
         elseif menu_id == 1016 then
-            destination = bitzer_c
+            destination = destination_array.bitzer_c
         elseif menu_id == 1017 then
-            destination = bitzer_d
+            destination = destination_array.bitzer_d
             -- Gadgets all warp to 'Gadget'
         elseif (menu_id >= 1005 and menu_id <= 1008) or (menu_id >= 1018 and menu_id <= 1021) then
-            destination = gadget_
+            destination = destination_array.gadget_
         elseif menu_id == 1022 and (current_activity.sub_cmd == 'port' and bitcheckinator == 0) or (current_activity.sub_cmd == 'normal' and (bitcheckinator == 1 or bitcheckinator == 0)) or (current_activity.sub_cmd == 'hard' and bitcheckinator == 0) then
-            destination = aminon_
+            destination = destination_array.aminon_
         elseif menu_id == 1022 and (current_activity.sub_cmd == 'port' and bitcheckinator == 2) or (current_activity.sub_cmd == 'hard' and (bitcheckinator == 1 or bitcheckinator == 2)) or (current_activity.sub_cmd == 'normal' and bitcheckinator == 2) then
-            destination = aminon_h
+            destination = destination_array.aminon_h
         end
 		if menu_id == 1022 and bitcheckinator == 1 and (current_activity.sub_cmd ~= 'normal' and current_activity.sub_cmd ~= 'hard') then
 		    return 'Difficulty not set - Use //so normal or //so hard ; alternatively, set the Aminon difficulty before using //so port.'
@@ -204,28 +205,28 @@ return T {
         if menu_id == 1009 and origination ~= nil then
             -- Warp the player back to the gadget they came from
             if origination == 1 then
-                destination = gadget_a
+                destination = destination_array.gadget_a
             elseif origination == 2 then
-                destination = gadget_b
+                destination = destination_array.gadget_b
             elseif origination == 3 then
-                destination = gadget_c
+                destination = destination_array.gadget_c
             elseif origination == 4 then
-                destination = gadget_d
+                destination = destination_array.gadget_d
             elseif origination == 10 then
-                destination = gadget_e
+                destination = destination_array.gadget_e
             elseif origination == 11 then
-                destination = gadget_f
+                destination = destination_array.gadget_f
             elseif origination == 12 then
-                destination = gadget_g
+                destination = destination_array.gadget_g
             elseif origination == 13 then
-                destination = gadget_h
+                destination = destination_array.gadget_h
 			end
         elseif menu_id == 1009 and origination == nil then
             return 'Superwarp does not know where to send you, debacle averted; Warp out manually.'  -- I can't imagine a scenario where this could occur but handled it anyway.
         end
         if menu_id == 1023 and origination ~= nil then
             if origination == 14 then
-                destination = gadget_q
+                destination = destination_array.gadget_q
 		    end
 		end
 		if current_activity.sub_cmd ~= 'repop' then
@@ -342,17 +343,24 @@ return T {
     end
         return nil
     end,
-    help_text = "| Sortie |\n Command options [so, se, sor]\n- so s/a/b/c/d (# now optional i.e. [#b]) OR  0/1/2/3/4 -- warp to a designated Device in Sortie. (Use only with devices)\n- so port -- warp to the other side of any bitzer or gadget. \n- so normal -- set Aminon difficulty to normal and warp into his chamber. \n- so hard -- set Aminon difficulty to hard and warp into his chamber. \n- so repop -- Rematerialize monsters at a device or downstairs bitzer. \n-----------------------------",
+    help_text = "| Sortie |\n Command options [so, se]\n- so s/a/b/c/d (# now optional i.e. [#b]) OR  0/1/2/3/4 -- warp to a designated Device in Sortie. (Use only with devices)\n- so port -- warp to the other side of any bitzer or gadget. \n- so normal -- set Aminon difficulty to normal and warp into his chamber. \n- so hard -- set Aminon difficulty to hard and warp into his chamber. \n- so repop -- Rematerialize monsters at a device or downstairs bitzer. \n-----------------------------",
     sub_zone_targets = S {'0', '1', '2', '3', '4','#a','#b','#c','#d', 's','a', 'b', 'c', 'd'},
     auto_select_zone = function(zone)
         if zone == 275 then
-            return 'Outer Ra\'Kaznar [U1]'
+            return 'Outer Ra\'Kaznar'
         end
         if zone == 133 then
-            return 'Outer Ra\'Kaznar [U2]'
+            return 'Outer Ra\'Kaznar'
         end
         if zone == 189 then
-            return 'Outer Ra\'Kaznar [U3]'
+            return 'Outer Ra\'Kaznar'
+        end
+    end,
+    auto_select_sub_zone = function(zone, specified)
+        if not specified.subzone then
+            return "S"
+        else
+            return nil
         end
     end,
     build_warp_packets = function(current_activity, zone, p, settings)
@@ -459,47 +467,47 @@ return T {
             end
             if (menu >= 1010 and menu <= 1017) then
                 if menu == 1010 then
-                    destination = bitzer_e
+                    destination = destination_array.bitzer_e
                 elseif menu == 1011 then
-                    destination = bitzer_f
+                    destination = destination_array.bitzer_f
                 elseif menu == 1012 then
-                    destination = bitzer_g
+                    destination = destination_array.bitzer_g
                 elseif menu == 1013 then
-                    destination = bitzer_h
+                    destination = destination_array.bitzer_h
                 elseif menu == 1014 then
-                    destination = bitzer_a
+                    destination = destination_array.bitzer_a
                 elseif menu == 1015 then
-                    destination = bitzer_b
+                    destination = destination_array.bitzer_b
                 elseif menu == 1016 then
-                    destination = bitzer_c
+                    destination = destination_array.bitzer_c
                 elseif menu == 1017 then
-                    destination = bitzer_d
+                    destination = destination_array.bitzer_d
                 end
             end
 
             -- Gadgets all warp to 'Gadget'
             if (menu >= 1005 and menu <= 1008) or (menu >= 1018 and menu <= 1021) then
-                destination = gadget_
+                destination = destination_array.gadget_
             end
 			
 			 if menu == 1009 and origination then
                 -- Warp the player back to the specific gadget they came from
                  if origination == 1 then
-                     destination = gadget_a
+                     destination = destination_array.gadget_a
                  elseif origination == 2 then
-                     destination = gadget_b
+                     destination = destination_array.gadget_b
                  elseif origination == 3 then
-                     destination = gadget_c
+                     destination = destination_array.gadget_c
                  elseif origination == 4 then
-                     destination = gadget_d
+                     destination = destination_array.gadget_d
                  elseif origination == 10 then
-                     destination = gadget_e
+                     destination = destination_array.gadget_e
                  elseif origination == 11 then
-                     destination = gadget_f
+                     destination = destination_array.gadget_f
                  elseif origination == 12 then
-                     destination = gadget_g
+                     destination = destination_array.gadget_g
                  elseif origination == 13 then
-                     destination = gadget_h
+                     destination = destination_array.gadget_h
                  end
 			elseif menu == 1009 and origination == nil then
 				log('Not sure where to send you, something went wrong.')
@@ -507,15 +515,15 @@ return T {
 			end
             if menu == 1023 and origination then
                 if origination == 14 then
-                    destination = gadget_q
+                    destination = destination_array.gadget_q
 		        end
 		    end
             --------------------------------------------------------------------------------------
         if menu == 1022 and bitcheckinator == 0 then
-            destination = aminon_
+            destination = destination_array.aminon_
         end
         if menu == 1022 and bitcheckinator == 2 then
-            destination = aminon_h
+            destination = destination_array.aminon_h
         end
 		    --------------------------------------------------------------------------------------
 		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
@@ -642,14 +650,14 @@ return T {
             --------------------------------------------------------------------------------------
         if menu == 1022 then
 		    if bitcheckinator == 0 then
-                destination = aminon_
+                destination = destination_array.aminon_
 			    log('Normal mode has already been set, you can use the port command for the duration of this instance.')
             elseif bitcheckinator == 2 then
 		        log('Hardmode has already been set; you cannot enter normalmode for the duration of this instance and can use the port command.')
-                destination = aminon_h
+                destination = destination_array.aminon_h
             elseif bitcheckinator == 1 then
 		        log('Setting difficulty to normal...')
-                destination = aminon_
+                destination = destination_array.aminon_
 			end
         end
 		    --------------------------------------------------------------------------------------
@@ -754,14 +762,14 @@ return T {
             --------------------------------------------------------------------------------------
         if menu == 1022 then
 		    if bitcheckinator == 0 then
-                destination = aminon_
+                destination = destination_array.aminon_
 			    log('Normalmode has already been set; you cannot enter hardmode for the duration of this instance and can use the port command.')
             elseif bitcheckinator == 2 then
 		        log('Hardmode has already been set, you can use the port command for the duration of this instance..')
-                destination = aminon_h
+                destination = destination_array.aminon_h
             elseif bitcheckinator == 1 then
 		        log('Setting difficulty to hard...')
-                destination = aminon_h
+                destination = destination_array.aminon_h
 			end
         end
 		    --------------------------------------------------------------------------------------
@@ -922,24 +930,43 @@ return T {
 ----------------------------------------------------------
     },
     warpdata = T{
-					--The bitzer and gadget destinations are not handled this way.
-        ['Outer Ra\'Kaznar [U1]'] = T{  
-                 ['0']  = { shortcut = 'S' },
-                 ['A'] =  { shortcut = '1' }, -- This is for the display_name, it shows 1 instead of A when a is input , it is done as a multiple assignment in superwarp and 
-                 ['2'] =  { shortcut = 'B' }, -- resolve_warp() handles this in such a way with these single character keys this is easier fix.
-                 ['3'] =  { shortcut = 'C' },
-                 ['4'] =  { shortcut = 'D' },
-                 ['#A'] = { shortcut = '1' },
-                 ['#B'] = { shortcut = 'B' },
-                 ['#C'] = { shortcut = 'C' },
-                 ['#D'] = { shortcut = 'D' },
+        ['Outer Ra\'Kaznar'] = T{  
+                ['0'] =  { shortcut = 'S' },
+                ['1'] =  { shortcut = 'A' },
+                ['2'] =  { shortcut = 'B' }, 
+                ['3'] =  { shortcut = 'C' },
+                ['4'] =  { shortcut = 'D' },
+                ['#A'] = { shortcut = 'A' },
+                ['#B'] = { shortcut = 'B' },
+                ['#C'] = { shortcut = 'C' },
+                ['#D'] = { shortcut = 'D' },
   --[[Device]]  ['S'] =   { menu_id = 1000, index = 817, zone = 275,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
-  --[[Device A]]['1'] =   { menu_id = 1001, index = 818, zone = 275,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
+  --[[Device A]]['A'] =   { menu_id = 1001, index = 818, zone = 275,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
   --[[Device B]]['B'] =   { menu_id = 1002, index = 819, zone = 275,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
   --[[Device C]]['C'] =   { menu_id = 1003, index = 820, zone = 275,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
   --[[Device D]]['D'] =   { menu_id = 1004, index = 821, zone = 275,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
 		},
-		['Outer Ra\'Kaznar [U2]'] = T{
+        --[[
+		            ['Outer Ra\'Kaznar [U2]'] = T{
+                    ['0']  = { shortcut = 'S' },
+                    ['A'] =  { shortcut = '1' },
+                    ['2'] =  { shortcut = 'B' },
+                    ['3'] =  { shortcut = 'C' },
+                    ['4'] =  { shortcut = 'D' },
+                    ['#A'] = { shortcut = '1' },
+                    ['#B'] = { shortcut = 'B' },
+                    ['#C'] = { shortcut = 'C' },
+                    ['#D'] = { shortcut = 'D' },
+                    ]]
+   --[[Device]]     --['S'] =   { menu_id = 1000, index = 817, zone = 133,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
+   --[[Device A]]   --['1'] =   { menu_id = 1001, index = 818, zone = 133,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
+   --[[Device B]]   --['B'] =   { menu_id = 1002, index = 819, zone = 133,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
+   --[[Device C]]   --['C'] =   { menu_id = 1003, index = 820, zone = 133,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
+   --[[Device D]]   --['D'] =   { menu_id = 1004, index = 821, zone = 133,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
+   
+		},
+    --[[
+		['Outer Ra\'Kaznar [U3]'] = T{    
                  ['0']  = { shortcut = 'S' },
                  ['A'] =  { shortcut = '1' },
                  ['2'] =  { shortcut = 'B' },
@@ -949,28 +976,13 @@ return T {
                  ['#B'] = { shortcut = 'B' },
                  ['#C'] = { shortcut = 'C' },
                  ['#D'] = { shortcut = 'D' },
-   --[[Device]]  ['S'] =   { menu_id = 1000, index = 817, zone = 133,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
-   --[[Device A]]['1'] =   { menu_id = 1001, index = 818, zone = 133,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
-   --[[Device B]]['B'] =   { menu_id = 1002, index = 819, zone = 133,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
-   --[[Device C]]['C'] =   { menu_id = 1003, index = 820, zone = 133,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
-   --[[Device D]]['D'] =   { menu_id = 1004, index = 821, zone = 133,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
-		},
-		['Outer Ra\'Kaznar [U3]'] = T{
-                 
-                 ['0']  = { shortcut = 'S' },
-                 ['A'] =  { shortcut = '1' },
-                 ['2'] =  { shortcut = 'B' },
-                 ['3'] =  { shortcut = 'C' },
-                 ['4'] =  { shortcut = 'D' },
-                 ['#A'] = { shortcut = '1' },
-                 ['#B'] = { shortcut = 'B' },
-                 ['#C'] = { shortcut = 'C' },
-                 ['#D'] = { shortcut = 'D' },
-   --[[Device]]  ['S']  =  { menu_id = 1000, index = 817, zone = 189,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
-   --[[Device A]]['1']  =  { menu_id = 1001, index = 818, zone = 189,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
-   --[[Device B]]['B']  =  { menu_id = 1002, index = 819, zone = 189,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
-   --[[Device C]]['C']  =  { menu_id = 1003, index = 820, zone = 189,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
-   --[[Device D]]['D']  =  { menu_id = 1004, index = 821, zone = 189,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
-		},
-    },
+                 ]]
+   --[[Device]]  --['S']  =  { menu_id = 1000, index = 817, zone = 189,npc = 21001009, offset = 1, x = -836.00006103516, y = -20, z = -178.00001525879 , h = 0, unknown1 = 1 , unknown2 = 1},
+   --[[Device A]]--['1']  =  { menu_id = 1001, index = 818, zone = 189,npc = 21001010, offset = 2, x = -460.00003051758, y = 96.000007629395, z = -150 , h = 63, unknown1 = 2  , unknown2 = 1},
+   --[[Device B]]--['B']  =  { menu_id = 1002, index = 819, zone = 189,npc = 21001011, offset = 3, x = -344.00003051758, y = -20, z = -150 , h = 127, unknown1 = 3 , unknown2 = 1},
+   --[[Device C]]--['C']  =  { menu_id = 1003, index = 820, zone = 189,npc = 21001012, offset = 4, x = -460.00003051758, y = -136, z = -150 , h = 191, unknown1 = 4 , unknown2 = 1},
+   --[[Device D]]--['D']  =  { menu_id = 1004, index = 821, zone = 189,npc = 21001013, offset = 5, x = -576, y = -20, z = -150 , h = 0, unknown1 = 5, unknown2 = 1}, 
+		--},
+        
+    --},
 }

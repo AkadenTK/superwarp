@@ -2,8 +2,25 @@ local npc_names = T{
     warp = S{'Home Point'},
     set = S{'Home Point'},
 }
+-- Which homepoint we go to when we specify a zone, whether in shorthand or longform, and not a sub-zone location. QoL
+-- Others are already the most ideal homepoint for a given zone or there is only one homepoint.
+local default_by_keyword = {
+    aht = "2", -- Assault, Nyzul, Salvage, Survival Guide. i.e. just '//sw aht' will take you to the point of highest interest for that zone.
+    urh = "2", -- Assault, Nyzul, Salvage, Survival Guide.
+    mark = "1", --Sparks / Unity Bastok Markets
+    rab = "2", --Ody + Nomad moogles
+    no = "2", -- Norg AH
+    wes = "2", -- Western Adoulin MH + Sparks + Unity + Vendors
+    eas = "2", -- Eastern Adoulin AH + MH
+    woo = "5", --Closest Ephemeral Moogle to a HP? Bone, Cloth guilds + vendors.
+    win = "1", --Fishing guild Port wind
+    up = "3", -- AH upper jeuno
+    wat = "4", --Windurst Waters 4
+    mine = "3", -- Bastok Mines alchemy
+    sou = "1", --Southern San d'Oria 1 Sparks, Unity, Voidwatch, Exit, Deeds, Copper Voucher exchange.
+}
 return T{ -- option: 2
-    short_name = {'hp','ho','home'},
+    short_name = {'hp','ho'},
     long_name = 'Homepoint',
     npc_plural = 'homepoints',
     npc_names = npc_names,
@@ -47,8 +64,21 @@ return T{ -- option: 2
         end
         return missing
     end,
-    help_text = "| Homepoints |\n Command options [hp, ho, home]\n- hp zone name [homepoint_number] -- warp to a designated homepoint.\n- hp set -- set the closest homepoint as your return homepoint\n-----------------------------",
+    help_text = "| Homepoints |\n Command options [hp, ho]\n- hp zone name [homepoint_number] -- warp to a designated homepoint.\n- hp set -- set the closest homepoint as your return homepoint\n-----------------------------",
     sub_zone_targets = S{'entrance', 'mog house', 'auction house', '1', '2', '3', '4', '5', '6', '7', '8', '9', },
+    auto_select_sub_zone = function(zone, specified)
+        local destiny = specified.zone:lower()
+        if not specified.subzone then
+            for keyword, value in pairs(default_by_keyword) do
+                if destiny:find(keyword, 1, true) then
+                    return value
+                end
+            end
+            return "ah"
+        else
+            return nil
+        end
+    end,
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
         local packet = nil

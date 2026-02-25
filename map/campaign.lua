@@ -1,15 +1,21 @@
 local past_zones = S{80,81,82,83,84,87,88,89,90,91,94,95,96,97,98,136,137,164,171,175}
 local past_town_zones = S{80,87,94}
+local all_warp_zones = S{80,81,82,83,84,87,88,89,90,91,94,95,96,97,98,136,137,164,171,175,115,119,120,101,104,105,106,109,110}
 local menu_ids = S{454,455,456,457,458}
+local maw_menu_ids = S{101,102,103,903,904,905,910}
+local target_ids = S{17212104,17203886}
 local npc_names = T{
     warp = S{'Scarlette, C.A.', 'Wenonah, C.A.', 'Narkissa, C.A.'},
     ['return'] = S{'Estaud','Sleiney','Timid Scorpion','Yimi Jomkeh','Disserond','Gray Colossus','Moana','Luk Leotih','Myllue','Telford','Gisbert','Wayward Echo','Hdya Mhirako','Marius','Larkin','Roiloux','Stray Boar','Barnett','Dhen Kwherri','Kearney','Felicia','Toulsard','Polished Fang','Xenia','Lamurara','Wren','Arlayse','Waldo','Jagged Onyx','Uriah','Addison','Mhik Ljusihlo','Darden','Tomoa-Nomoa','Astrid','Landon','Amaliya','Renvriche'},
+    port = S{'Cavernous Maw'}, -- travel through cav. maws 2-way, 1-cmd. Backward and forward in time.
 }
 return T{
-    short_name = {'ca','cn','cam'},
+    short_name = {'ca','cn'},
     long_name = 'Campaign',
-    npc_plural = 'Campaign Arbiters',
+    npc_plural = 'Campaign NPCs',
     npc_names = npc_names,
+    all_warp_zones = all_warp_zones,
+    target_ids = target_ids,
     zone_npc_list = function(type)
         local mlist = windower.ffxi.get_mob_list()
         mlist = table.filter(mlist, function(name)
@@ -22,19 +28,23 @@ return T{
     end,
     validate = function(menu_id, zone, current_activity,p)
         local destination = current_activity.activity_settings
-        allied_notes = p["Menu Parameters"]:unpack('I', 9)
+        allied_notes = p["Menu Parameters"] and p["Menu Parameters"]:unpack('I', 9)
         local warp_cost = 40 --Minimum check, warp costs vary and it gets checked again along with the destination locks.
-        if allied_notes < warp_cost then
+        if allied_notes and allied_notes < warp_cost then
             return "You have less than 40 Allied Notes."
         end
-        if not menu_ids:contains(menu_id) then 
-            return "Incorrect menu detected! Menu ID: "..menu_id
-        end
-        if past_town_zones:contains(zone) and menu_id ~= 458 then
-            return "Incorrect menu ID detected, Campaign teleports not possible."
-        end
-        if not past_zones:contains(zone) then
-            return 'Not in past town zone.'
+        if current_activity.sub_cmd ~= 'port' then 
+            if not menu_ids:contains(menu_id) then
+                return "Incorrect menu detected! Menu ID: "..menu_id
+            end
+            if past_town_zones:contains(zone) and menu_id ~= 458 then
+                return "Incorrect menu ID detected, Campaign teleports not possible."
+            end
+            if not past_zones:contains(zone) then
+                return 'Not in past town zone.'
+            end
+        elseif current_activity.sub_cmd == 'port' and not maw_menu_ids:contains(menu_id) then
+            return "Wrong menu."
         end
         return nil
     end,
@@ -69,7 +79,7 @@ return T{
             return missing
         end
     end,
-    help_text = "| Campaign |\n Command options [ca, cn, cam]\n- ca zone name -- warp to a designated [S] zone via a Campaign Arbiter in a [S] city.\n- ca return -- return to your [S] home nation. via any [S] 2 initial field NPC i.e. Amaliya, C.A.\n-----------------------------",
+    help_text = "| Campaign |\n Command options [ca, cn]\n- ca zone name -- warp to a designated [S] zone via a Campaign Arbiter in a [S] city.\n- ca return -- return to your [S] home nation. via any [S] 2 initial field NPC i.e. Amaliya, C.A.\n- ca port -- teleport to the other side of [S] Cavernous Maws.\n-----------------------------",
     sub_zone_targets = S{},
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
@@ -148,6 +158,42 @@ return T{
             packet["Zone"] = zone
             packet["Menu ID"] = menu
             actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=2, description='complete menu'})
+
+            return actions
+        end,
+        port = function(current_activity, zone, p, settings)
+            local actions = T{}
+            local packet = nil
+            local menu = p["Menu ID"]
+            local npc = current_activity.npc
+
+            log("Traveling through time...")
+            -- update request
+            packet = packets.new('outgoing', 0x016)
+            packet["Target Index"] = windower.ffxi.get_player().index
+            actions:append(T{packet=packet, description='update request'})
+
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 0
+            packet["_unknown1"] = 0
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = true
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
+
+            packet = packets.new('outgoing', 0x05B)
+            packet["Target"] = npc.id
+            packet["Option Index"] = 1
+            packet["_unknown1"] = 0
+            packet["Target Index"] = npc.index
+            packet["Automated Message"] = false
+            packet["_unknown2"] = 0
+            packet["Zone"] = zone
+            packet["Menu ID"] = menu
+            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='warp request'})
 
             return actions
         end,

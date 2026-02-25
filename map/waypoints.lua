@@ -1,9 +1,9 @@
-npc_names = T{
+local npc_names = T{
     warp = S{'Waypoint'},
 }
 local adoulin = S(require('resources').zones:en(string.endswith-{' Adoulin'}):map(table.get-{'id'}))
 return T{
-    short_name = {'wp','way','wa'},
+    short_name = {'wp','wa'},
     long_name = 'Waypoint',
     npc_plural = 'waypoints',
     npc_names = npc_names,
@@ -18,7 +18,7 @@ return T{
                 return {name=name}
             end)
         else
-            temp_list = L{}
+            local temp_list = L{}
             for index, name in pairs(mlist) do
                 temp_list:append(index)
             end
@@ -75,8 +75,24 @@ return T{
         end
         return missing
     end,
-    help_text = "| Waypoints |\n Command options [wp, wa, way]\n- wp zone name [waypoint_number] -- warp to a designated waypoint.\n-----------------------------",
-    sub_zone_targets =  S{'frontier station', 'platea', 'triumphus', 'couriers', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enigmatic device'},
+    help_text = "| Waypoints |\n Command options [wp, wa]\n- wp zone name [waypoint_number] -- warp to a designated waypoint.\n-----------------------------",
+    sub_zone_targets =  S{'frontier station','front','frontier','station', 'platea', 'triumphus', 'couriers', 'pioneers', 'mummers', 'inventors', 'auction house', 'mog house', 'bridge', 'airship', 'docks', 'waterfront', 'peacekeepers', 'scouts', 'statue', 'goddess', 'wharf', 'yahse', 'sverdhried', 'hillock', 'coronal', 'esplanade', 'castle', 'gates', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'enigmatic device'},
+    auto_select_sub_zone = function(zone, specified)
+        local destiny = specified.zone:lower()
+        if not specified.subzone then
+            if destiny:find("eas") then
+                return "Auction House"
+            elseif destiny:find("wes") then
+                return "Mog House"
+            elseif zone == 256 or zone == 257 then 
+                return 'Frontier'
+            else
+                return 'Frontier'
+            end
+        else
+            return nil
+        end
+    end,
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
         local packet = nil
@@ -193,8 +209,8 @@ return T{
             packet["Zone"] = zone
             packet["Menu ID"] = menu
 
-            packet["Option Index"] = 'b7b4b3':pack(current_waypoint_index, destination.op_z, destination.op_i):unpack('b14')
-            packet["_unknown1"] = 'b5b8':pack(0, teleport_cost):unpack('b13')
+            packet["Option Index"] = ('b7b4b3'):pack(current_waypoint_index, destination.op_z, destination.op_i):unpack('b14')
+            packet["_unknown1"] = ('b5b8'):pack(0, teleport_cost):unpack('b13')
             packet["Automated Message"] = true
             packet["_unknown2"] = 0
             actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
@@ -241,8 +257,8 @@ return T{
             packet["Zone"] = zone
             packet["Menu ID"] = menu
 
-            packet["Option Index"] = 'b7b4b3':pack(current_waypoint_index, destination.op_z, destination.op_i):unpack('b14')
-            packet["_unknown1"] = 'b5b8':pack(0, teleport_cost):unpack('b13')
+            packet["Option Index"] = ('b7b4b3'):pack(current_waypoint_index, destination.op_z, destination.op_i):unpack('b14')
+            packet["_unknown1"] = ('b5b8'):pack(0, teleport_cost):unpack('b13')
             packet["Automated Message"] = true
             packet["_unknown2"] = 0
             actions:append(T{packet=packet, delay=wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='send options'})
@@ -315,18 +331,21 @@ return T{
             ['9'] = { index = 29, offset = 23, zone = 257, npc = 135, op_z = 2, op_i = 9, sz_oi = 0, x = 95.994003295898, z = -40.150001525879, y = -74.541000366211, h = 0, unknown1 = 0},
         },
         ['Yahse Hunting Grounds'] = {
+            ['Frontier'] = { shortcut = 'Frontier Station' },
             ['Frontier Station'] = { index = 31, offset = 70, zone = 260, npc = 517, op_z = 4, op_i = 1, sz_oi = 1002, x = 321, z = 0, y = -199.80000305176, h = 127, unknown1 = 0},
             ['1'] =                { index = 32, offset = 71, zone = 260, npc = 518, op_z = 4, op_i = 2, sz_oi = 1002, x = 86.500007629395, z = 0, y = 1.5000001192093, h = 0, unknown1 = 0},
             ['2'] =                { index = 33, offset = 72, zone = 260, npc = 519, op_z = 4, op_i = 3, sz_oi = 1002, x = -286.5, z = 0, y = 43.500003814697, h = 127, unknown1 = 0},
             ['3'] =                { index = 34, offset = 73, zone = 260, npc = 520, op_z = 4, op_i = 4, sz_oi = 1002, x = -162.40000915527, z = 0, y = -272.80001831055, h = 191, unknown1 = 0},
         },
         ['Ceizak Battlegrounds'] = {
+            ['Frontier'] = { shortcut = 'Frontier Station' },
             ['Frontier Station'] = { index = 41, offset = 64, zone = 261, npc = 524, op_z = 3,    op_i = 1, sz_oi = 1002, x = 365.00003051758, z = 0.60000002384186, y = 190.00001525879, h = 127, unknown1 = 0},
             ['1'] =                   { index = 42, offset = 65, zone = 261, npc = 525, op_z = 3, op_i = 2, sz_oi = 1002, x = -6.8790001869202, z = 0, y = -117.51100921631, h = 63, unknown1 = 0},
             ['2'] =                   { index = 43, offset = 66, zone = 261, npc = 526, op_z = 3, op_i = 3, sz_oi = 1002, x = -42.000003814697, z = 0, y = 155, h = 191, unknown1 = 0},
             ['3'] =                   { index = 44, offset = 67, zone = 261, npc = 527, op_z = 3, op_i = 4, sz_oi = 1002, x = -442.00003051758, z = 0, y = -247.00001525879, h = 191, unknown1 = 0},
         },
         ['Foret de Hennetiel'] = {
+            ['Frontier'] = { shortcut = 'Frontier Station' },
             ['Frontier Station'] = { index = 51, offset = 96, zone = 262, npc = 533, op_z = 5,  op_i = 1, sz_oi = 1002, x = 398.11001586914, z = -2, y = 279.11001586914, h = 0, unknown1 = 0},
             ['1'] =                { index = 52, offset = 97, zone = 262, npc = 534, op_z = 5,  op_i = 2, sz_oi = 1002, x = 12.60000038147, z = -2.4000000953674, y = 342.00003051758, h = 0, unknown1 = 0},
             ['2'] =                { index = 53, offset = 98, zone = 262, npc = 535, op_z = 5,  op_i = 3, sz_oi = 1002, x = 505.00003051758, z = -2.25, y = -303.5, h = 127, unknown1 = 0},
@@ -334,6 +353,7 @@ return T{
             ['4'] =                { index = 55, offset = 100, zone = 262, npc = 537, op_z = 5, op_i = 5, sz_oi = 1002, x = -251.80001831055, z = -2.3700001239777, y = -39.25, h = 63, unknown1 = 0},
         },
         ['Morimar Basalt Fields'] = {
+            ['Frontier'] = { shortcut = 'Frontier Station' },
             ['Frontier Station'] = { index = 61, offset = 102, zone = 265, npc = 736, op_z = 6, op_i = 1, sz_oi = 1002, x = 443.72802734375, z = -16, y = -325.4280090332, h = 191, unknown1 = 0},
             ['1'] =                { index = 62, offset = 103, zone = 265, npc = 737, op_z = 6, op_i = 2, sz_oi = 1002, x = 368.00003051758, z = -16, y = 37.5, h = 127, unknown1 = 0},
             ['2'] =                { index = 63, offset = 104, zone = 265, npc = 738, op_z = 6, op_i = 3, sz_oi = 1002, x = 112.80000305176, z = -0.483000010252, y = 324.40002441406, h = 63, unknown1 = 0},
@@ -342,6 +362,7 @@ return T{
             ['5'] =                { index = 66, offset = 107, zone = 265, npc = 741, op_z = 6, op_i = 6, sz_oi = 1002, x = -78.200004577637, z = -47.284000396729, y = 303, h = 191, unknown1 = 0},
         },
         ['Yorcia Weald'] = {
+            ['Frontier'] = { shortcut = 'Frontier Station' },
             ['Frontier Station'] = { index = 71, offset = 128, zone = 263, npc = 564, op_z = 7, op_i = 1, sz_oi = 1002, x = 353.30001831055, z = 0.20000000298023, y = 153.30000305176, h = 223, unknown1 = 0},
             ['1'] =                { index = 72, offset = 129, zone = 263, npc = 565, op_z = 7, op_i = 2, sz_oi = 1002, x = -40.499000549316, z = 0.36700001358986, y = 296.36700439453, h = 0, unknown1 = 0},
             ['2'] =                { index = 73, offset = 130, zone = 263, npc = 566, op_z = 7, op_i = 3, sz_oi = 1002, x = 122.13200378418, z = 0.14600001275539, y = -287.73101806641, h = 127, unknown1 = 0},
@@ -349,6 +370,7 @@ return T{
             ['Enigmatic Device'] = { index = 302, offset = 162, zone = 999, op_z = 11, op_i = 3 },
         },
         ['Marjami Ravine'] = {
+            ['Frontier'] = { shortcut = 'Frontier Station' },
             ['Frontier Station'] = { index = 81, offset = 134, zone = 266, npc = 414, op_z = 8, op_i = 1, sz_oi = 1002, x = 358.00003051758, z = -60.000003814697, y = 165.00001525879, h = 63, unknown1 = 0},
             ['1'] =                { index = 82, offset = 135, zone = 266, npc = 415, op_z = 8, op_i = 2, sz_oi = 1002, x = 323.00003051758, z = -20, y = -79, h = 0, unknown1 = 0},
             ['2'] =                { index = 83, offset = 136, zone = 266, npc = 416, op_z = 8, op_i = 3, sz_oi = 1002, x = 6.808000087738, z = 0, y = 78.437004089355, h = 191, unknown1 = 0},
@@ -356,6 +378,7 @@ return T{
             ['4'] =                { index = 85, offset = 138, zone = 266, npc = 418, op_z = 8, op_i = 5, sz_oi = 1002, x = -326.02200317383, z = -40.023002624512, y = 201.09600830078, h = 191, unknown1 = 0},
         },
         ['Kamihr Drifts'] = {
+            ['Frontier'] = { shortcut = 'Frontier Station' },
             ['Frontier Station'] = { index = 91, offset = 166, zone = 267, npc = 364, op_z = 9, op_i = 1, sz_oi = 1002, x = 439.40301513672, z = 63.000003814697, y = -272.55401611328, h = 63, unknown1 = 0},
             ['1'] =                { index = 92, offset = 167, zone = 267, npc = 365, op_z = 9, op_i = 2, sz_oi = 1002, x = -42.574001312256, z = 43.000003814697, y = -71.319000244141, h = 0, unknown1 = 0},
             ['2'] =                { index = 93, offset = 168, zone = 267, npc = 366, op_z = 9, op_i = 3, sz_oi = 1002, x = 8.2400007247925, z = 43.000003814697, y = -283.01699829102, h = 191, unknown1 = 0},

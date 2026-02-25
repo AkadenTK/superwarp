@@ -1,3 +1,4 @@
+local settings = nil
 local entry_zones = S{33}
 local limbus_zones = S{37,38}
 local npc_names = T{
@@ -144,6 +145,29 @@ local temenos_floor_order = {
     "C1","C2","C3","C4"
 }
 
+local function find_5k_chest(zone_id)
+    local zone, chest_keys
+
+    if zone_id == 37 then
+        zone = "temenos"
+        chest_keys = { "N7", "W7", "E7", "C4" }
+    elseif zone_id == 38 then
+        zone = "apollyon"
+        chest_keys = { "NW5", "SW4", "NE5", "SE4" }
+    else
+        return nil
+    end
+
+    local chest_table = settings.limbus_chests[zone]
+    if not chest_table then return nil end
+
+    for _, key in ipairs(chest_keys) do
+        if chest_table[key] == 4 then
+            return key
+        end
+    end
+end
+
 local function find_first_apollyon_missing_floor()
     for _, _floor in ipairs(apollyon_floor_order) do
         local item_id = apollyon_temp_item_ids[_floor]
@@ -189,7 +213,7 @@ local function find_shuffled_missing_apollyon_floor(menu_id)
     local current_tower = current_floor:sub(1, 2)
     local fallback_floor, fallback_item = nil, nil
     for floor, item_id in pairs(apollyon_temp_item_ids) do
-        if floor ~= current_floor and not has_temp_item(item_id) then
+        if --[[floor ~= current_floor and]] not has_temp_item(item_id) then
             if floor:sub(1, 2) == current_tower then
                 return floor, item_id
             end
@@ -208,7 +232,7 @@ local function find_shuffled_missing_temenos_floor(menu_id)
     local current_tower = current_floor:sub(1, 1)
     local fallback_floor, fallback_item = nil, nil
     for floor, item_id in pairs(temenos_temp_item_ids) do
-        if floor ~= current_floor and not has_temp_item(item_id) then
+        if --[[floor ~= current_floor and]] not has_temp_item(item_id) then
             if floor:sub(1, 1) == current_tower then
                 return floor, item_id
             end
@@ -221,7 +245,7 @@ local function find_shuffled_missing_temenos_floor(menu_id)
 end
 
 return T {
-    short_name = { 'li', 'te', 'ap' },
+    short_name = {'li','te','ap'},
     long_name = 'Limbus',
     move_in_zone = true,
     npc_plural = 'Limbus warps',
@@ -240,7 +264,11 @@ return T {
         end)
         return mlist
     end,
-    validate = function(menu_id, zone, current_activity,p)
+    validate = function(menu_id, zone, current_activity,p,chestdata)
+		if chestdata == nil then
+			return 'Please update your superwarp.lua file to version 1.0.5 or later for Limbus support.'
+		end
+		settings = chestdata
 		local _apollyon_floor, item_id = find_first_apollyon_missing_floor()
         local _temenos_floor, item_id = find_first_temenos_missing_floor()
 		local _apollyon_shuffle, item_id = find_shuffled_missing_apollyon_floor(menu_id)
@@ -275,46 +303,28 @@ if zone == 38 then
 				destination = destination_array.apollyon[_apollyon_floor]
 				current_floor_checkinator = true
 				cross_tower_checkinator = true
-			elseif menu_id == 102 or menu_id == 103 then
-				destination = destination_array.apollyon.SE4
-				log('All data collected. Sending you to open the chest.')
-			elseif menu_id == 108 or menu_id == 112 or menu_id == 117 or menu_id == 121 then
-				destination = destination_array.apollyon.E1
-				log('All data collected. Sending you to the entrance.')
-			else
-				if menu_id >= 104 and menu_id <= 107 then
-					destination = destination_array.apollyon.NW5
-				elseif menu_id >= 109 and menu_id <= 111 then
-					destination = destination_array.apollyon.SW4
-				elseif menu_id >= 113 and menu_id <= 116 then
-					destination = destination_array.apollyon.NE5
-				elseif menu_id >= 118 and menu_id <= 120 then
-					destination = destination_array.apollyon.SE4
+			else--if menu_id == 102 or menu_id == 103 then
+				local chest = find_5k_chest(zone)
+				destination = destination_array.apollyon[chest]
+				log(chest and 'All data collected. Sending you to '..chest..'.')
+				if menu_id == destination.menu_id then
+					return "Open chest on this floor."
 				end
-				log('All data collected. Sending you to open the chest.')
-			end 
+				cross_tower_checkinator = true
+			end
 		elseif current_activity.sub_cmd == 'random' then
 			if _apollyon_shuffle then
 				destination = destination_array.apollyon[_apollyon_shuffle]
 				current_floor_checkinator = true
 				cross_tower_checkinator = true
-			elseif menu_id == 102 or menu_id == 103 then
-				destination = destination_array.apollyon.SE4
-				log('All data collected. Sending you to open the chest.')
-			elseif menu_id == 108 or menu_id == 112 or menu_id == 117 or menu_id == 121 then
-				destination = destination_array.apollyon.E1
-				log('All data collected. Sending you to the entrance.')
 			else
-				if menu_id >= 104 and menu_id <= 107 then
-					destination = destination_array.apollyon.NW5
-				elseif menu_id >= 109 and menu_id <= 111 then
-					destination = destination_array.apollyon.SW4
-				elseif menu_id >= 113 and menu_id <= 116 then
-					destination = destination_array.apollyon.NE5
-				elseif menu_id >= 118 and menu_id <= 120 then
-					destination = destination_array.apollyon.SE4
+				local chest = find_5k_chest(zone)
+				destination = destination_array.apollyon[chest]
+				log(chest and 'All data collected. Sending you to '..chest..'.')
+				if menu_id == destination.menu_id then
+					return "Open chest on this floor."
 				end
-				log('All data collected. Sending you to open the chest.')
+				cross_tower_checkinator = true
 			end 
 		----------------------------------------------
 		elseif current_activity.sub_cmd == 'port' then
@@ -458,46 +468,28 @@ elseif zone == 37 then
 				destination = destination_array.temenos[_temenos_floor]
 				current_floor_checkinator = true
 				cross_tower_checkinator = true
-			elseif menu_id == 1000 then
-				destination = destination_array.temenos.C4
-				log('All data collected. Sending you to open the chest.')
-			elseif menu_id == 1025 or menu_id == 1007 or menu_id == 1014 or menu_id == 1021 then
-				destination = destination_array.temenos.E
-				log('All data collected. Sending you to the entrance.')
 			else
-				if menu_id >= 1001 and menu_id <= 1006 then
-					destination = destination_array.temenos.N7
-				elseif menu_id >= 1008 and menu_id <= 1013 then
-					destination = destination_array.temenos.W7
-				elseif menu_id >= 1015 and menu_id <= 1020 then
-					destination = destination_array.temenos.E7
-				elseif menu_id >= 1022 and menu_id <= 1024 then
-					destination = destination_array.temenos.C4
+				local chest = find_5k_chest(zone)
+				destination = destination_array.temenos[chest]
+				log(chest and 'All data collected. Sending you to '..chest..'.')
+				cross_tower_checkinator = true
+				if menu_id == destination.menu_id then
+					return "Open chest on this floor."
 				end
-				log('All data collected. Sending you to open the chest.')
 			end 
 		elseif current_activity.sub_cmd == 'random' then
 			if _temenos_shuffle then
 				destination = destination_array.temenos[_temenos_shuffle]
 				current_floor_checkinator = true
 				cross_tower_checkinator = true
-			elseif menu_id == 1000 then
-				destination = destination_array.temenos.C4
-				log('All data collected. Sending you to open the chest.')
-			elseif menu_id == 1025 or menu_id == 1007 or menu_id == 1014 or menu_id == 1021 then
-				destination = destination_array.temenos.E
-				log('All data collected. Sending you to the entrance.')
 			else
-				if menu_id >= 1001 and menu_id <= 1006 then
-					destination = destination_array.temenos.N7
-				elseif menu_id >= 1008 and menu_id <= 1013 then
-					destination = destination_array.temenos.W7
-				elseif menu_id >= 1015 and menu_id <= 1020 then
-					destination = destination_array.temenos.E7
-				elseif menu_id >= 1022 and menu_id <= 1024 then
-					destination = destination_array.temenos.C4
+				local chest = find_5k_chest(zone)
+				destination = destination_array.temenos[chest]
+				log(chest and 'All data collected. Sending you to '..chest..'.')
+				cross_tower_checkinator = true
+				if menu_id == destination.menu_id then
+					return "Open chest on this floor."
 				end
-				log('All data collected. Sending you to open the chest.')
 			end 
 		--------------------------------------------
 		elseif current_activity.sub_cmd == 'port' then
@@ -667,7 +659,7 @@ end
 	if current_activity.sub_cmd ~= 'exit' and current_activity.sub_cmd ~= 'enter' then
 		------------Same floor prevention / data check warp override------------------
         if menu_id == destination.menu_id then
-			if current_floor_checkinator and current_activity.sub_cmd == 'next' then
+			if current_floor_checkinator and (current_activity.sub_cmd == 'next' or current_activity.sub_cmd == 'random') then
 				current_floor_checkinator = nil
 				return "You still have work to do on this floor."
 			else
@@ -684,7 +676,7 @@ end
 	end
 		current_floor_checkinator = nil
 		cross_tower_checkinator = nil
-        return nil
+		return nil
     end,
     help_text = "| Limbus |\n Command options [li, te, ap]\n- li e1/nw1/sw2/ne5/se3   e/n1/w2/e5/c3 etc. -- warp to a designated tower and floor in limbus. \n- li next -- warp to the first uncompleted floor in sequence, if this is in another tower, will warp to the entrance.\n- li random -- Similar to the next command, sends you to floors you do not have the data for until you have collected all data; Will send you to other floors within the same tower until all are completed then will send to another tower/floor.\n- li port -- warp to the next floor of any tower, if on last floor will warp to the entrance, if at entrance will warp to first floor of the first tower. \n- li back -- the reverse of port command, teleports to the previous floor. If you are on the first floor of a tower this will send you to the entrance, if you are at the entrance this command will send you to the last floor of the last tower.\n- li enter -- enter apollyon. \n- li exit -- exit apollyon.\n------------------------------",
     sub_zone_targets = S {'e1', 'e2', 'nw1', 'nw2', 'nw3', 'nw4', 'nw5', 'sw1', 'sw2', 'sw3','sw4', 'ne1', 'ne2', 'ne3', 'ne4', 'ne5', 'se1', 'se2', 'se3', 'se4','entrance','n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'w1', 'w2','w3', 'w4', 'w5', 'w6', 'w7', 'e1', 'e2', 'e3', 'e4', 'e5','e6','e7','c1','c2','c3','c4'}, 
@@ -775,7 +767,7 @@ end
 
         return actions
     end,
-    sub_commands = {
+sub_commands = {
 	port = function(current_activity, zone, p, settings, warpdata)
 		local actions = T {}
 		local packet = nil
@@ -1184,18 +1176,9 @@ end
     if zone == 38 then
 			if _apollyon_floor then
 				destination = destination_array.apollyon[_apollyon_floor]
-			elseif menu == 102 or menu == 103 then
-				destination = destination_array.apollyon.SE4
-			elseif menu >= 104 and menu <= 107 then
-				destination = destination_array.apollyon.NW5
-			elseif menu >= 109 and menu <= 111 then
-				destination = destination_array.apollyon.SW4
-			elseif menu >= 113 and menu <= 116 then
-				destination = destination_array.apollyon.NE5
-			elseif menu >= 118 and menu <= 120 then
-				destination = destination_array.apollyon.SE4
-			elseif menu == 108 or menu == 112 or menu == 117 or menu == 121 then
-				destination = destination_array.apollyon.E1
+			else
+				local chest = find_5k_chest(zone)
+				destination = destination_array.apollyon[chest]
 			end
 		-----------Cross-tower warp override--------------------------------------------------------------------------------------------------------------------------------
         if (menu >= 104 and menu <= 108) and (destination.menu_id ~= 102 and destination.menu_id ~= 103) and (destination.menu_id > 108 or destination.menu_id < 104) then
@@ -1213,18 +1196,9 @@ end
     elseif zone == 37 then
 			if _temenos_floor then
 				destination = destination_array.temenos[_temenos_floor]
-			elseif menu == 1000 then
-				destination = destination_array.temenos.C4
-			elseif menu >= 1001 and menu <= 1006 then
-				destination = destination_array.temenos.N7
-			elseif menu >= 1008 and menu <= 1013 then
-				destination = destination_array.temenos.W7
-			elseif menu >= 1015 and menu <= 1020 then
-				destination = destination_array.temenos.E7
-			elseif menu >= 1022 and menu <= 1024 then
-				destination = destination_array.temenos.C4
-			elseif menu == 1007 or menu == 1014 or menu == 1021 or menu == 1025 then
-				destination = destination_array.temenos.E
+			else
+				local chest = find_5k_chest(zone)
+				destination = destination_array.temenos[chest]
 			end 
 
         if (menu >= 1001 and menu <= 1007) and destination.menu_id ~= 1000 and (destination.menu_id > 1007 or destination.menu_id < 1001) then
@@ -1334,18 +1308,9 @@ end
     if zone == 38 then
         if _apollyon_shuffle then
             destination = destination_array.apollyon[_apollyon_shuffle]
-        elseif menu == 102 or menu == 103 then
-            destination = destination_array.apollyon.SE4
-        elseif menu >= 104 and menu <= 107 then
-            destination = destination_array.apollyon.NW5
-        elseif menu >= 109 and menu <= 111 then
-            destination = destination_array.apollyon.SW4
-        elseif menu >= 113 and menu <= 116 then
-            destination = destination_array.apollyon.NE5
-        elseif menu >= 118 and menu <= 120 then
-            destination = destination_array.apollyon.SE4
-		elseif menu == 108 or menu == 112 or menu == 117 or menu == 121 then
-			destination = destination_array.apollyon.E1
+		else
+			local chest = find_5k_chest(zone)
+			destination = destination_array.apollyon[chest]
         end
     
 		-----------Cross-tower warp override--------------------------------------------------------------------------------------------------------------------------------
@@ -1364,18 +1329,9 @@ end
     elseif zone == 37 then
 			if _temenos_shuffle then
 				destination = destination_array.temenos[_temenos_shuffle]
-			elseif menu == 1000 then
-				destination = destination_array.temenos.C4
-			elseif menu >= 1001 and menu <= 1006 then
-				destination = destination_array.temenos.N7
-			elseif menu >= 1008 and menu <= 1013 then
-				destination = destination_array.temenos.W7
-			elseif menu >= 1015 and menu <= 1020 then
-				destination = destination_array.temenos.E7
-			elseif menu >= 1022 and menu <= 1024 then
-				destination = destination_array.temenos.C4
-			elseif menu == 1007 or menu == 1014 or menu == 1021 or menu == 1025 then
-				destination = destination_array.temenos.E
+			else
+				local chest = find_5k_chest(zone)
+				destination = destination_array.temenos[chest]
 			end 
 
         if (menu >= 1001 and menu <= 1007) and destination.menu_id ~= 1000 and (destination.menu_id > 1007 or destination.menu_id < 1001) then
@@ -1513,7 +1469,7 @@ end
             return actions
         end,
 
-        ['exit'] = function(current_activity, zone, p, settings)
+	['exit'] = function(current_activity, zone, p, settings)
             local actions = T{}
             local packet = nil
             local menu = p["Menu ID"]

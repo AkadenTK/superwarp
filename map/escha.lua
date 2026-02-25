@@ -7,10 +7,11 @@ local npc_names = T{
     exit= S{'Undulating Confluence', 'Dimensional Portal'},
 }
 return T{
-    short_name = {'ew','es','ea'},
+    short_name = {'ew','ea'},
     long_name = 'Escha',
     npc_plural = 'eschan npcs',
     npc_names = npc_names,
+    escha_zones = escha_zones,
     zone_npc_list = function(type)
         local mlist = windower.ffxi.get_mob_list()
         mlist = table.filter(mlist, function(name)
@@ -77,7 +78,7 @@ return T{
         end
         return missing
     end,
-    help_text = "| Escha |\n Command options [ew, es, ea]\n- ew portal number -- warp to a designated portal in your current escha zone.\n- ew enter -- enter the eschan zone corresponding to the entrance zone.\n- ew domain -- get Elvorseal if needed and warp to the domain invasion arena.\n- ew domain return -- return Elvorseal.\n- ew exit -- leave escha.\n-----------------------------",
+    help_text = "| Escha |\n Command options [ew, ea]\n- ew portal number -- warp to a designated portal in your current escha zone.\n- ew enter -- enter the eschan zone corresponding to the entrance zone.\n- ew domain -- get Elvorseal if needed and warp to the domain invasion arena.\n- ew domain return -- return Elvorseal.\n- ew exit -- leave escha.\n-----------------------------",
     sub_zone_targets =  S{'1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14','15' },
     auto_select_zone = function(zone)
         if zone == 288 then return 'Escha Zi\'tah' end
