@@ -1,6 +1,6 @@
 # superwarp
 
-This is an addon for Windower4 for FFXI. It allows text commands to teleport using Homepoints, Waypoints, Proto-Waypoints, Survival Guides, Escha Portals and Reisenjima Ingresses, Voidwatch and Unity NPCs, Abyssea Confluxes, Runic Portals, Odyssey Confluxes and Translocators, and Sortie Gadgets, Bitzers, and Devices, Temenos Matter Diffusion Modules and Apollyon Swirling Vortices.
+This is an addon for Windower4 for FFXI. It allows text commands to teleport using Homepoints, Waypoints, Proto-Waypoints, Survival Guides, Escha Portals and Reisenjima Ingresses, Voidwatch and Unity NPCs, Abyssea Confluxes, Runic Portals, Odyssey Confluxes and Translocators, and Sortie Gadgets, Bitzers, and Devices, Temenos Matter Diffusion Modules and Apollyon Swirling Vortices, Incursion Rusted Transmitters, Walk Of Echoes Confluxes.
 
 ### Commands:
 The //sw command prefix can now be used for all maps. It may still be used in the manner it was previously if the user so desired.
@@ -314,7 +314,7 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 - **Improvement**: Homepoints now defaults to the most popular homepoint of frequently visited zones when a sub-command is not specified; This allows the user to leverage the fuzzyfind feature and command interpretation to execute common warps with very little typing. Examples - '//sw no' = Norg #2, '//sw eas' = Eastern Adoulin #2 with no custom alias configuration. 
 - **Improvement**: Waypoints now default to the Frontier Station of non-town zones when a sub-zone destination is not given, defaults to AH for Eastern Adoulin, and MH for Western Adoulin.
 - **Improvement**: (Waypoints) Shortcut added to more easily travel to Frontier Station; There are now multiple accepted inputs such as 'front' and 'frontier' to go these WPs. Some users may have struggled with this in the past if unaware of the pre-programmed 'fs' alias.
-- **Improvement**: Sortie Device warps now default to S device when a destination is not specified. i.e. //sw
+- **Improvement**: Smart command. '//sw' Sortie Device warps now use logic to take the user to the next logical destination for a 9-Boss run based on main job and progress in the run. DHABCGFE. (Corsair gets sent to B if they do not have B shard, start if they do etc). Because of this it is possible to use one command for the entire 9boss run. /console sw  or  //sw   or hotkey Alt + S (sw)
 - **Improvement**: Help text readability.
 - **Resolved**: (Proto-waypoints) Zoning and warping back to the same location of the same zone is now guarded against.
 - **Resolved**: (Survival-Guides) Zoning and warping back to the same location of the same zone is now guarded against.

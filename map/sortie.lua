@@ -358,6 +358,22 @@ return T {
     end,
     auto_select_sub_zone = function(zone, specified)
         if not specified.subzone then
+            if has_temp_item(temp_item_ids.Shard.G) then
+                return "C"
+            elseif has_temp_item(temp_item_ids.Shard.F) then
+                return "B"
+            elseif has_temp_item(temp_item_ids.Shard.E) then
+                return "A"
+            elseif has_temp_item(temp_item_ids.Shard.H) then
+                return "D"
+            else
+                local job = windower.ffxi.get_player().main_job
+                if job == 'COR' and not has_temp_item(temp_item_ids.Shard.B) then
+                    return "B"
+                elseif (job == 'GEO' or job == 'DNC') and not has_temp_item(temp_item_ids.Shard.C) then
+                    return "C"
+                end
+            end
             return "S"
         else
             return nil
@@ -368,7 +384,11 @@ return T {
         local packet = nil
         local menu = p["Menu ID"]
         local npc = current_activity.npc
-        local destination = current_activity.activity_settings		
+        local destination = current_activity.activity_settings
+        if not device_menu_ids:contains(menu) then
+            log('You cannot warp to a device from here.')
+            return
+        end
         -- update request
         packet = packets.new('outgoing', 0x016)
         packet["Target Index"] = windower.ffxi.get_player().index

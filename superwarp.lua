@@ -86,7 +86,7 @@ sub_zone_aliases = {
 
 local defaults = {
     debug = false,
-    send_all_delay = 0.3,                  -- delay (seconds) between each character
+    send_all_delay = 0.3,                   -- delay (seconds) between each character
     max_retries = 6,                        -- max retries for loading NPCs.
     retry_delay = 2,                        -- delay (seconds) between retries
     simulated_response_time = 0,            -- response time (seconds) for selecting a single menu item. Note this can happen multiple times per warp.
@@ -546,6 +546,7 @@ local function do_warp(map_name, zone, sub_zone)
                 do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
             else
                 log('No ' .. map.npc_plural .. ' found!')
+                timing.warp_cmd_time = nil
             end
         elseif dist > 6^2 then
             if state.loop_count > 0 then
@@ -554,6 +555,7 @@ local function do_warp(map_name, zone, sub_zone)
                 do_warp:schedule(settings.retry_delay, map_name, zone, sub_zone)
             else
                 log(npc.name .. ' found, but too far!')
+                timing.warp_cmd_time = nil
             end
         elseif npc_key and (warp_settings.key == npc_key or npc_key == '1' and not warp_settings.key and warp_settings.npc == npc.index) and warp_settings.zone == windower.ffxi.get_info()['zone'] then
             log("You are already at "..display_name.."! Teleport canceled.")
@@ -587,6 +589,7 @@ local function do_sub_cmd(map_name, sub_cmd, args)
         	do_sub_cmd:schedule(settings.retry_delay, map_name, sub_cmd, args)
         else
         	log('No '..map.npc_plural..' found!')
+            timing.warp_cmd_time = nil
         end
 
     elseif dist > 6^2 then
@@ -596,6 +599,7 @@ local function do_sub_cmd(map_name, sub_cmd, args)
         	do_sub_cmd:schedule(settings.retry_delay, map_name, sub_cmd, args)
         else
             log(npc.name..' found, but too far!')
+            timing.warp_cmd_time = nil
         end
     elseif npc and npc.id and npc.index and dist <= 6^2 then
         current_activity = {type=map_name, sub_cmd=sub_cmd, args=args, npc=npc}
@@ -621,6 +625,7 @@ local function do_find_missing_destinations(map_name, args)
             do_find_missing_destinations:schedule(settings.retry_delay, map_name, args)
         else
             log('No '..map.npc_plural..' found!')
+            timing.warp_cmd_time = nil
         end
     elseif dist > 6^2 then
         if state.loop_count > 0 then
@@ -629,6 +634,7 @@ local function do_find_missing_destinations(map_name, args)
             do_find_missing_destinations:schedule(settings.retry_delay, map_name, args)
         else
             log(npc.name..' found, but too far!')
+            timing.warp_cmd_time = nil
         end
     elseif npc and npc.id and npc.index and dist <= 6^2 then
         local max_results = 999999
@@ -636,6 +642,12 @@ local function do_find_missing_destinations(map_name, args)
             max_results = tonumber(args[1]) or 999999 
         end
         current_activity = {type=map_name, find_missing=true, missing_max=max_results, args=args, npc=npc}
+        timing.warp_init_time = os.clock()
+        if timing.warp_cmd_time then
+            debug("Warp initialization time: "..string.format("%.3f", timing.warp_init_time - timing.warp_cmd_time).." seconds")
+            timing.warp_cmd_time = nil
+            timing.warp_init_time = nil
+        end
         poke_npc(npc.id, npc.index)
     end    
 end
@@ -784,8 +796,14 @@ local function smart_command(best, short_name)
     elseif best.map_name == 'sortie' then
         if best.npc.name:find('Device', 1, true) then
             best.interaction = 'warp'
-        elseif best.npc.name:find('Bitzer', 1, true) or best.npc.name:find('Gadget', 1, true) then
+        elseif best.npc.name:find('Bitzer', 1, true) then
             best.interaction = 'port'
+        elseif best.npc.name:find('Gadget', 1, true) then
+            if not best.npc.name:find("?", 1, true) then
+                best.interaction = 'port'
+            else
+                best.interaction = 'normal'
+            end
         end
     elseif best.map_name == 'portals' then
         if zone_check == 50 then
@@ -935,6 +953,7 @@ local function the_superwarp(genArgs, dispatcher, retries)
             the_superwarp:schedule(3, genArgs, dispatcher, state.loop_count)
         else
             log('No warp NPCs nearby.')
+            timing.warp_cmd_time = nil
         end
         return
     end
@@ -1009,9 +1028,12 @@ windower.register_event('addon command', function(...)
             local map = maps[key]
             windower.add_to_chat(207,map.help_text)
         end
-        windower.add_to_chat(207,'| Superwarp |\nsw cancel -- Cancels pending warp command.\nsw reset -- Attempts to clear menu lock.\nsw menu - Toggle clickable warp destination menu.\n-----------------------------')
+        windower.add_to_chat(207,'| Superwarp |\nsw cancel -- Cancels pending warp command.\nsw reset -- Attempts to clear menu lock.\n-----------------------------')
         windower.add_to_chat(207,'Use [all/a/@all/party/p] after the command prefix and before the destination to warp all characters or all party/alliance members. (//li p next)\nYou may still use [warp] if you learned to include it or still have macros written this way. (sw hp warp eastern adoulin 1) (Legacy support)\n\n[New!] You may now use "//sw" or "/console sw" for all maps with no extra command prefix. i.e. //sw port , or //sw rab to go to Rabao #2')
         windower.add_to_chat(207,'[New!] Superwarp (smartcommand) - You may now use just //sw with no command for all warps that do not require a destination to be specified. i.e. enter and exit commands for abyssea, escha zones and apollyon, domain invasion enter, next command in limbus, port in odyssey and sortie, runic portal assault and return, campaign npcs return and Cavernous Maw port, all 4 Walk Of Echoes commands. It can also be used to go to the default destination in cases that call for specification. "//sw p" to use the smart command with all party members, or "a" for all. Use with confidence. Layers of failsafes are in place.')
+    elseif current_activity ~= nil then
+        log('Superwarp is currently busy. To cancel the last request try "//sw cancel"')
+        return
     else
         timing.warp_cmd_time = os.clock()
         if smartcheck then

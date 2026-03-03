@@ -5,11 +5,13 @@ local npc_names = T{
 -- Which homepoint we go to when we specify a zone, whether in shorthand or longform, and not a sub-zone location. QoL
 -- Others are already the most ideal homepoint for a given zone or there is only one homepoint.
 local default_by_keyword = {
+    jeuno = "1", -- Jeuno zones
+    nor = "2", -- Norg AH
+    port = "1", -- Port zones
     aht = "2", -- Assault, Nyzul, Salvage, Survival Guide. i.e. just '//sw aht' will take you to the point of highest interest for that zone.
     urh = "2", -- Assault, Nyzul, Salvage, Survival Guide.
     mark = "1", --Sparks / Unity Bastok Markets
     rab = "2", --Ody + Nomad moogles
-    no = "2", -- Norg AH
     wes = "2", -- Western Adoulin MH + Sparks + Unity + Vendors
     eas = "2", -- Eastern Adoulin AH + MH
     woo = "5", --Closest Ephemeral Moogle to a HP? Bone, Cloth guilds + vendors.
