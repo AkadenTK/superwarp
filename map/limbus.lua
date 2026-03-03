@@ -701,14 +701,6 @@ end
             description = 'update request'
         })
 
-        -- request map
-        packet = packets.new('outgoing', 0x114)
-        actions:append(T {
-            packet = packet,
-            delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
-            description = 'request map'
-        })
-
         -- menu change
         packet = packets.new('outgoing', 0x05B)
         packet["Target"] = npc.id
@@ -897,14 +889,6 @@ sub_commands = {
             actions:append(T {
                 packet = packet,
                 description = 'update request'
-            })
-
-            -- request map
-            packet = packets.new('outgoing', 0x114)
-            actions:append(T {
-                packet = packet,
-                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
-                description = 'request map'
             })
 
             -- menu change
@@ -1097,14 +1081,6 @@ sub_commands = {
                 description = 'update request'
             })
 
-            -- request map
-            packet = packets.new('outgoing', 0x114)
-            actions:append(T {
-                packet = packet,
-                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
-                description = 'request map'
-            })
-
             -- menu change
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
@@ -1227,14 +1203,6 @@ sub_commands = {
             actions:append(T {
                 packet = packet,
                 description = 'update request'
-            })
-
-            -- request map
-            packet = packets.new('outgoing', 0x114)
-            actions:append(T {
-                packet = packet,
-                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
-                description = 'request map'
             })
 
             -- menu change
@@ -1366,14 +1334,6 @@ sub_commands = {
                 description = 'update request'
             })
 
-            -- request map
-            packet = packets.new('outgoing', 0x114)
-            actions:append(T {
-                packet = packet,
-                delay = wiggle_value(settings.simulated_response_time, settings.simulated_response_variation),
-                description = 'request map'
-            })
-
             -- menu change
             packet = packets.new('outgoing', 0x05B)
             packet["Target"] = npc.id
@@ -1464,7 +1424,7 @@ sub_commands = {
             packet["_unknown2"] = 0
             packet["Zone"] = zone
             packet["Menu ID"] = menu
-            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=2, description='complete menu'})
+            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=1+wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu'})
 
             return actions
         end,
@@ -1501,7 +1461,7 @@ sub_commands = {
             packet["_unknown2"] = 0
             packet["Zone"] = zone
             packet["Menu ID"] = menu
-            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=2, description='complete menu'})
+            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=1+wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu'})
 
             return actions
         end,

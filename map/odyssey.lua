@@ -574,7 +574,7 @@ end
             packet["_unknown2"] = 0
             packet["Zone"] = zone
             packet["Menu ID"] = menu
-            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=2, description='complete menu'})
+            actions:append(T{packet=packet, wait_packet=0x052, expecting_zone=true, delay=1+wiggle_value(settings.simulated_response_time, settings.simulated_response_variation), description='complete menu'})
 
             return actions
         end,
