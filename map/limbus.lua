@@ -1148,10 +1148,15 @@ sub_commands = {
 		local _apollyon_floor, item_id = find_first_apollyon_missing_floor()
         local _temenos_floor, item_id = find_first_temenos_missing_floor()
 		local destination = nil
+		local chest_reminder = nil
 
     if zone == 38 then
 			if _apollyon_floor then
 				destination = destination_array.apollyon[_apollyon_floor]
+				if (menu == 102 or menu == 103) then
+					local chest = find_5k_chest(zone)
+					chest_reminder = 'End this climb at the '..chest..' chest.'
+				end
 			else
 				local chest = find_5k_chest(zone)
 				destination = destination_array.apollyon[chest]
@@ -1172,6 +1177,10 @@ sub_commands = {
     elseif zone == 37 then
 			if _temenos_floor then
 				destination = destination_array.temenos[_temenos_floor]
+				if menu == 1000 then
+					local chest = find_5k_chest(zone)
+					chest_reminder = 'End this climb at the '..chest..' chest.'
+				end
 			else
 				local chest = find_5k_chest(zone)
 				destination = destination_array.temenos[chest]
@@ -1195,7 +1204,10 @@ sub_commands = {
 					return
 				end
 		    --------------------------------------------------------------------------------------
-		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+				log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+				if chest_reminder then
+					log(chest_reminder)
+				end
 			--------------------------------------------------------------------------------------
             -- update request
             packet = packets.new('outgoing', 0x016)
@@ -1272,10 +1284,15 @@ sub_commands = {
 			local destination = nil
 		    local _apollyon_shuffle, item_id = find_shuffled_missing_apollyon_floor(menu)
             local _temenos_shuffle, item_id = find_shuffled_missing_temenos_floor(menu)
+			local chest_reminder = nil
 
     if zone == 38 then
         if _apollyon_shuffle then
             destination = destination_array.apollyon[_apollyon_shuffle]
+			if (menu == 102 or menu == 103) then
+				local chest = find_5k_chest(zone)
+				chest_reminder = 'End this climb at the '..chest..' chest.'
+			end
 		else
 			local chest = find_5k_chest(zone)
 			destination = destination_array.apollyon[chest]
@@ -1297,6 +1314,10 @@ sub_commands = {
     elseif zone == 37 then
 			if _temenos_shuffle then
 				destination = destination_array.temenos[_temenos_shuffle]
+				if menu == 1000 then
+					local chest = find_5k_chest(zone)
+					chest_reminder = 'End this climb at the '..chest..' chest.'
+				end
 			else
 				local chest = find_5k_chest(zone)
 				destination = destination_array.temenos[chest]
@@ -1324,7 +1345,10 @@ sub_commands = {
 					return
 				end
 		    --------------------------------------------------------------------------------------
-		    log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+		    	log('Warping via ' .. npc.name .. ' to '..destination.display_name..'.')
+				if chest_reminder then
+					log(chest_reminder)
+				end
 			--------------------------------------------------------------------------------------
             -- update request
             packet = packets.new('outgoing', 0x016)

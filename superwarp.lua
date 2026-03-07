@@ -103,6 +103,7 @@ local defaults = {
     simulate_client_lock = false,           -- lock the local client during a warp/subcommand, simulating menu behavior.
     send_all_order_mode = 'melast',         -- order modes: melast, mefirst, alphabetical
     chat_log_use = 'log',                   -- log messages to 'log', 'console', or 'none'. If debug is on, it will always log to the chat log
+    understood = false,
     limbus_chests = {
         temenos = {
             ["N7"] = 2,["W7"] = 3,["E7"] = 4,["C4"] = 1
@@ -1013,6 +1014,12 @@ windower.register_event('addon command', function(...)
                 log(m)
             end
         end
+    elseif cmd == 'understood' then
+        if not settings.understood then
+            windower.add_to_chat(207,'Load messages will no longer be displayed')
+            settings.understood = true
+            settings:save()
+        end
     elseif cmd == 'help' then
         windower.add_to_chat(207,'\n| READ ME |\n[New!] You may now use "//sw" or "/console sw" for all maps with no extra command prefix. i.e. //sw port, or //sw rab to go to Rabao #2')
         windower.add_to_chat(207,'[New!] Superwarp (smartcommand) - You may now use just //sw with no command for all warps that do not require a destination to be specified. i.e. enter and exit commands for abyssea, escha zones and apollyon, domain invasion enter, next command in limbus, port in odyssey and sortie, runic portal assault and return, campaign npcs return and Cavernous Maw port, all 4 Walk Of Echoes commands. It can also be used to go to the default destination in cases that call for specification. "//sw p" to use the smart command with all party members, or "a" for all. Use with confidence. Layers of failsafes are in place.')
@@ -1420,9 +1427,12 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
     end
 end)
 windower.register_event('load', function()
-   windower.add_to_chat(207,'\n Now use sw in place of  hp, wp, sg, un, so, li, ew, ab etc -   for all warp commands!!\n The new smart-command is "//sw" by itself. It autohandles all warp scenarios where a destination need not be specified. i.e. so port or ab enter. It works as any subcommand for any map.')
-   windower.add_to_chat(207,' All legacy functionality is unchanged.')
-   windower.add_to_chat(207,' sw help to list all information.')
+    if not settings.understood then
+        windower.add_to_chat(207,'\n Now use sw in place of  hp, wp, sg, un, so, li, ew, ab etc -  for all warp commands!!\n The new smart-command is "//sw" by itself. It autohandles all warp scenarios where a destination need not be specified. i.e. so port or ab enter. It works as any subcommand for any map except others where multiple are usable, in those cases it always serves as one. i.e. next cmd for limbus and repop or normal cmd for sortie.')
+        windower.add_to_chat(207,' All legacy functionality is unchanged.')
+        windower.add_to_chat(207,' sw understood to stop displaying these messages on load.')
+    end
+    windower.add_to_chat(207,' sw help to list all information.')
 end)
 windower.register_event('login', function()
     player_info = windower.ffxi.get_player()
