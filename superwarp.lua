@@ -1348,6 +1348,8 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
 end)
 windower.register_event('outgoing chunk',function(id,data,modified,injected,blocked)
     if id == 0x01A and not injected and current_activity and not current_activity.canceled then
+        log('Wait until the current action has finished. If you are soft-locked  //sw reset ')
+      --[[
         -- USER poked something and we were in the middle of something.
         -- we can't cancel that poke. The client is execting it already. We MUST cancel the current task.
         log('Detected user interaction. Canceling current warp...')
@@ -1355,7 +1357,8 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
         reset(true)
         coroutine.sleep(1)
         return false
-    end
+        ]]
+    end  
 end)
 windower.register_event('zone change',function(id,data,modified,injected,blocked)
     current_zone = windower.ffxi.get_info().zone
@@ -1428,7 +1431,7 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
 end)
 windower.register_event('load', function()
     if not settings.understood then
-        windower.add_to_chat(207,'\n Now use sw in place of  hp, wp, sg, un, so, li, ew, ab etc -  for all warp commands!!\n The new smart-command is "//sw" by itself. It autohandles all warp scenarios where a destination need not be specified. i.e. so port or ab enter. It works as any subcommand for any map except others where multiple are usable, in those cases it always serves as one. i.e. next cmd for limbus and repop or normal cmd for sortie.')
+        windower.add_to_chat(207,'\n Now use sw in place of  hp, wp, sg, un, so, li, ew, ab etc -  for all warp commands!!\n The new smart-command is "//sw" by itself. It autohandles all warp scenarios where a destination need not be specified. i.e. so port or ab enter. It works as any subcommand for any map except others where multiple are usable, in those cases it always serves as one. i.e. next cmd for limbus.')
         windower.add_to_chat(207,' All legacy functionality is unchanged.')
         windower.add_to_chat(207,' sw understood to stop displaying these messages on load.')
     end
