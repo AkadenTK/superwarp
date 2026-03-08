@@ -320,4 +320,5 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 - **Resolved**: (Survival-Guides) Zoning and warping back to the same location of the same zone is now guarded against.
 - **Resolved**: (Abyssea) Warping to the same location is now guarded against.
 - **Resolved**: An issue wherein loading or reloading superwarp on multiple characters simultaneously could flash the settings.xml file, resetting to default values. Each character now has their own xml file.
+- **Resolved**: An issue that could cause the user to freeze or crash when touching a warp device, accidentally or otherwise, while superwarp was active.
 - **Resolved**: Minor bugs.
