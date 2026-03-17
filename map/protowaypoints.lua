@@ -2,7 +2,7 @@ local npc_names = T{
     warp = S{'Proto-Waypoint'},
 }
 return T{
-    short_name = {'pwp','pw','pro'},
+    short_name = {'pwp','pw'},
     long_name = 'Proto-waypoint',
     npc_plural = 'proto-waypoints',
     npc_names = npc_names,
@@ -17,6 +17,10 @@ return T{
         return mlist
     end,
     validate = function(menu_id, zone, current_activity)
+        local destination = current_activity.activity_settings
+        if destination.zone == zone then 
+            return "You are already at that location."
+        end
         if not (menu_id == 10209 or -- Ru'Lude Gardens
                menu_id == 10012 or -- Selbina
                menu_id == 345 or -- Mhaura
@@ -41,7 +45,7 @@ return T{
         end
         return missing
     end,
-    help_text = "| Proto-Waypoints |\n Command options [pwp, pw, pro]\n- pwp zone name -- warp to a designated geomagnetic fount.\n-----------------------------",
+    help_text = "| Proto-Waypoints |\n Command options [pwp, pw]\n- pwp zone name -- warp to a designated geomagnetic fount.\n-----------------------------",
     build_warp_packets = function(current_activity, zone, p, settings)
         local actions = T{}
         local packet = nil

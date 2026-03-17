@@ -55,8 +55,9 @@ windower.register_event('ipc message', function(msg)
     local player = windower.ffxi.get_mob_by_target('me') and windower.ffxi.get_mob_by_target('me').name
 
     if cmd == 'marco' then
-        windower.send_ipc_message('polo '..player)
-
+        if player then
+            windower.send_ipc_message('polo '..player)
+        end
     elseif cmd == 'polo' then
         if participating_characters ~= nil then 
             participating_characters:append(args[1])
