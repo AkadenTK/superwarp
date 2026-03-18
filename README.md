@@ -3,7 +3,13 @@
 This is an addon for Windower4 for FFXI. It allows text commands to teleport using Homepoints, Waypoints, Proto-Waypoints, Survival Guides, Escha Portals and Reisenjima Ingresses, Voidwatch and Unity NPCs, Abyssea Confluxes, Runic Portals, Odyssey Confluxes and Translocators, and Sortie Gadgets, Bitzers, and Devices, Temenos Matter Diffusion Modules and Apollyon Swirling Vortices, Incursion Rusted Transmitters, Walk Of Echoes Confluxes.
 
 ### Commands:
-The //sw command prefix can now be used for all maps. It may still be used in the manner it was previously if the user so desired.
+
+#### The superwarp™ (New!)
+| Command | Action |
+| --- | --- |
+| //sw [a/p]  Passes the appropriate command for the circumstance. Some users might consider a hotkey for this, like alt + S to pass the smartcommand with no typing and no macro. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+
+---
 
 #### Homepoint Commands
 | Command | Action |
@@ -44,7 +50,7 @@ The //sw command prefix can now be used for all maps. It may still be used in th
 #### Unity Commands
 | Command | Action |
 | --- | --- |
-| //[sw] un [warp] [all/party] zone_name  | Warp to a specified zone or the correct zone for a specified Unity NM. If an NM is specified, Superwarp will display the coordinates for the spawn NPCs. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
+| //[sw] un [warp] [all/party] zone_name  | Warp to a specified zone or the correct zone for a specified Unity NM. If an NM is specified, superwarp will display the coordinates for the spawn NPCs. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).  |
 | //[sw] un [all/party] missing [max]  | List out which destinations are still locked. The optional max parameter is a maximum number of lines to display. Default: all. |
 |alt cmd: uy |
 
@@ -124,11 +130,6 @@ The //sw command prefix can now be used for all maps. It may still be used in th
 |//[sw] woe [all/party] exit | Exit a battlefield inside Walk Of Echoes. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |alt cmd: we |
 
-#### The Superwarp™ (New!)
-| Command | Action |
-| --- | --- |
-| //sw [a/p]  Passes the appropriate command for the circumstance. Some users might consider a hotkey for this, like alt + S to pass the smartcommand with no typing and no macro. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-
 #### Misc. Commands
 | Command | Action |
 | --- | --- |
@@ -186,15 +187,15 @@ Further customization can be done with the Shortcuts section in the settings fil
 ```
 
 ### In-Zone warping
-When handling the menu through the game's vanilla systems, warping between two homepoints or waypoints in the same zone sends a packet that moves your character without zoning out. Escha/Reis do this too. This is usually accompanied by a fade-to-black animation. When this occurs through Superwarp, no animations are played. It's faster, but it can look jarring. You can disable this behavior for some zones (Escha/Reis cannot be, because of the nature of the zone) with a setting: `<enable_same_zone_teleport>false</enable_same_zone_teleport>`. It is true by default. 
+When handling the menu through the game's vanilla systems, warping between two homepoints or waypoints in the same zone sends a packet that moves your character without zoning out. Escha/Reis do this too. This is usually accompanied by a fade-to-black animation. When this occurs through superwarp, no animations are played. It's faster, but it can look jarring. You can disable this behavior for some zones (Escha/Reis cannot be, because of the nature of the zone) with a setting: `<enable_same_zone_teleport>false</enable_same_zone_teleport>`. It is true by default. 
 
 ### Locked homepoints and waypoints
-Superwarp is no longer able to warp to locations you have not unlocked yet. Square has started checking serverside. 
+superwarp is no longer able to warp to locations you have not unlocked yet. Square has started checking serverside. 
 
 ### Multi-boxing features
 Every command can be sent to all characters by prepending the "all" or "party" keyword before the zone name and sub-zone destination or the sub-command. This will send the same command to all characters on the same machine or all characters on the same machine in the same party and delay their responses to prevent Square-Enix's servers from rejecting duplicate packets.
 
-The default behavior of Superwarp is to cancel the in-game follow and autorun during a warp/sub-command event. But to disable this (for some reason), there is an option in the settings.xml file.
+The default behavior of superwarp is to cancel the in-game follow and autorun during a warp/sub-command event. But to disable this (for some reason), there is an option in the settings.xml file.
 
 An option is available to apply a windower command before a warp/sub-command begins as well as on arrival. The use case is really infinite, but the goal was to enable the user to disable follow addons during a warp or sub-command event. Bonus feature! Prank your friends by setting the command before starting a warp to `sw cancel`. (Don't actually, I'm the one that will get a message about it not working)
 
@@ -214,7 +215,7 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 - **Feature**: Homepoints now uses same-zone teleporting feature.
 - **Feature**: Homepoints now check enabled expansion content before warping. Before, if you warped to a zone that came in an expansion that is not enabled or installed, the character would get stuck until the expansion was enabled and installed.
 - **Feature**: All warp systems check the currency required to teleport before teleporting. 
-- **Feature**: An option has been added to check for unlock status of homepoints, waypoints, and survival guides. To enable unlock checks, set the following setting: `<enable_locked_warps>false</enable_locked_warps>`. This option is TRUE by default, meaning that Superwarp will let you warp there even if you don't have it unlocked.
+- **Feature**: An option has been added to check for unlock status of homepoints, waypoints, and survival guides. To enable unlock checks, set the following setting: `<enable_locked_warps>false</enable_locked_warps>`. This option is TRUE by default, meaning that superwarp will let you warp there even if you don't have it unlocked.
 - **Feature**: When in escha or Reisenjima, use the sub-command "domain" to aquire elvorseal if the status is not already applied and teleport to the target Domain Invasion arena. If the option to acquire elvorseal is not available, the command will warn in the log and cancel. To return the status before the fight is over, use the sub-command "domain return"
 - **Resolved**: Escha and Waypoint systems now correctly consume currency.
 - **Feature**: Waypoints warp system can now teleport to rune locations.
@@ -224,11 +225,11 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 - **Feature**: An option to simulate menu choice delay by a fixed number of seconds. Change the setting `<simulated_response_time>0</simulated_response_time>` to a number of seconds to wait between ***EACH*** menu packet sent. Teleports send between 2 and 4 packets that can be affected by this number, so be prepared to wait. This option is specifically designed to make packets sent look more like vanilla behavior.
 - **Resolved**: Teleport packets now respect the game's normal order for sending to the client. The next menu option packets will wait for the response packets before continuing. This makes the teleporting take a little bit longer, but it looks much more like vanilla game behavior. 
 - **Feature**: Added custom shortcuts. Configured in the settings file, an exact phrase can be specified (e.g. "wado" for "Western Adoulin") that resolves to a zone name or a zone + subzone combination.
-- **Feature**: When Superwarp detects that the event has been skipped while mid-teleport, it can retry immediately. Additionally with a new setting, it will enable "fast" mode for the next attempt. Fast mode does not wait for the response packets and removes any simulated menu choice delays. The hope is to fire off the teleport packets to get you out of there ASAP. To enable this option change the setting `<enable_fast_retry_on_interrupt>true</enable_fast_retry_on_interrupt>`.
-- **Improvement**: The retry system has been improved. Superwarp has more control over when a retry is attempted. This should mean less issues when the client lags. Retries occur when the warp NPC cannot be found, is out of range, or when the event is skipped.
+- **Feature**: When superwarp detects that the event has been skipped while mid-teleport, it can retry immediately. Additionally with a new setting, it will enable "fast" mode for the next attempt. Fast mode does not wait for the response packets and removes any simulated menu choice delays. The hope is to fire off the teleport packets to get you out of there ASAP. To enable this option change the setting `<enable_fast_retry_on_interrupt>true</enable_fast_retry_on_interrupt>`.
+- **Improvement**: The retry system has been improved. superwarp has more control over when a retry is attempted. This should mean less issues when the client lags. Retries occur when the warp NPC cannot be found, is out of range, or when the event is skipped.
 - **Resolved**: Same-zone teleports now correctly orient your character on arrival. 
 - **Resolved**: All same-zone teleports now have fully accurate arrival coordinates. The packet sent matches vanilla exactly.
-- **Improvement**: The reset functionality when an error occurs with Superwarp has been improved. This should get your character out of "stuck in menu" issue more often. Ideally, you should never have to use this feature.
+- **Improvement**: The reset functionality when an error occurs with superwarp has been improved. This should get your character out of "stuck in menu" issue more often. Ideally, you should never have to use this feature.
 - **Imprevement**: When submitting multiple actions accidentally, superwarp will prevent the second attempt. To cancel an in-progress warp type `//sw cancel` or `//sw cancel all`. 
 - **Improvement**: Client menu locks should be far less frequent (they were quite infrequent before, but it should be less frequent still). If the warp somehow manages to stall, don't talk to the NPC manually. Instead do `//sw reset` to reset the menu lock before reattempting.
 - **Improvement**: Menu ID and NPC IDs are validated when a new menu packet arrives. Odd out-of order things happen sometimes, this aims to prevent issues. 
@@ -278,7 +279,7 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 
 #### v1.0
 - **Feature**: Odyssey warp system added.
-- **Resolved**: Sortie: Resolved lock-up when warping to or from Aminon. Be sure to set your destination before warping to Aminon. Superwarp will cancel the warp and warn the user if it is not set.
+- **Resolved**: Sortie: Resolved lock-up when warping to or from Aminon. Be sure to set your destination before warping to Aminon. superwarp will cancel the warp and warn the user if it is not set.
 - **Resolved**: Sortie: Fix for sometimes being immediately warped out from a boss room.
 - **Improvement**: Sortie: More consistent handling of origination gadget.
 
@@ -306,7 +307,7 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 
 #### v1.1
 - **Feature**: All commands for all maps can now be dispatched with 'sw'.
-- **Feature**: Introducing The Superwarp. A new general command that uses logic to become the appropriate command based on the circumstances. Give it a spin.
+- **Feature**: Introducing The superwarp. A new general command that uses logic to become the appropriate command based on the circumstances. Give it a spin.
 - **Feature**: The 'next' and 'random' commands for the Limbus map now have the ability to track the chests you open and will always send you to the 4th-to-last chest you opened in sequence irrespective of repeat opens. If you received 5k from a chest and wish to try the same chest again, the tracking will ignore the repeat open. Multiboxers will wish to rotate regardless since opening different chests with different characters is a headache.
 - **Feature**: Incursion warp system added.
 - **Feature**: Walk Of Echoes warp system added.
