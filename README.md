@@ -7,7 +7,7 @@ This is an addon for Windower4 for FFXI. It allows text commands to teleport usi
 #### The superwarp™ (New!)
 | Command | Action |
 | --- | --- |
-| //sw [a/p]  Passes the appropriate command for the circumstance. Some users might consider a hotkey for this, like alt + S to pass the smartcommand with no typing and no macro. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+| //sw [a/p]  One command to rule them all. Passes the appropriate command for the circumstance. Some users might consider a hotkey for this, like alt + S to pass the smartcommand with no typing and no macro. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 
 ---
 
