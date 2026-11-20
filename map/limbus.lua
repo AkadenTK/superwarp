@@ -14,7 +14,7 @@ local npc_names = T{
 
    local destination_array = {
         ['apollyon'] = {
-	   E1  = {display_name = 'Entrance 1', zone = 38, menu_id = 102,  index = 678, npc = 16933542, offset = 1, x = -608,z = 0, y = -600,h = 126, unknown1 = 1,  unknown2 = 1},
+	   E1  = {display_name = 'Entrance 1', zone = 38, menu_id = 102,  index = 678, npc = 169335542, offset = 1, x = -608,z = 0, y = -600,h = 126, unknown1 = 1,  unknown2 = 1},
 	   E2  = {display_name = 'Entrance 2', zone = 38, menu_id = 103,  index = 679, npc = 169335543, offset = 1, x = 608,z = 0, y = -600,h = 0,   unknown1 = 1,  unknown2 = 1},
 	   NW1 = {display_name = 'Northwest 1', zone = 38, menu_id = 104,  index = 680, npc = 16933544, offset = 1, x = -440.00003051758, z = 0, y = -88.000007629395,  h = 191, unknown1 = 11, unknown2 = 1},
 	   NW2 = {display_name = 'Northwest 2', zone = 38, menu_id = 105,  index = 681, npc = 16933545, offset = 2, x = -534,z = 0, y = 171.00001525879,h = 159, unknown1 = 12, unknown2 = 1},
@@ -1196,7 +1196,7 @@ sub_commands = {
     warpdata = T{
         ['Apollyon'] = T{
 			['Entrance']  = { shortcut = 'E1' },
-			['E1']  = {display_name = 'Entrance 1', zone = 38, menu_id = 102,  index = 678, npc = 16933542, offset = 1, x = -608,z = 0, y = -600,h = 126, unknown1 = 1,  unknown2 = 1},
+			['E1']  = {display_name = 'Entrance 1', zone = 38, menu_id = 102,  index = 678, npc = 169335542, offset = 1, x = -608,z = 0, y = -600,h = 126, unknown1 = 1,  unknown2 = 1},
 			['E2']  = {display_name = 'Entrance 2', zone = 38, menu_id = 103,  index = 679, npc = 169335543, offset = 1, x = 608,z = 0, y = -600,h = 0,   unknown1 = 1,  unknown2 = 1},
 			['NW1'] = {display_name = 'Northwest 1', zone = 38, menu_id = 104,  index = 680, npc = 16933544, offset = 1, x = -440.00003051758, z = 0, y = -88.000007629395,  h = 191, unknown1 = 11, unknown2 = 1},
 			['NW2'] = {display_name = 'Northwest 2', zone = 38, menu_id = 105,  index = 681, npc = 16933545, offset = 2, x = -534,z = 0, y = 171.00001525879,h = 159, unknown1 = 12, unknown2 = 1},

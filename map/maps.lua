@@ -9,13 +9,15 @@ local maps =  {
     ['portals'] = require('map/portals'),
     ['voidwatch'] = require('map/voidwatch'),
     ['spd'] = require('map/spd'),
-    ['garden'] = require('map/garden'),
     ['sortie'] = require('map/sortie'),
     ['odyssey'] = require('map/odyssey'),
     ['limbus'] = require('map/limbus'),
     ['campaign'] = require('map/campaign'),
     ['incursion'] = require('map/incursion'),
     ['walkofechoes'] = require('map/walkofechoes'),
+    ['garden'] = require('map/garden'),
+    ['dynamis'] = require('map/dynamis'),
+    ['tomes'] = require('map/tomes'),
 }
 
 for _, map in pairs(maps) do

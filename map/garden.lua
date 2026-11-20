@@ -30,13 +30,14 @@ return T{
         local missing = T{}
         return missing
     end,
-    help_text = "| Mog Garden |\n- mg zone -- Enter Mog Garden from Eastern/Western Adoulin or Mog Dinghy in a Port zone or exit Mog Garden from Mog Dinghy.\n-----------------------------",
+    help_text = "| Mog Garden |\n- mg zone -- Enter Mog Garden from Eastern/Western Adoulin or Mog Dinghy in a Port zone or exit Mog Garden from Mog Dinghy.\nMog House\n- mg or mg anything - Warp out from Mog House. mg zone / mg garden warp to Mog Garden from Mog House.\n-----------------------------",
     sub_zone_targets =  S{},
     auto_select_zone = function(zone)
     end,
     auto_select_sub_zone = function(zone)
     end,
     build_warp_packets = function(current_activity, zone, p, settings)
+        local packet = nil
         packet = packets.new('outgoing', 0x05B)
         packet["Target"] = npc.id
         packet["Option Index"] = 0
