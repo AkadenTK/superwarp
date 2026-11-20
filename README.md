@@ -14,6 +14,7 @@ The //sw command prefix can now be used for all maps. It may still be used in th
 |(New!) //sw display | Toggles sendall confirmation display. |
 |(New!) //sw chest (tower) / chest |  -- Manually updates chest tracking with the tower you input after the chest command. i.e. //sw chest nw or sw/ne/se/n/w/e/c; If no argument is provided after 'chest' it will display the next chest open location while in limbus. |
 |(New!) //sw chestsync / syncchest / sync | Instantly synchronizes all characters' Limbus chest tracking order with the character the command is executed from, ensuring all characters warp to the same destination. |
+|(New!) //sw order | Toggles Sortie Device order between ABC & CBA. (Smart Command) One button for the whole 9boss run. |
 | //sw cancel [all/party]  | Cancels the current in-progress warp.   |
 | //sw reset [all/party]  | Resets client menu lock. This should be exceedingly rare, but it's here in case it's needed.   |
 
@@ -143,10 +144,30 @@ The //sw command prefix can now be used for all maps. It may still be used in th
 |//[sw] woe [all/party] exit | Exit a battlefield inside Walk Of Echoes. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |alt cmd: we |
 
-#### Mog Garden (New!)
+#### Mog Garden / Mog House (New!)
 | Command | Action |
 | --- | --- |
 |//[sw] mg [all/party] zone | Enter Mog Garden from Eastern/Western Adoulin or Mog Dinghy in a Port zone or exit Mog Garden from Mog Dinghy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] mg [all/party] out / exit / leave | (While inside Mog House) Exit Mog House. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] mg [all/party] zone / garden | (While inside Mog House) Head into Mog Garden from Mog House. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+
+
+#### Dynamis - Divergence (Shared) (New!)
+| Command | Action |
+| --- | --- |
+|//[sw] dy [all/party] zone | After automatically checking your eligibility and confirming you are cleared - zones into shared Dynamis - Divergence zones from Enigmatic Footprints #2. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+
+#### Tomes (New!)
+| Command | Action |
+| --- | --- |
+|//[sw] to [all/party] zone | Warps you to your home nation from a Field Manual (Repatriation). Warps you to your Home Point from a Grounds Tome. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+
+#### Mog Garden / Mog House (New!)
+| Command | Action |
+| --- | --- |
+|//[sw] mg [all/party] zone | Enter Mog Garden from Eastern/Western Adoulin or Mog Dinghy in a Port zone or exit Mog Garden from Mog Dinghy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] mg [all/party] out / exit / leave | (While inside Mog House) Exit Mog House. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
+|//[sw] mg [all/party] zone / garden | (While inside Mog House) Head into Mog Garden from Mog House. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 
 ### Fuzzy Zone Names
 
@@ -366,4 +387,16 @@ Thanks to Staticvoid for researching and implementing the Sortie, Odyssey, Temen
 - **Improvement**: Sortie, Odyssey maps have been reworked and made more efficient.
 - **Improvement**: Added to Escha map; enter / exit for Reisenjima Sanctorium via Etched Rock on either side. smartcommand autohandles each. (//sw)  - following the reduction of phantom gem from 30 to 10.
 - **Improvement**:  Added to Abyssea map; enter / exit for Abyssea - Empyreal Paradox  via Transcendental Radiance in Qufim / Cavernous Maw from inside. smartcommand autohandles each (//sw) - following the reduction of phantom gem from 30 to 10.
+
+#### v1.1.5
+- **Feature**: Added Mog House Warps.
+- **Feature**: Added Dynamis-Divergence shared zones warps.
+- **Feature**: Added Grounds Tome and Field manual warps.
+- **Feature**: Added option to reverse Sortie upstairs order (CBA) [Default ABC]
+- **Feature**: Added command to toggle Sortie order (Smart Command). //sw order 
+- **Improvement**: Adjust edgecase for Limbus warps.
+- **Resolved**: Fix bug for users running packetflow.
+
+
+
 

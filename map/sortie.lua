@@ -255,7 +255,11 @@ return T {
                     return "C"
                 end
             end
-            return "S"
+            if specified.order and has_temp_item(temp_item_ids.Fragment.D) then
+                return "C"
+            else
+                return "S"
+            end
         else
             return nil
         end
