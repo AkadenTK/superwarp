@@ -122,35 +122,27 @@ The //sw command prefix can now be used for all maps. It may still be used in th
 |//[sw] li [all/party] exit | Exit the Apollyon zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |alt cmds: te / ap |
 
-#### Campaign (New!)
+#### Campaign
 | Command | Action |
 | --- | --- |
 |//[sw] ca [warp] [all/party] | warp to a designated [S] zone via a Campaign Arbiter in a [S] city. "sw" and "warp" are optional, and do nothing different. It's for those that require it because they've been trained to already. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] ca [all/party] return | return to your [S] home nation. via any [S] 2 initial field NPC i.e. Amaliya, C.A. . "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |alt cmd: cn |
 
-#### Incursion (New!)
+#### Incursion
 | Command | Action |
 | --- | --- |
 |//[sw] in [warp] [all/party] [part of boss name] | warp to a designated boss chamber inside Incursion. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] in missing| Check which destinations you lack, incase you wanted to do it; I wrote it so i'm putting it in here. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |alt cmd: inc |
 
-#### Walk Of Echoes (New!)
+#### Walk Of Echoes
 | Command | Action |
 | --- | --- |
 |//[sw] woe [all/party] zone| Zone into or out of the Walk Of Echoes zone. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] woe [all/party] enter | Enter a battlefield you are standing within 6 yalms of while inside Walk Of Echoes. (There is no point at which more than one conflux is <= 6 yalms.) "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |//[sw] woe [all/party] exit | Exit a battlefield inside Walk Of Echoes. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
 |alt cmd: we |
-
-#### Mog Garden / Mog House (New!)
-| Command | Action |
-| --- | --- |
-|//[sw] mg [all/party] zone | Enter Mog Garden from Eastern/Western Adoulin or Mog Dinghy in a Port zone or exit Mog Garden from Mog Dinghy. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-|//[sw] mg [all/party] out / exit / leave | (While inside Mog House) Exit Mog House. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-|//[sw] mg [all/party] zone / garden | (While inside Mog House) Head into Mog Garden from Mog House. "all" and "party" will send an ipc message to all local instances (or specific local party members) with a delay (otherwise it will get stuck).
-
 
 #### Dynamis - Divergence (Shared) (New!)
 | Command | Action |
