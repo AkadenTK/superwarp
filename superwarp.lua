@@ -50,7 +50,7 @@ _addon.name = 'superwarp'
 
 _addon.author = 'Akaden'
 
-_addon.version = '1.1.4'
+_addon.version = '1.1.5'
 
 _addon.commands = {'sw','superwarp'}
 
@@ -110,6 +110,7 @@ local defaults = {
     send_all_display = true,
     chat_log_use = 'log',                   -- log messages to 'log', 'console', or 'none'. If debug is on, it will always log to the chat log
     understood = false,
+    sortie_reverse_order = false,
     hp_legacy_defaults = true,
     limbus_chests = {
         temenos = {
@@ -193,6 +194,7 @@ local state = {
 }
 
 local prev_location = nil
+local mh_door_menu = nil
 local confirm_msg = ''
 local function add_table_entry(zone, entry)
     local t = settings.limbus_chest_order[zone]
@@ -837,6 +839,41 @@ local function handle_map_short_name(map, name)
     return false
 end
 
+-- These warps do not use an NPC poke and server response therefore they need an alternate, shorter, path of execution.
+local function handle_moghouse_warp(info, args)
+    local destiny, coordinate
+    local packet = packets.new('outgoing', 0x05E)
+    packet['Zone Line'] = 1903324538
+    if args:contains('zone') or args:contains('garden') then
+        coordinate = 'to Mog Garden'
+        destiny = 127
+    else
+        coordinate = 'out'
+        destiny = 0
+    end
+    log('Warping '..coordinate..' from Mog House.')
+    debug('Warping '..coordinate..' from Mog House.')
+    packet['Type'] = destiny
+    if mh_door_menu then
+        packet['MH Door Menu'] = mh_door_menu
+    elseif info.zone == 256 or info.zone == 257 then
+        packet['MH Door Menu'] = 9
+    else
+        log('Unable to zone from Mog House; superwarp was not loaded when you entered Mog House and you are not in Adoulin. More information is needed to safely execute warp.')
+        return
+    end
+    debug('Injecting packet 1 zone request.')
+    packets.inject(packet)
+    if current_warp_id then
+        local player = windower.ffxi.get_mob_by_target('me').name
+        if player == warp_sender then
+            warp_listener(true, player)
+        else
+            windower.send_ipc_message('confirm '..current_warp_id..' '..player)
+        end
+    end
+end
+
 local function handle_warp(warp, args, fast_retry, retries_remaining, current_sub_cmd)
     warp = warp:lower()
     if retries_remaining == nil then
@@ -885,6 +922,17 @@ local function handle_warp(warp, args, fast_retry, retries_remaining, current_su
     end
     warp_ident = ((warp_ident and warp_ident) or 0) + 1
     smartcmd = false
+    -------------------Mog House Handling-----------------------------
+    if warp == 'mg' then
+        local info = windower.ffxi.get_info()
+        if info.mog_house and info.zone ~= 280 then -- We're in a Mog House and it is not our Mog Garden.
+            handle_moghouse_warp(info, args)
+            return
+        else
+            current_sub_cmd = 'zone'
+        end
+    end
+    -------------------------------------------------------------------
     if args[1] and args[1]:lower() == 'missing' then
         args:remove(1)         
         for key,map in pairs(maps) do
@@ -933,7 +981,7 @@ local function handle_warp(warp, args, fast_retry, retries_remaining, current_su
                 if map.auto_select_zone and map.auto_select_zone(zone) then
                     zone_target = map.auto_select_zone(zone)
                 end
-                local specified = {zone = zone_target, subzone = sub_zone_target, legacy = settings.hp_legacy_defaults}
+                local specified = {zone = zone_target, subzone = sub_zone_target, legacy = settings.hp_legacy_defaults, order = settings.sortie_reverse_order}
                 if map.auto_select_sub_zone and map.auto_select_sub_zone(zone, specified) then
                     sub_zone_target = map.auto_select_sub_zone(zone, specified)
                 end
@@ -1163,49 +1211,53 @@ end
 --            [The superwarp™]             --
 ---------------------------------------------
 local function the_superwarp(genArgs, dispatcher, retries)
-
-    if retries == nil then
-        state.loop_count = settings.max_retries
-    end
-
-    local result = magic_map()
-    if not result.map_name then
-        if state.loop_count > 0 then
-            log('Searching for warp NPCs...')
-            state.loop_count = state.loop_count - 1
-            the_superwarp:schedule(3, genArgs, dispatcher, state.loop_count)
-        else
-            log('No warp NPCs nearby.')
-            timing.warp_cmd_time = nil
-        end
-        return
-    end
-    state.debug_stack = T{}
-    state.loop_count = nil
-    if result.map_name == 'campaign' and result.interaction == 'port' then
-        if maps.abyssea.target_ids:contains(result.npc.id) then
-            result.map_name = 'abyssea'
-            result.interaction = 'enter'
-        end
-    end
-    local map = maps[result.map_name]
-
     local short_name
-    if type(map.short_name) == 'table' then
-        short_name = map.short_name[1]
-    else
-        short_name = map.short_name
-    end
-    for i,v in pairs(genArgs) do genArgs[i]=windower.convert_auto_trans(genArgs[i]) end
-    if genArgs:length() == 0 then
-        local smart_cmd
-        smart_cmd, short_name = smart_command(result, short_name)
-        if smart_cmd ~= 'warp' and short_name ~= 'hp' then
-            debug('No sub-command provided, using '..short_name..' '..smart_cmd..'.')
-            genArgs:append(smart_cmd)
+    local info = windower.ffxi.get_info()
+    state.debug_stack = T{}
+    if not info.mog_house or info.mog_house and info.zone == 280 then
+        if retries == nil then
+            state.loop_count = settings.max_retries
         end
-    else
-        debug('Using '..result.npc.name..' for '..result.map_name..'.')
+
+        local result = magic_map()
+        if not result.map_name then
+            if state.loop_count > 0 then
+                log('Searching for warp NPCs...')
+                state.loop_count = state.loop_count - 1
+                the_superwarp:schedule(3, genArgs, dispatcher, state.loop_count)
+            else
+                log('No warp NPCs nearby.')
+                timing.warp_cmd_time = nil
+            end
+            return
+        end
+        state.loop_count = nil
+        if result.map_name == 'campaign' and result.interaction == 'port' then
+            if maps.abyssea.target_ids:contains(result.npc.id) then
+                result.map_name = 'abyssea'
+                result.interaction = 'enter'
+            end
+        end
+        local map = maps[result.map_name]
+
+        if type(map.short_name) == 'table' then
+            short_name = map.short_name[1]
+        else
+            short_name = map.short_name
+        end
+        for i,v in pairs(genArgs) do genArgs[i]=windower.convert_auto_trans(genArgs[i]) end
+        if genArgs:length() == 0 then
+            local smart_cmd
+            smart_cmd, short_name = smart_command(result, short_name)
+            if smart_cmd ~= 'warp' and short_name ~= 'hp' then
+                debug('No sub-command provided, using '..short_name..' '..smart_cmd..'.')
+                genArgs:append(smart_cmd)
+            end
+        else
+            debug('Using '..result.npc.name..' for '..result.map_name..'.')
+        end
+    elseif info.zone ~= 280 then
+        short_name = 'mg'
     end
     if dispatcher then genArgs:insert(1, dispatcher) end
     smartcmd = true
@@ -1219,8 +1271,7 @@ windower.register_event('addon command', function(...)
     local cmd = args[1]
     args:remove(1)
     for i,v in pairs(args) do args[i]=windower.convert_auto_trans(args[i]) end
-    local item = table.concat(args," "):lower()
-
+    
     if cmd and warp_list:contains(cmd:lower()) and args[1] then
         warp_listener()
         received_warp_command(cmd, args)
@@ -1290,6 +1341,15 @@ windower.register_event('addon command', function(...)
             log('Homepoint defaults set to: Legacy')
         end
         config.save(settings)
+    elseif cmd and cmd:contains('order') then
+        if settings.sortie_reverse_order then
+            settings.sortie_reverse_order = false
+            log('Sortie order set to: ABC')
+        else
+            settings.sortie_reverse_order = true
+            log('Sortie order set to: CBA')
+        end
+        config.save(settings)
     elseif cmd and cmd:contains('display') then
         if settings.send_all_display then
             settings.send_all_display = false
@@ -1314,7 +1374,7 @@ windower.register_event('addon command', function(...)
             local map = maps[key]
             windower.add_to_chat(207,map.help_text)
         end
-        windower.add_to_chat(207,'| superwarp |\nsw cancel -- Cancels pending warp command.\nsw reset -- Attempts to clear menu lock.\nsw sync -- Instantly synchronizes all characters Limbus chest tracking order with the character the command is executed from.\nsw chest (tower) / chest -- Manually updates chest tracking with the tower you input after the chest command. i.e. //sw chest se; If no argument is provided will display the next chest open location within limbus. i.e. //sw chest\nsw hpdefaults -- Toggles homepoint default destinations between Legacy and New.\nsw display -- Toggles all / party warp display.\nsw missing -- Display destinations you are missing from the nearest warp system if applicable.\n-----------------------------')
+        windower.add_to_chat(207,'| superwarp |\nsw cancel -- Cancels pending warp command.\nsw reset -- Attempts to clear menu lock.\nsw sync -- Instantly synchronizes all characters Limbus chest tracking order with the character the command is executed from.\nsw chest (tower) / chest -- Manually updates chest tracking with the tower you input after the chest command. i.e. //sw chest se; If no argument is provided will display the next chest open location within limbus. i.e. //sw chest\nsw hpdefaults -- Toggles homepoint default destinations between Legacy and New.\nsw order Toggles between ABC and CBA order for Sortie Smart Command.\nsw display -- Toggles all / party warp display.\nsw missing -- Display destinations you are missing from the nearest warp system if applicable.\n-----------------------------')
         windower.add_to_chat(207,'Use [all/a/@all/party/p] after the command prefix and before the destination to warp all characters or all party/alliance members. (//li p next)\nYou may still use [warp] if you learned to include it or still have macros written this way. (sw hp warp eastern adoulin 1) (Legacy support)\n\n[New!] You may now use "//sw" or "/console sw" for all maps with no extra command prefix. i.e. //sw port , or //sw rab to go to Rabao #2')
         windower.add_to_chat(207,'[New!] superwarp (smartcommand) - You may now use just //sw with no command for all warps that do not require a destination to be specified. i.e. enter and exit commands for abyssea, escha zones and apollyon, domain invasion enter, next command in limbus, port in odyssey and sortie, runic portal assault and return, campaign npcs return and Cavernous Maw port, all 4 Walk Of Echoes commands. It can also be used to go to the default destination in cases that call for specification. "//sw p" to use the smart command with all party members, or "a" for all. Use with confidence. Layers of failsafes are in place.')
         windower.add_to_chat(207,'If you become menu locked use //sw reset to clear.')
@@ -1375,31 +1435,6 @@ function receive_send_all(msg)
     end
 end
 
-local function auto_shutdown(id) -- Ensure that if the same process ID is still open after a reasonable amount of time after the indicator has been triggered, it gets shut down and systems reset.
-    if current_activity and current_activity.warp_ident == id then
-        debug("The warp has not finished or progressed since the NPC interaction anomoly and superwarp detects no new warp IDs. Resetting..")
-        state.loop_count = 0
-        last_activity = current_activity
-        current_activity = nil
-        reset(true)
-    elseif not current_activity then
-        debug("No current activity, doing nothing.")
-        debug('If you become menu locked use //sw reset to clear.')
-        return
-    end
-end
-
-local function read_warp_state(i,id)
-    if current_activity and id ~= current_activity.warp_ident then
-        debug("A different warp has commenced now, leaving it to its own devices.")
-        return
-    elseif current_activity and current_activity.action_index ~= i then
-        debug("Warp state has progressed, leaving it to its own devices.")
-        return
-    end
-    auto_shutdown:schedule(5, id)
-end
-
 local function reset_action_queue() -- Clean solution to one of the toughest bugs i've had to overcome.
     local wait_packets = {
         nil,
@@ -1418,7 +1453,22 @@ local function reset_action_queue() -- Clean solution to one of the toughest bug
     current_activity.action_index = current_activity.action_index + 1
     if current_activity.retried_once then
         current_activity.retry_attempted = true
-        log('Trying one more time to send the move request...')
+        log('Failed again, attempting to execute warp one more time or abort cleanly.')
+
+        local zone = windower.ffxi.get_info().zone
+        local map = zone == 38 and maps.limbus.warpdata['Apollyon'] or maps.limbus.warpdata['Temenos']
+        local the_poke = current_activity.poked_npc_id
+
+        for _, teleporter in pairs(map) do
+            if teleporter.npc == the_poke then
+                current_activity.action_queue[2].packet["X"] = teleporter.x
+                current_activity.action_queue[2].packet["Y"] = teleporter.y
+                current_activity.action_queue[2].packet["Z"] = teleporter.z
+                current_activity.action_queue[2].packet["_unknown1"] = teleporter.unknown1
+                current_activity.action_queue[2].packet["Rotation"] = teleporter.h
+                break
+            end
+        end
     else
         log('There was "Nothing out of the ordinary here.", Attempting to retry the warp.')
     end
@@ -1466,7 +1516,7 @@ local function perform_next_action()
                 local action = ca.action_queue[i]
                 if action and ca.action_index == i and wi == warp_ident and action.wait_packet == p and not ca.canceled then --We no longer get false timeouts which would thwart otherwise would be successful warps.
                     debug("timed out waiting for packet 0x"..p:hex().." for action "..tostring(i)..' '..(d or ''))
-                    if in_limbus_zone and current_activity.action_index == 3 and state.loop_count > 0 and not current_activity.retry_attempted then  -- If we timeout at this phase and it is not because of interrupt send the 0x05C again because it was dropped.
+                    if in_limbus_zone and (current_activity.action_index == 3 and state.loop_count > 0 and not current_activity.retry_attempted) or (current_activity.retried_once and not current_activity.retry_attempted) then  -- If we timeout at this phase and it is not because of interrupt send the 0x05C again because it was dropped. / Or we have retried once and still failed, safe retry/abort procedure.
                         reset_action_queue()
                     else
                         if s.loop_count > 0 then
@@ -1531,7 +1581,7 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
                 current_action.wait_packet = nil
                 current_action.incoming_packet = packets.parse('incoming',data)
                 perform_next_action()
-            else
+            elseif id == 0x052 and message_type == 2 then
                 debug("Detected event skip while waiting to receive packet 0x"..id:hex().." for action "..tostring(current_activity.action_index)..' '..(current_action.description or ''))
             end
         end
@@ -1591,7 +1641,11 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
         p['_flags3'] = bit.bor(p['_flags3'], 2)
         return packets.build(p)
     end
-
+    if id == 0x00A then
+        local p = packets.parse('incoming', data)
+        if not p then return end
+        mh_door_menu = p['MH Door Menu']
+    end
     if id == 0x052 and current_activity and current_activity.running then
         local message_type = data:unpack('b4', 5)
         if message_type == 2 then
@@ -1713,12 +1767,6 @@ windower.register_event('incoming chunk',function(id,data,modified,injected,bloc
                 current_activity = nil
                 return false
             end
-        elseif current_activity and (state.warp_interrupted or state.loop_count > 0) then
-            debug("Prevented menu from blocking packet exchanges, reading state machine...")
-            local i = current_activity and current_activity.action_index
-            local ident = current_activity.warp_ident -- Capture Warp ID now and check in 5 seconds to determine whether a reset is needed.
-            read_warp_state:schedule(5, i, ident)
-            return true
         end
     end
 end)
@@ -1808,7 +1856,7 @@ windower.register_event('outgoing chunk',function(id,data,modified,injected,bloc
 end)
 windower.register_event('load', function()
     if not settings.understood then
-        windower.add_to_chat(207,' \nWelcome to superwarp 1.1.4. \n \n Now use sw in place of  hp, wp, sg, un, so, li, ew, ab etc -  for all warp commands!!\n The new smart-command is "//sw" by itself. It autohandles all warp scenarios where a destination need not be specified. i.e. so port or ab enter. It works as any subcommand for any map except others where multiple are usable, in those cases it always serves as one. i.e. next cmd for limbus.')
+        windower.add_to_chat(207,' \nWelcome to superwarp 1.1.5. \n \n Now use sw in place of  hp, wp, sg, un, so, li, ew, ab etc -  for all warp commands!!\n The new smart-command is "//sw" by itself. It autohandles all warp scenarios where a destination need not be specified. i.e. so port or ab enter. It works as any subcommand for any map except others where multiple are usable, in those cases it always serves as one. i.e. next cmd for limbus.')
         windower.add_to_chat(207,' All legacy functionality is still in place.')
         windower.add_to_chat(207,' sw help to list all information.')
         windower.add_to_chat(207,' sw understood to stop displaying these messages on load.')
